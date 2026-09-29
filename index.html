@@ -279,7 +279,7 @@
                                 <th style="padding: 0.6rem;">Avatar & Grupo</th>
                                 <th style="padding: 0.6rem;">Integrantes</th>
                                 <th style="padding: 0.6rem;">Puntaje</th>
-                                <th style="padding: 0.6rem; text-align: center;">Acción</th>
+                                <th style="padding: 0.6rem; text-align: center;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="teacherGroupsTableBody"></tbody>
@@ -657,7 +657,7 @@
                 const stage = STAGES[this.currentStageIndex];
                 const isCorrect = (optionIndex === stage.correct);
                 
-                // CÁLCULO DE PUNTAJE: 500 base por acierto + puntos proporcionales al tiempo restante a favor
+                // CÁLCULO DE PUNTAJE: 500 puntos base por acierto + bono proporcional al tiempo restante
                 let pointsEarned = isCorrect ? (500 + Math.floor(this.remainingSeconds * 5)) : 0;
 
                 if (db) {
@@ -830,8 +830,9 @@
                         <td style="padding: 0.6rem; font-weight: 700;"><span style="font-size: 1.1rem; margin-right: 0.3rem;">${g.avatar || '🚀'}</span> ${g.name}</td>
                         <td style="padding: 0.6rem; color: #64748b;">${g.members}</td>
                         <td style="padding: 0.6rem; font-weight: 700; color: #4f46e5;">${g.score || 0} pts</td>
-                        <td style="padding: 0.6rem; text-align: center;">
-                            <button onclick="app.resetGroupScore('${g.name}')" style="background: #fee2e2; color: #991b1b; border: none; padding: 0.25rem 0.5rem; border-radius: 0.3rem; font-size: 0.65rem; font-weight: 600; cursor: pointer;">Reiniciar</button>
+                        <td style="padding: 0.6rem; text-align: center; display: flex; gap: 0.4rem; justify-content: center;">
+                            <button onclick="app.resetGroupScore('${g.name}')" style="background: #fef3c7; color: #92400e; border: none; padding: 0.25rem 0.5rem; border-radius: 0.3rem; font-size: 0.65rem; font-weight: 600; cursor: pointer;">Reiniciar</button>
+                            <button onclick="app.deleteGroup('${g.name}')" style="background: #fee2e2; color: #991b1b; border: none; padding: 0.25rem 0.5rem; border-radius: 0.3rem; font-size: 0.65rem; font-weight: 600; cursor: pointer;">Eliminar</button>
                         </td>
                     </tr>
                 `).join('');
@@ -840,6 +841,18 @@
             async resetGroupScore(gName) {
                 if (confirm(`¿Reiniciar puntaje de ${gName}?`)) {
                     if (db) { try { await db.collection('groups').doc(gName).update({ score: 0 }); } catch(e){} }
+                }
+            }
+
+            async deleteGroup(gName) {
+                if (confirm(`¿Estás seguro de eliminar completamente al grupo "${gName}"?`)) {
+                    if (db) {
+                        try { await db.collection('groups').doc(gName).delete(); } catch(e){}
+                    }
+                    let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                    delete localGroups[gName];
+                    localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
+                    this.loadGroupsTable();
                 }
             }
 
