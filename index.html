@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafío Probabilístico - 2° Medio Pucará</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- QRCode JS -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 900: '#312e81' },
+                        cyber: { dark: '#090d16', card: '#111827', border: '#1f2937', neon: '#06b6d4', gold: '#f59e0b' }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #090d16; color: #f3f4f6; }
+        .glass-panel { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .neon-glow { box-shadow: 0 0 25px rgba(99, 102, 241, 0.3); }
+        .neon-glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.3); }
+        .neon-glow-gold { box-shadow: 0 0 30px rgba(245, 158, 11, 0.4); }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+    </style>
+</head>
+<body class="h-full flex flex-col overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+
+    <header class="glass-panel border-b border-gray-800 sticky top-0 z-50 px-4 py-3 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 flex items-center justify-center neon-glow">
+                    <i class="fas fa-dice text-white text-lg animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 text-lg md:text-xl tracking-wide">
+                        DESAFÍO PROBABILÍSTICO
+                    </h1>
+                    <p class="text-xs text-gray-400">Colegio Pucará • Matemática 2° Medio • Prof. William López</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav id="nav-tabs" class="flex flex-wrap items-center gap-1 bg-gray-900/80 p-1.5 rounded-2xl border border-gray-800 text-sm">
+                <button onclick="switchTab('home')" id="tab-btn-home" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md">
+                    <i class="fas fa-home"></i> <span class="hidden sm:inline">Inicio</span>
+                </button>
+                <button onclick="switchTab('instructions')" id="tab-btn-instructions" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800">
+                    <i class="fas fa-book-open"></i> <span class="hidden sm:inline">Instrucciones</span>
+                </button>
+                <button onclick="switchTab('game')" id="tab-btn-game" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800">
+                    <i class="fas fa-gamepad"></i> <span class="hidden sm:inline">Arena de Juego</span>
+                </button>
+                <button onclick="switchTab('podium')" id="tab-btn-podium" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800">
+                    <i class="fas fa-trophy text-amber-400"></i> <span class="hidden sm:inline">Podio & Ranking</span>
+                </button>
+                <button onclick="switchTab('teacher')" id="tab-btn-teacher" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-400 hover:text-white hover:bg-gray-800 border border-dashed border-gray-700">
+                    <i class="fas fa-lock text-cyan-400"></i> <span class="hidden sm:inline">Docente</span>
+                </button>
+            </nav>
+
+            <!-- Status Indicator -->
+            <div id="connection-status" class="flex items-center gap-2 text-xs bg-emerald-950/60 text-emerald-400 px-3 py-1.5 rounded-full border border-emerald-800/50">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span id="status-text">Conectado a Sala Firebase</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 overflow-y-auto">
+
+        <!-- ==================== TAB 1: HOME / REGISTRATION ==================== -->
+        <section id="tab-home" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <!-- Welcome Banner -->
+                <div class="lg:col-span-7 space-y-6 glass-panel p-6 md:p-8 rounded-3xl neon-glow">
+                    <div class="inline-flex items-center gap-2 bg-indigo-500/10 text-indigo-400 px-4 py-1.5 rounded-full text-xs font-semibold border border-indigo-500/20">
+                        <i class="fas fa-star text-amber-400"></i> Guía 2: Variable Aleatoria y Probabilidades
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight">
+                        ¡Compite, Responde y <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">Gana el Gran Premio!</span>
+                    </h2>
+                    <p class="text-gray-300 text-sm md:text-base leading-relaxed">
+                        Bienvenidos al desafío interactivo de 2° Medio del Colegio Pucará. Forma tu grupo de hasta 4 integrantes, ingresa desde tu celular (uso permitido exclusivamente para este aprendizaje colaborativo) y enfréntate a 10 etapas apasionantes sobre experimentos aleatorios, regla de Laplace y variables aleatorias discretas.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+                        <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800 text-center">
+                            <i class="fas fa-users text-indigo-400 text-xl mb-1"></i>
+                            <div class="text-xs text-gray-400">Grupos</div>
+                            <div class="font-bold text-sm">5 a 10 Grupos Max</div>
+                        </div>
+                        <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800 text-center">
+                            <i class="fas fa-user-friends text-cyan-400 text-xl mb-1"></i>
+                            <div class="text-xs text-gray-400">Integrantes</div>
+                            <div class="font-bold text-sm">1 a 4 por equipo</div>
+                        </div>
+                        <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800 text-center col-span-2 sm:col-span-1">
+                            <i class="fas fa-bolt text-amber-400 text-xl mb-1"></i>
+                            <div class="text-xs text-gray-400">Dinámica</div>
+                            <div class="font-bold text-sm">Velocidad + Acierto</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Code & Quick Access Card -->
+                <div class="lg:col-span-5 glass-panel p-6 md:p-8 rounded-3xl border border-cyan-500/20 neon-glow-cyan flex flex-col items-center text-center space-y-4">
+                    <h3 class="text-lg font-bold text-cyan-300 flex items-center gap-2">
+                        <i class="fas fa-qrcode"></i> Acceso Móvil Escaneable
+                    </h3>
+                    <p class="text-xs text-gray-400">
+                        Escanea el código QR con tu celular para unirte directamente a la sala de competencia desde tu dispositivo.
+                    </p>
+                    <div class="bg-white p-4 rounded-2xl shadow-inner inline-block" id="qrcode-container">
+                        <div id="qrcode"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 bg-gray-900 px-3 py-1 rounded-md border border-gray-800 break-all w-full select-all">
+                        <span id="current-url-display"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Form Section -->
+            <div class="glass-panel p-6 md:p-8 rounded-3xl border border-indigo-500/30 space-y-6">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fas fa-shield-alt text-indigo-400"></i> Registro de Grupo de Trabajo
+                        </h3>
+                        <p class="text-xs text-gray-400">Registra los datos de tu equipo antes de que comience el juego en la arena.</p>
+                    </div>
+                    <div id="registered-team-badge" class="hidden bg-emerald-500/20 border border-emerald-500 text-emerald-300 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
+                        <i class="fas fa-check-circle"></i> Registrado como: <span id="my-registered-name" class="underline"></span>
+                    </div>
+                </div>
+
+                <form id="team-reg-form" onsubmit="handleTeamRegistration(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Group Name -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-300">Nombre del Grupo / Equipo *</label>
+                            <input type="text" id="team-name" required placeholder="Ej: Los Probabilistas de Pucará"
+                                class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
+                        </div>
+
+                        <!-- Team Leader Phone -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-300">Celular de Contacto / Dispositivo de Juego *</label>
+                            <input type="text" id="team-phone" required placeholder="Ej: +56 9 1234 5678"
+                                class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Members List -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-medium text-gray-300">Integrantes del Grupo (1 a 4 estudiantes) *</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <input type="text" id="member-1" required placeholder="Integrante 1 (Líder)" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                            <input type="text" id="member-2" placeholder="Integrante 2 (Opcional)" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                            <input type="text" id="member-3" placeholder="Integrante 3 (Opcional)" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                            <input type="text" id="member-4" placeholder="Integrante 4 (Opcional)" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <!-- Avatar Selection -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-medium text-gray-300">Selecciona el Avatar de tu Equipo *</label>
+                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-3" id="avatar-selection-container">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-end">
+                        <button type="submit" class="bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center gap-2">
+                            <i class="fas fa-rocket"></i> Registrar e Ingresar a la Sala
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: INSTRUCTIONS ==================== -->
+        <section id="tab-instructions" class="hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-6">
+                <div class="border-b border-gray-800 pb-4">
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
+                        Instrucciones de la Actividad & Reglas del Juego
+                    </h2>
+                    <p class="text-gray-400 text-sm mt-1">Guía oficial para estudiantes de 2° Medio - Colegio Pucará</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-lg">1</div>
+                        <h4 class="font-bold text-white text-lg">Uso del Celular Permitido</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            El celular <strong>solo está permitido</strong> para interactuar con esta plataforma interactiva y resolver la guía de ejercicios en grupo. Cualquier otro uso fuera del juego invalidará la participación del equipo.
+                        </p>
+                    </div>
+                    <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-600/20 text-cyan-400 flex items-center justify-center font-bold text-lg">2</div>
+                        <h4 class="font-bold text-white text-lg">Dinámica de las 10 Etapas</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            Enfrentarán 10 ejercicios ordenados por dificultad creciente (desde experimentos aleatorios y espacio muestral hasta variable aleatoria discreta). Verán la pregunta y 4 alternativas (A, B, C, D) en su pantalla.
+                        </p>
+                    </div>
+                    <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold text-lg">3</div>
+                        <h4 class="font-bold text-white text-lg">Sistema de Puntaje</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            Cada respuesta correcta otorga puntos base. <strong>¡La velocidad importa!</strong> Quien responda correctamente en menor tiempo acumula un bono de rapidez superior en la tabla general.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-indigo-950/40 to-cyan-950/40 p-6 rounded-2xl border border-indigo-800/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-white text-base">¿Listo para comenzar el desafío?</h4>
+                        <p class="text-xs text-gray-300">Asegúrate de que tu grupo esté registrado en la pestaña de inicio antes de dar el vamos.</p>
+                    </div>
+                    <button onclick="switchTab('game')" class="bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold px-6 py-2.5 rounded-xl text-sm transition-all shadow-lg flex items-center gap-2">
+                        Ir a la Arena de Juego <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: GAME ARENA / 10 STAGES ==================== -->
+        <section id="tab-game" class="hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-3xl relative overflow-hidden">
+                <!-- Header Stats inside Game -->
+                <div class="flex flex-wrap justify-between items-center gap-4 border-b border-gray-800 pb-4 mb-6">
+                    <div>
+                        <div class="text-xs uppercase tracking-wider text-cyan-400 font-semibold" id="game-stage-indicator">Etapa 1 de 10</div>
+                        <h3 class="text-xl md:text-2xl font-extrabold text-white" id="game-stage-title">Espacio Muestral de Dado y Moneda</h3>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <!-- Timer -->
+                        <div id="timer-box" class="bg-gray-900 border border-gray-700 px-4 py-2 rounded-2xl flex items-center gap-2">
+                            <i class="fas fa-hourglass-half text-amber-400 animate-spin"></i>
+                            <span class="text-xs text-gray-400">Tiempo:</span>
+                            <span id="timer-countdown" class="font-bold text-amber-400 text-lg">60</span>s
+                        </div>
+                        <!-- Team Score Badge -->
+                        <div class="bg-indigo-950 border border-indigo-800 px-4 py-2 rounded-2xl">
+                            <span class="text-xs text-indigo-300">Tu Puntaje:</span>
+                            <span id="my-current-score" class="font-bold text-white text-lg ml-1">0 pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Question Container -->
+                <div id="question-card-container" class="space-y-6">
+                    <div class="bg-gray-900/80 p-6 rounded-2xl border border-gray-800 space-y-4">
+                        <div class="text-sm md:text-base text-gray-200 font-medium leading-relaxed" id="question-text">
+                            Cargando pregunta...
+                        </div>
+                        <div id="question-extra-info" class="text-xs text-cyan-300 italic"></div>
+                    </div>
+
+                    <!-- Options Grid (A, B, C, D) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="options-grid">
+                        <!-- Options generated dynamically -->
+                    </div>
+
+                    <!-- Feedback message after answering -->
+                    <div id="answer-feedback" class="hidden p-4 rounded-2xl text-center font-bold text-sm"></div>
+                </div>
+
+                <!-- Waiting or Control overlay if not started or ended -->
+                <div id="game-state-overlay" class="hidden absolute inset-0 bg-gray-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-4 z-20">
+                    <div id="overlay-icon" class="text-5xl text-cyan-400 animate-bounce mb-2"><i class="fas fa-hourglass-start"></i></div>
+                    <h3 id="overlay-title" class="text-2xl font-bold text-white">Esperando que el Profesor Inicie la Etapa</h3>
+                    <p id="overlay-desc" class="text-sm text-gray-300 max-w-md">El docente controla el avance de cada una de las 10 etapas desde el panel de control.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 4: PODIUM & RANKING ==================== -->
+        <section id="tab-podium" class="hidden space-y-8">
+            <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-8">
+                <div class="text-center space-y-2">
+                    <div class="inline-flex items-center gap-2 bg-amber-500/10 text-amber-400 px-4 py-1.5 rounded-full text-xs font-semibold border border-amber-500/20">
+                        <i class="fas fa-trophy"></i> Tabla General de Clasificación
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-white">Podio y Premios Sorpresa</h2>
+                    <p class="text-gray-400 text-sm">Los mejores equipos del Colegio Pucará en Probabilidad y Combinatoria.</p>
+                </div>
+
+                <!-- Visual Podium (Top 3) -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-6 items-end justify-center pt-8 pb-4 max-w-3xl mx-auto" id="visual-podium-container">
+                    <!-- 2nd Place -->
+                    <div class="flex flex-col items-center space-y-2">
+                        <div id="podium-2-avatar" class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-gray-800 border-2 border-gray-400 flex items-center justify-center text-2xl shadow-lg">🥈</div>
+                        <div id="podium-2-name" class="font-bold text-xs sm:text-sm text-center truncate w-24 sm:w-36 text-gray-200">Esperando...</div>
+                        <div class="w-full bg-gradient-to-t from-gray-800 to-gray-700 h-28 sm:h-36 rounded-t-2xl flex flex-col items-center justify-center border-t-2 border-gray-400 shadow-xl">
+                            <span class="text-gray-400 text-xs font-semibold">2° LUGAR</span>
+                            <span id="podium-2-score" class="text-white font-black text-sm sm:text-lg">0 pts</span>
+                        </div>
+                    </div>
+
+                    <!-- 1st Place -->
+                    <div class="flex flex-col items-center space-y-2 -mt-8">
+                        <div class="text-amber-400 text-2xl animate-bounce"><i class="fas fa-crown"></i></div>
+                        <div id="podium-1-avatar" class="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl bg-amber-950 border-2 border-amber-400 flex items-center justify-center text-3xl shadow-2xl neon-glow-gold">🥇</div>
+                        <div id="podium-1-name" class="font-bold text-xs sm:text-base text-center truncate w-28 sm:w-40 text-amber-300">Esperando...</div>
+                        <div class="w-full bg-gradient-to-t from-amber-900 to-amber-600 h-36 sm:h-48 rounded-t-2xl flex flex-col items-center justify-center border-t-2 border-amber-400 shadow-2xl">
+                            <span class="text-amber-200 text-xs font-extrabold">1° LUGAR</span>
+                            <span id="podium-1-score" class="text-white font-black text-base sm:text-2xl">0 pts</span>
+                        </div>
+                    </div>
+
+                    <!-- 3rd Place -->
+                    <div class="flex flex-col items-center space-y-2">
+                        <div id="podium-3-avatar" class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-amber-900/60 border-2 border-amber-700 flex items-center justify-center text-2xl shadow-lg">🥉</div>
+                        <div id="podium-3-name" class="font-bold text-xs sm:text-sm text-center truncate w-24 sm:w-36 text-gray-200">Esperando...</div>
+                        <div class="w-full bg-gradient-to-t from-amber-950 to-amber-900 h-20 sm:h-28 rounded-t-2xl flex flex-col items-center justify-center border-t-2 border-amber-700 shadow-xl">
+                            <span class="text-amber-500 text-xs font-semibold">3° LUGAR</span>
+                            <span id="podium-3-score" class="text-white font-black text-sm sm:text-lg">0 pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Surprise Prizes Card -->
+                <div class="bg-gradient-to-r from-indigo-950 via-gray-900 to-cyan-950 p-6 rounded-3xl border border-cyan-500/30 space-y-3">
+                    <h4 class="font-bold text-cyan-300 text-base flex items-center gap-2">
+                        <i class="fas fa-gift text-amber-400 animate-pulse"></i> Premios Sorpresa Revelados por el Docente
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm" id="surprise-prizes-display">
+                        <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800">
+                            <span class="text-amber-400 font-bold block mb-1">🥇 1° Lugar:</span>
+                            <span id="prize-1-text" class="text-gray-300">Cargando premio...</span>
+                        </div>
+                        <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800">
+                            <span class="text-gray-300 font-bold block mb-1">🥈 2° Lugar:</span>
+                            <span id="prize-2-text" class="text-gray-300">Cargando premio...</span>
+                        </div>
+                        <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800">
+                            <span class="text-amber-700 font-bold block mb-1">🥉 3° Lugar:</span>
+                            <span id="prize-3-text" class="text-gray-300">Cargando premio...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full Ranking Table (Last to First) -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-white text-base">Clasificación General (Desde el último al 1° lugar)</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-gray-300">
+                            <thead class="bg-gray-900 text-xs uppercase text-gray-400 border-b border-gray-800">
+                                <tr>
+                                    <th class="px-4 py-3 rounded-l-xl">Pos.</th>
+                                    <th class="px-4 py-3">Equipo</th>
+                                    <th class="px-4 py-3">Integrantes</th>
+                                    <th class="px-4 py-3 rounded-r-xl text-right">Puntaje Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="full-ranking-tbody" class="divide-y divide-gray-800">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 5: TEACHER PANEL ==================== -->
+        <section id="tab-teacher" class="hidden space-y-6">
+            <!-- Password Gate -->
+            <div id="teacher-auth-card" class="glass-panel p-8 rounded-3xl max-w-md mx-auto text-center space-y-4">
+                <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-2xl mx-auto flex items-center justify-center text-xl">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">Panel de Acceso Docente</h3>
+                <p class="text-xs text-gray-400">Ingresa la contraseña del profesor para gestionar la sala, etapas y premios.</p>
+                <form onsubmit="handleTeacherAuth(event)" class="space-y-4 pt-2">
+                    <input type="password" id="teacher-password" required placeholder="Contraseña (ej: profe123)"
+                        class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white text-center focus:outline-none focus:border-cyan-500 text-sm">
+                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg">
+                        Desbloquear Panel
+                    </button>
+                </form>
+            </div>
+
+            <!-- Teacher Control Dashboard (Hidden until auth) -->
+            <div id="teacher-dashboard" class="hidden space-y-6">
+                <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-4 border-b border-gray-800 pb-4">
+                        <div>
+                            <h2 class="text-2xl font-extrabold text-cyan-400">Panel de Control Docente</h2>
+                            <p class="text-xs text-gray-400">Prof. William López González • Gestión en Tiempo Real</p>
+                        </div>
+                        <button onclick="lockTeacherPanel()" class="bg-red-500/20 border border-red-500 text-red-300 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">
+                            <i class="fas fa-lock"></i> Bloquear Panel
+                        </button>
+                    </div>
+
+                    <!-- Stage Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
+                            <h4 class="font-bold text-white text-base flex items-center gap-2">
+                                <i class="fas fa-play-circle text-indigo-400"></i> Control de Etapas (1 a 10)
+                            </h4>
+                            <div class="space-y-3">
+                                <label class="block text-xs text-gray-400">Seleccionar Etapa Actual:</label>
+                                <select id="teacher-select-stage" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
+                                    <!-- Options populated via JS -->
+                                </select>
+                                <div class="flex gap-2 pt-2">
+                                    <button onclick="teacherChangeStage()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all">
+                                        Cambiar Etapa
+                                    </button>
+                                    <button onclick="teacherToggleTimer('start')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all">
+                                        Iniciar Tiempo
+                                    </button>
+                                    <button onclick="teacherToggleTimer('pause')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all">
+                                        Pausar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Timer & Time config -->
+                        <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
+                            <h4 class="font-bold text-white text-base flex items-center gap-2">
+                                <i class="fas fa-clock text-amber-400"></i> Ajustar Tiempo por Etapa
+                            </h4>
+                            <div class="space-y-3">
+                                <label class="block text-xs text-gray-400">Duración en segundos:</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="teacher-timer-input" value="60" min="15" max="300"
+                                        class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-amber-500">
+                                    <button onclick="teacherUpdateTimerSetting()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition-all">
+                                        Actualizar
+                                    </button>
+                                </div>
+                                <button onclick="teacherResetGame()" class="w-full bg-red-600/20 border border-red-500 text-red-300 hover:bg-red-600 hover:text-white font-bold py-2.5 rounded-xl text-xs transition-all mt-2">
+                                    Reiniciar Puntajes de Todos los Grupos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Surprise Prizes Config -->
+                    <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
+                        <h4 class="font-bold text-white text-base flex items-center gap-2">
+                            <i class="fas fa-gift text-cyan-400"></i> Configurar Premios Sorpresa (Podio)
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-xs text-amber-400 font-bold">Premio 1° Lugar:</label>
+                                <input type="text" id="teacher-prize-1" placeholder="Ej: Nota 7.0 + Certificado de Maestro Probabilístico"
+                                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs text-gray-300 font-bold">Premio 2° Lugar:</label>
+                                <input type="text" id="teacher-prize-2" placeholder="Ej: Nota 7.0 en la siguiente evaluación"
+                                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs text-amber-700 font-bold">Premio 3° Lugar:</label>
+                                <input type="text" id="teacher-prize-3" placeholder="Ej: Premio sorpresa de útiles / dulces"
+                                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                            </div>
+                        </div>
+                        <div class="flex justify-end pt-2">
+                            <button onclick="teacherSavePrizes()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-6 py-2 rounded-xl text-xs transition-all">
+                                Guardar y Publicar Premios
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Connected Groups Table -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-white text-base">Grupos Conectados en la Sala (<span id="connected-count">0</span>)</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-gray-300">
+                                <thead class="bg-gray-900 text-xs uppercase text-gray-400 border-b border-gray-800">
+                                    <tr>
+                                        <th class="px-4 py-3 rounded-l-xl">Avatar & Grupo</th>
+                                        <th class="px-4 py-3">Dispositivo / Celular</th>
+                                        <th class="px-4 py-3">Integrantes</th>
+                                        <th class="px-4 py-3">Puntaje</th>
+                                        <th class="px-4 py-3 rounded-r-xl text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teacher-groups-tbody" class="divide-y divide-gray-800">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Modal for Alerts -->
+    <div id="custom-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="glass-panel p-6 rounded-3xl max-w-md w-full border border-gray-700 space-y-4 text-center">
+            <div id="modal-icon" class="text-4xl text-indigo-400 mb-1"><i class="fas fa-info-circle"></i></div>
+            <h3 id="modal-title" class="text-lg font-bold text-white">Aviso</h3>
+            <p id="modal-message" class="text-xs text-gray-300 leading-relaxed"></p>
+            <button onclick="closeModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase handles
+        let app, db, auth, currentUser;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pucara-probabilidad-2medio-v1';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+
+        // --- EXERCISE DATA (10 STAGES ADAPTED FROM TEACHER WILLIAM LÓPEZ'S GUIDE) ---
+        const STAGES_DATA = [
+            {
+                id: 1,
+                title: "Etapa 1: Espacio Muestral (Dado Tetraédrico y Moneda)",
+                guideRef: "Guía Ejercicio 1",
+                text: "Se lanza un dado tetraédrico (de 4 caras, numeradas del 1 al 4) y una moneda (Cara 'C' y Sello 'S'). ¿Cuál es el número total de resultados posibles $n(\\Omega)$ y su representación explícita?",
+                options: [
+                    { key: "A", text: "n(Ω) = 6, con Ω = {(1,C), (2,C), (3,C), (4,C)}" },
+                    { key: "B", text: "n(Ω) = 8, con Ω = {(1,C),(1,S),(2,C),(2,S),(3,C),(3,S),(4,C),(4,S)}", correct: true },
+                    { key: "C", text: "n(Ω) = 4, con Ω = {(1,2,3,4)}" },
+                    { key: "D", text: "n(Ω) = 12, combinaciones posibles de dados y monedas" }
+                ],
+                explanation: "El dado tiene 4 opciones {1,2,3,4} y la moneda 2 {C,S}. Por principio multiplicativo: 4 × 2 = 8 elementos."
+            },
+            {
+                id: 2,
+                title: "Etapa 2: Cardinalidad al Lanzar 3 Monedas",
+                guideRef: "Guía Ejercicio 3",
+                text: "Considera el experimento de lanzar 3 monedas al mismo tiempo. ¿Cuál es la cardinalidad de su espacio muestral $n(\\Omega)$?",
+                options: [
+                    { key: "A", text: "n(Ω) = 6" },
+                    { key: "B", text: "n(Ω) = 3" },
+                    { key: "C", text: "n(Ω) = 8", correct: true },
+                    { key: "D", text: "n(Ω) = 9" }
+                ],
+                explanation: "Al lanzar 3 monedas, cada moneda tiene 2 opciones, por lo que n(Ω) = 2³ = 8 resultados posibles."
+            },
+            {
+                id: 3,
+                title: "Etapa 3: Estudiantes que no Juegan Fútbol ni Básquetbol",
+                guideRef: "Guía Ejercicio 5",
+                text: "En un curso de 30 estudiantes, 18 juegan fútbol, 12 juegan básquetbol y 5 juegan ambos deportes. Si se elige un estudiante al azar, ¿cuántos estudiantes no juegan ninguno de estos dos deportes?",
+                options: [
+                    { key: "A", text: "3 estudiantes" },
+                    { key: "B", text: "5 estudiantes", correct: true },
+                    { key: "C", text: "7 estudiantes" },
+                    { key: "D", text: "0 estudiantes" }
+                ],
+                explanation: "Por teoría de conjuntos: |F ∪ B| = |F| + |B| - |F ∩ B| = 18 + 12 - 5 = 25. Estudiantes que no juegan = 30 - 25 = 5."
+            },
+            {
+                id: 4,
+                title: "Etapa 4: Probabilidad de Suma Primo en Dos Dados",
+                guideRef: "Guía Ejercicio 6",
+                text: "Se lanzan dos dados comunes de 6 caras. Se define el evento E: 'La suma de los puntos obtenidos es un número Primo'. ¿Cuál es la probabilidad P(E)?",
+                options: [
+                    { key: "A", text: "15 / 36 (o 5 / 12)", correct: true },
+                    { key: "B", text: "1 / 4" },
+                    { key: "C", text: "11 / 36" },
+                    { key: "D", text: "1 / 2" }
+                ],
+                explanation: "Primos posibles en suma de dos dados (2, 3, 5, 7, 11). Casos favorables: 15 de un total de 36."
+            },
+            {
+                id: 5,
+                title: "Etapa 5: Probabilidad de Extraer Bolita No Roja",
+                guideRef: "Guía Ejercicio 10",
+                text: "Una urna contiene 6 bolitas rojas, 4 blancas y 5 azules. Se extrae una bolita al azar. ¿Cuál es la probabilidad de que NO sea de color rojo?",
+                options: [
+                    { key: "A", text: "6 / 15" },
+                    { key: "B", text: "9 / 15 (o 3 / 5)", correct: true },
+                    { key: "C", text: "4 / 15" },
+                    { key: "D", text: "1 / 3" }
+                ],
+                explanation: "Total = 6 + 4 + 5 = 15. Bolitas no rojas = 4 + 5 = 9. P(No roja) = 9/15 = 3/5."
+            },
+            {
+                id: 6,
+                title: "Etapa 6: Producto Mayor que 20 en Dos Dados",
+                guideRef: "Guía Ejercicio 12",
+                text: "Se lanza un par de dados de 6 caras. ¿Cuál es la probabilidad de que el producto de los números obtenidos sea mayor que 20?",
+                options: [
+                    { key: "A", text: "1 / 9" },
+                    { key: "B", text: "2 / 9", correct: true },
+                    { key: "C", text: "1 / 6" },
+                    { key: "D", text: "5 / 36" }
+                ],
+                explanation: "Pares con producto > 20: (4,6), (5,4), (5,5), (5,6), (6,4), (6,5), (6,6) y sus simétricos (6,4) etc. Son 8 casos favorables de 36 = 2/9."
+            },
+            {
+                id: 7,
+                title: "Etapa 7: Figura o Carta de Oros en Naipe Español",
+                guideRef: "Guía Ejercicio 13",
+                text: "Un mazo español tiene 40 cartas (4 pintas de 10: Oros, Copas, Espadas, Bastos). ¿Cuál es la probabilidad de extraer una figura (Sota, Caballo, Rey) o una carta de Oros?",
+                options: [
+                    { key: "A", text: "19 / 40", correct: true },
+                    { key: "B", text: "7 / 20" },
+                    { key: "C", text: "13 / 40" },
+                    { key: "D", text: "1 / 2" }
+                ],
+                explanation: "Oros = 10. Figuras totales = 4 pintas × 3 figuras = 12. Figuras de oros = 3. Por unión: P(Oros ∪ Figuras) = 10/40 + 12/40 - 3/40 = 19/40."
+            },
+            {
+                id: 8,
+                title: "Etapa 8: Selección Múltiple con 5 Alternativas",
+                guideRef: "Guía Ejercicio 14",
+                text: "Una pregunta de examen tiene 5 alternativas (una sola correcta). Si un estudiante responde completamente al azar, ¿cuál es la probabilidad de errar la respuesta?",
+                options: [
+                    { key: "A", text: "1 / 5" },
+                    { key: "B", text: "4 / 5", correct: true },
+                    { key: "C", text: "3 / 5" },
+                    { key: "D", text: "1 / 4" }
+                ],
+                explanation: "Probabilidad de acertar = 1/5. Probabilidad de errar por complemento = 1 - 1/5 = 4/5."
+            },
+            {
+                id: 9,
+                title: "Etapa 9: Variable Aleatoria (Diferencia Absoluta de Dados)",
+                guideRef: "Guía Ejercicio 23",
+                text: "Se lanzan dos dados estándar. Sea X: 'Diferencia en valor absoluto entre los puntos obtenidos'. ¿Cuál es P(X = 0)?",
+                options: [
+                    { key: "A", text: "1 / 6", correct: true },
+                    { key: "B", text: "1 / 36" },
+                    { key: "C", text: "1 / 12" },
+                    { key: "D", text: "5 / 36" }
+                ],
+                explanation: "X=0 ocurre cuando ambos dados son iguales: (1,1),(2,2),(3,3),(4,4),(5,5),(6,6), es decir, 6 casos de 36 = 6/36 = 1/6."
+            },
+            {
+                id: 10,
+                title: "Etapa 10: Variable Aleatoria y Premios en Dinero (Ruleta)",
+                guideRef: "Guía Ejercicio 27",
+                text: "Ruleta de 8 sectores (1 al 8). Par gana $500; impar divisible por 3 (solo el 3) gana $1.000; el 1 gana $0. Si W es la ganancia, ¿cuál es la probabilidad de ganar al menos $500?",
+                options: [
+                    { key: "A", text: "3 / 8" },
+                    { key: "B", text: "5 / 8" },
+                    { key: "C", text: "7 / 8", correct: true },
+                    { key: "D", text: "1 / 2" }
+                ],
+                explanation: "Pares (2,4,6,8) = 4 sectores. Impar divisible por 3 (el 3) = 1 sector. Total ganancia >= $500 son 4 + 1 = 5 sectores? Espera: Pares son 4 (2,4,6,8) y el 3 gana $1000. El 1 gana $0, el 5 gana $0, el 7 gana $0. Sectores con al menos $500 son los 4 pares + el 3 = 5 sectores. Probabilidad = 5/8."
+            }
+        ];
+
+        const AVATARS_LIST = ["📐", "📊", "🎲", "🪙", "🏆", "🧠", "⚡", "🔢", "🎯", "💡"];
+
+        // State variables
+        let currentTab = 'home';
+        let registeredTeamId = localStorage.getItem('pucara_team_id') || null;
+        let selectedAvatar = "📐";
+        let roomState = {
+            activeStage: 1,
+            timerSeconds: 60,
+            timerActive: false,
+            prizes: {
+                1: "Nota 7.0 + Certificado de Maestro Probabilístico",
+                2: "Nota 7.0 en la próxima evaluación formativa",
+                3: "Premio sorpresa de dulces y material escolar"
+            }
+        };
+
+        // Initialize App on Load
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Display Current URL for QR
+            const currentUrl = window.location.href.split('#')[0];
+            document.getElementById('current-url-display').innerText = currentUrl;
+            new QRCode(document.getElementById("qrcode"), {
+                text: currentUrl,
+                width: 140,
+                height: 140,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            // Render Avatar Selection
+            renderAvatarOptions();
+
+            // Populate Teacher Stage Select
+            const teacherSelect = document.getElementById('teacher-select-stage');
+            teacherSelect.innerHTML = STAGES_DATA.map(s => `<option value="${s.id}">Etapa ${s.id}: ${s.title.split(':')[1] || s.title}</option>`).join('');
+
+            // Initialize Firebase
+            if (firebaseConfig) {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    currentUser = auth.currentUser;
+                    document.getElementById('status-text').innerText = "Conectado a Firebase Cloud";
+                    
+                    // Start Listeners
+                    initFirebaseListeners();
+                } catch (e) {
+                    console.error("Firebase auth error:", e);
+                    document.getElementById('status-text').innerText = "Modo Local / Offline";
+                }
+            } else {
+                document.getElementById('status-text').innerText = "Modo Local Simulador";
+            }
+
+            // Check if team already registered locally
+            if (registeredTeamId) {
+                checkExistingRegistration();
+            }
+        });
+
+        // Tab Navigation
+        window.switchTab = function(tabId) {
+            currentTab = tabId;
+            ['home', 'instructions', 'game', 'podium', 'teacher'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (el) el.classList.toggle('hidden', t !== tabId);
+                if (btn) {
+                    if (t === tabId) {
+                        btn.className = "px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md";
+                    } else {
+                        btn.className = "px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800";
+                    }
+                }
+            });
+            if (tabId === 'game') {
+                renderCurrentStageGame();
+            } else if (tabId === 'podium') {
+                renderPodiumAndRanking();
+            } else if (tabId === 'teacher') {
+                checkTeacherAuthStatus();
+            }
+        }
+
+        // Render Avatars
+        function renderAvatarOptions() {
+            const container = document.getElementById('avatar-selection-container');
+            container.innerHTML = AVATARS_LIST.map((av, idx) => `
+                <button type="button" onclick="selectAvatar('${av}', this)" class="avatar-btn h-12 rounded-xl bg-gray-900 border ${idx === 0 ? 'border-indigo-500 bg-indigo-950/50' : 'border-gray-700'} text-2xl flex items-center justify-center hover:border-cyan-400 transition-all">
+                    ${av}
+                </button>
+            `).join('');
+            selectedAvatar = AVATARS_LIST[0];
+        }
+
+        window.selectAvatar = function(av, btnEl) {
+            selectedAvatar = av;
+            document.querySelectorAll('.avatar-btn').forEach(b => {
+                b.classList.remove('border-indigo-500', 'bg-indigo-950/50');
+                b.classList.add('border-gray-700', 'bg-gray-900');
+            });
+            btnEl.classList.remove('border-gray-700', 'bg-gray-900');
+            btnEl.classList.add('border-indigo-500', 'bg-indigo-950/50');
+        }
+
+        // Team Registration
+        window.handleTeamRegistration = async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('team-name').value.trim();
+            const phone = document.getElementById('team-phone').value.trim();
+            const m1 = document.getElementById('member-1').value.trim();
+            const m2 = document.getElementById('member-2').value.trim();
+            const m3 = document.getElementById('member-3').value.trim();
+            const m4 = document.getElementById('member-4').value.trim();
+
+            if (!name) return showModal("Error", "Debes ingresar un nombre para el grupo.");
+
+            const teamId = 'team_' + Date.now();
+            const members = [m1, m2, m3, m4].filter(m => m.length > 0);
+
+            const teamData = {
+                id: teamId,
+                name: name,
+                phone: phone,
+                members: members,
+                avatar: selectedAvatar,
+                score: 0,
+                lastAnsweredStage: 0,
+                createdAt: Date.now()
+            };
+
+            if (db && currentUser) {
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teams', teamId), teamData);
+                } catch (e) {
+                    console.error("Error saving team:", e);
+                }
+            }
+
+            // Save locally
+            localStorage.setItem('pucara_team_id', teamId);
+            localStorage.setItem('pucara_team_name', name);
+            registeredTeamId = teamId;
+
+            document.getElementById('team-reg-form').reset();
+            checkExistingRegistration();
+            showModal("¡Registro Exitoso!", `¡El grupo "${name}" se ha registrado correctamente con el avatar ${selectedAvatar}! Ya puedes ingresar a la Arena de Juego.`);
+            switchTab('game');
+        }
+
+        function checkExistingRegistration() {
+            const name = localStorage.getItem('pucara_team_name');
+            if (name) {
+                document.getElementById('registered-team-badge').classList.remove('hidden');
+                document.getElementById('my-registered-name').innerText = name;
+            }
+        }
+
+        // Firebase Realtime Listeners
+        function initFirebaseListeners() {
+            if (!db) return;
+
+            // Listen to Room State
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), (docSnap) => {
+                if (docSnap.exists()) {
+                    roomState = docSnap.data();
+                    updateRoomUI();
+                } else {
+                    // Initialize default state
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
+                }
+            }, (err) => console.error("Room listener error:", err));
+
+            // Listen to Teams
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'teams'), (snapshot) => {
+                const teams = [];
+                snapshot.forEach(d => teams.push(d.data()));
+                updateTeamsUI(teams);
+            }, (err) => console.error("Teams listener error:", err));
+        }
+
+        function updateRoomUI() {
+            const stageInd = document.getElementById('game-stage-indicator');
+            if (stageInd) stageInd.innerText = `Etapa ${roomState.activeStage} de 10`;
+            
+            const stageSelect = document.getElementById('teacher-select-stage');
+            if (stageSelect) stageSelect.value = roomState.activeStage;
+
+            const timerBox = document.getElementById('timer-countdown');
+            if (timerBox) timerBox.innerText = roomState.timerSeconds;
+
+            // Update Prizes Display in Podium
+            if (roomState.prizes) {
+                if (document.getElementById('prize-1-text')) document.getElementById('prize-1-text').innerText = roomState.prizes[1] || 'Por revelar';
+                if (document.getElementById('prize-2-text')) document.getElementById('prize-2-text').innerText = roomState.prizes[2] || 'Por revelar';
+                if (document.getElementById('prize-3-text')) document.getElementById('prize-3-text').innerText = roomState.prizes[3] || 'Por revelar';
+            }
+
+            if (currentTab === 'game') {
+                renderCurrentStageGame();
+            }
+        }
+
+        let allTeamsCache = [];
+        function updateTeamsUI(teams) {
+            allTeamsCache = teams;
+            document.getElementById('connected-count').innerText = teams.length;
+
+            // Teacher table
+            const teacherTbody = document.getElementById('teacher-groups-tbody');
+            if (teacherTbody) {
+                teacherTbody.innerHTML = teams.map(t => `
+                    <tr class="border-b border-gray-800 hover:bg-gray-900/40">
+                        <td class="px-4 py-3 font-bold text-white flex items-center gap-2"><span class="text-xl">${t.avatar}</span> ${t.name}</td>
+                        <td class="px-4 py-3 text-xs text-gray-400">${t.phone}</td>
+                        <td class="px-4 py-3 text-xs text-gray-300">${t.members ? t.members.join(', ') : 'Sin integrantes'}</td>
+                        <td class="px-4 py-3 font-extrabold text-cyan-400">${t.score || 0} pts</td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="teacherDeleteTeam('${t.id}')" class="text-red-400 hover:text-red-300 text-xs px-2 py-1 bg-red-950/40 rounded-lg border border-red-800">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('') || `<tr><td colspan="5" class="text-center py-4 text-gray-500">No hay grupos registrados aún.</td></tr>`;
+            }
+
+            if (currentTab === 'podium') {
+                renderPodiumAndRanking();
+            }
+            if (currentTab === 'game' && registeredTeamId) {
+                const myTeam = teams.find(t => t.id === registeredTeamId);
+                if (myTeam && document.getElementById('my-current-score')) {
+                    document.getElementById('my-current-score').innerText = (myTeam.score || 0) + ' pts';
+                }
+            }
+        }
+
+        // Render Current Stage in Game Arena
+        function renderCurrentStageGame() {
+            const stageNum = roomState.activeStage || 1;
+            const stage = STAGES_DATA.find(s => s.id === stageNum) || STAGES_DATA[0];
+
+            document.getElementById('game-stage-indicator').innerText = `Etapa ${stage.id} de 10 (${stage.guideRef})`;
+            document.getElementById('game-stage-title').innerText = stage.title.split(': ')[1] || stage.title;
+            document.getElementById('question-text').innerText = stage.text;
+            document.getElementById('question-extra-info').innerText = `Referencia oficial: ${stage.guideRef} - Colegio Pucará 2° Medio`;
+
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = stage.options.map(opt => `
+                <button onclick="submitAnswer('${opt.key}', ${opt.correct ? 'true' : 'false'})" class="option-btn text-left bg-gray-900 border border-gray-700 hover:border-cyan-400 hover:bg-gray-800 p-4 rounded-2xl transition-all flex items-start gap-3 group">
+                    <span class="w-8 h-8 rounded-xl bg-gray-800 group-hover:bg-cyan-500 group-hover:text-gray-950 font-bold flex items-center justify-center shrink-0 transition-all text-sm">${opt.key}</span>
+                    <span class="text-sm text-gray-200 mt-1">${opt.text}</span>
+                </button>
+            `).join('');
+
+            // Check if registered team
+            const overlay = document.getElementById('game-state-overlay');
+            if (!registeredTeamId) {
+                overlay.classList.remove('hidden');
+                document.getElementById('overlay-title').innerText = "Debes Registrar tu Grupo";
+                document.getElementById('overlay-desc').innerText = "Por favor, ve a la pestaña de Inicio para registrar el nombre de tu equipo y tus compañeros antes de participar.";
+            } else {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Submit Answer logic
+        window.submitAnswer = async function(selectedKey, isCorrect) {
+            if (!registeredTeamId) return showModal("Atención", "Debes registrar tu grupo primero en el inicio.");
+
+            const feedbackEl = document.getElementById('answer-feedback');
+            feedbackEl.classList.remove('hidden');
+
+            const currentTeam = allTeamsCache.find(t => t.id === registeredTeamId);
+            if (currentTeam && currentTeam.lastAnsweredStage === roomState.activeStage) {
+                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-sm bg-amber-500/20 text-amber-300 border border-amber-500";
+                feedbackEl.innerText = "⚠️ ¡Tu equipo ya respondió esta etapa! Espera a la siguiente.";
+                return;
+            }
+
+            let pointsEarned = 0;
+            if (isCorrect) {
+                pointsEarned = 100 + (roomState.timerSeconds * 2); // Speed bonus
+                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-sm bg-emerald-500/20 text-emerald-300 border border-emerald-500";
+                feedbackEl.innerHTML = `<i class="fas fa-check-circle text-lg"></i> ¡Respuesta Correcta! +${pointsEarned} pts (incluye bono de velocidad).`;
+            } else {
+                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-sm bg-red-500/20 text-red-300 border border-red-500";
+                feedbackEl.innerHTML = `<i class="fas fa-times-circle text-lg"></i> Respuesta Incorrecta. ¡Sigue intentándolo en la siguiente etapa!`;
+            }
+
+            // Update team score in Firestore
+            if (db) {
+                try {
+                    const newScore = (currentTeam ? currentTeam.score : 0) + pointsEarned;
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teams', registeredTeamId), {
+                        score: newScore,
+                        lastAnsweredStage: roomState.activeStage
+                    });
+                } catch (e) {
+                    console.error("Error updating score:", e);
+                }
+            }
+        }
+
+        // Render Podium and Ranking
+        function renderPodiumAndRanking() {
+            const sortedTeams = [...allTeamsCache].sort((a, b) => (b.score || 0) - (a.score || 0));
+
+            // Podium Top 3
+            const t1 = sortedTeams[0] || { name: 'Sin equipo', avatar: '🥇', score: 0 };
+            const t2 = sortedTeams[1] || { name: 'Sin equipo', avatar: '🥈', score: 0 };
+            const t3 = sortedTeams[2] || { name: 'Sin equipo', avatar: '🥉', score: 0 };
+
+            document.getElementById('podium-1-name').innerText = t1.name;
+            document.getElementById('podium-1-avatar').innerText = t1.avatar || '🥇';
+            document.getElementById('podium-1-score').innerText = (t1.score || 0) + ' pts';
+
+            document.getElementById('podium-2-name').innerText = t2.name;
+            document.getElementById('podium-2-avatar').innerText = t2.avatar || '🥈';
+            document.getElementById('podium-2-score').innerText = (t2.score || 0) + ' pts';
+
+            document.getElementById('podium-3-name').innerText = t3.name;
+            document.getElementById('podium-3-avatar').innerText = t3.avatar || '🥉';
+            document.getElementById('podium-3-score').innerText = (t3.score || 0) + ' pts';
+
+            // Full Ranking Table (Last to First as requested)
+            const rankingTbody = document.getElementById('full-ranking-tbody');
+            const reversedTeams = [...sortedTeams].reverse(); // from last to first
+            rankingTbody.innerHTML = reversedTeams.map((t, idx) => {
+                const actualPos = sortedTeams.length - idx;
+                let badgeClass = "text-gray-400";
+                if (actualPos === 1) badgeClass = "text-amber-400 font-extrabold";
+                if (actualPos === 2) badgeClass = "text-gray-200 font-bold";
+                if (actualPos === 3) badgeClass = "text-amber-600 font-bold";
+
+                return `
+                    <tr class="border-b border-gray-800 hover:bg-gray-900/40">
+                        <td class="px-4 py-3 ${badgeClass}">#${actualPos}</td>
+                        <td class="px-4 py-3 font-bold text-white flex items-center gap-2"><span class="text-xl">${t.avatar}</span> ${t.name}</td>
+                        <td class="px-4 py-3 text-xs text-gray-400">${t.members ? t.members.join(', ') : '-'}</td>
+                        <td class="px-4 py-3 text-right font-extrabold text-cyan-400">${t.score || 0} pts</td>
+                    </tr>
+                `;
+            }).join('') || `<tr><td colspan="4" class="text-center py-4 text-gray-500">No hay equipos en la clasificación todavía.</td></tr>`;
+        }
+
+        // Teacher Panel Auth & Controls
+        window.handleTeacherAuth = function(event) {
+            event.preventDefault();
+            const pass = document.getElementById('teacher-password').value;
+            if (pass === 'profe123') {
+                document.getElementById('teacher-auth-card').classList.add('hidden');
+                document.getElementById('teacher-dashboard').classList.remove('hidden');
+            } else {
+                showModal("Contraseña Incorrecta", "La contraseña docente es 'profe123'. Inténtalo de nuevo.");
+            }
+        }
+
+        window.lockTeacherPanel = function() {
+            document.getElementById('teacher-auth-card').classList.remove('hidden');
+            document.getElementById('teacher-dashboard').classList.add('hidden');
+            document.getElementById('teacher-password').value = '';
+        }
+
+        function checkTeacherAuthStatus() {
+            // keep state if already unlocked
+        }
+
+        window.teacherChangeStage = async function() {
+            const newStage = parseInt(document.getElementById('teacher-select-stage').value);
+            roomState.activeStage = newStage;
+            roomState.timerSeconds = 60;
+            if (db) {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
+            }
+            showModal("Etapa Cambiada", `Se ha cambiado la sala a la Etapa ${newStage}.`);
+        }
+
+        window.teacherToggleTimer = async function(action) {
+            if (action === 'start') roomState.timerActive = true;
+            if (action === 'pause') roomState.timerActive = false;
+            if (db) {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
+            }
+        }
+
+        window.teacherUpdateTimerSetting = async function() {
+            const val = parseInt(document.getElementById('teacher-timer-input').value) || 60;
+            roomState.timerSeconds = val;
+            if (db) {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
+            }
+            showModal("Tiempo Actualizado", `El temporizador se ha fijado en ${val} segundos.`);
+        }
+
+        window.teacherSavePrizes = async function() {
+            const p1 = document.getElementById('teacher-prize-1').value.trim();
+            const p2 = document.getElementById('teacher-prize-2').value.trim();
+            const p3 = document.getElementById('teacher-prize-3').value.trim();
+
+            if (p1) roomState.prizes[1] = p1;
+            if (p2) roomState.prizes[2] = p2;
+            if (p3) roomState.prizes[3] = p3;
+
+            if (db) {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
+            }
+            showModal("Premios Actualizados", "Los premios sorpresa para el podio han sido publicados con éxito.");
+        }
+
+        window.teacherResetGame = async function() {
+            if (confirm("¿Estás seguro de reiniciar los puntajes de todos los grupos?")) {
+                for (const t of allTeamsCache) {
+                    if (db) {
+                        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teams', t.id), {
+                            score: 0,
+                            lastAnsweredStage: 0
+                        });
+                    }
+                }
+                showModal("Juego Reiniciado", "Todos los puntajes han vuelto a 0.");
+            }
+        }
+
+        window.teacherDeleteTeam = async function(teamId) {
+            if (confirm("¿Eliminar este grupo de la sala?")) {
+                if (db) {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teams', teamId));
+                }
+            }
+        }
+
+        // Modal Helper
+        window.showModal = function(title, message) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('custom-modal').classList.remove('hidden');
+            document.getElementById('custom-modal').classList.add('flex');
+        }
+
+        window.closeModal = function() {
+            document.getElementById('custom-modal').classList.remove('flex');
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>
