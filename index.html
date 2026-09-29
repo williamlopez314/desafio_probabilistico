@@ -1,1133 +1,920 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desafío Probabilístico - 2° Medio Pucará</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- QRCode JS -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
-                    colors: {
-                        brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 900: '#312e81' },
-                        cyber: { dark: '#090d16', card: '#111827', border: '#1f2937', neon: '#06b6d4', gold: '#f59e0b' }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 3s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <title>Desafío Probabilístico - 2° Medio | Colegio Pucará</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- QRCodeJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #090d16; color: #f3f4f6; }
-        .glass-panel { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .neon-glow { box-shadow: 0 0 25px rgba(99, 102, 241, 0.3); }
-        .neon-glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.3); }
-        .neon-glow-gold { box-shadow: 0 0 30px rgba(245, 158, 11, 0.4); }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #090d16; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%); min-height: 100vh; color: #f8fafc; display: flex; flex-direction: column; justify-content: space-between; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); color: #1e293b; border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); }
+        .btn-primary { background: linear-gradient(135deg, #4f46e5 0%, #db2777 100%); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        .input-field { width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #cbd5e1; font-size: 0.9rem; color: #1e293b; outline: none; transition: border-color 0.2s; }
+        .input-field:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
+        .hidden { display: none !important; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        header { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); border-bottom: 1px solid #334155; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+        main { flex-grow: 1; max-width: 1000px; width: 100%; margin: 2rem auto; padding: 0 1rem; display: flex; flex-direction: column; justify-content: center; }
+        footer { text-align: center; padding: 1.5rem; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid #1e293b; }
     </style>
 </head>
-<body class="h-full flex flex-col overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+<body>
 
-    <header class="glass-panel border-b border-gray-800 sticky top-0 z-50 px-4 py-3 shadow-lg">
-        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 flex items-center justify-center neon-glow">
-                    <i class="fas fa-dice text-white text-lg animate-pulse"></i>
-                </div>
-                <div>
-                    <h1 class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 text-lg md:text-xl tracking-wide">
-                        DESAFÍO PROBABILÍSTICO
-                    </h1>
-                    <p class="text-xs text-gray-400">Colegio Pucará • Matemática 2° Medio • Prof. William López</p>
-                </div>
+    <!-- Header Principal -->
+    <header>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="background: linear-gradient(135deg, #4f46e5, #db2777); padding: 0.6rem; border-radius: 1rem; color: white;" class="animate-float">
+                🎲
             </div>
-
-            <!-- Navigation Tabs -->
-            <nav id="nav-tabs" class="flex flex-wrap items-center gap-1 bg-gray-900/80 p-1.5 rounded-2xl border border-gray-800 text-sm">
-                <button onclick="switchTab('home')" id="tab-btn-home" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md">
-                    <i class="fas fa-home"></i> <span class="hidden sm:inline">Inicio</span>
-                </button>
-                <button onclick="switchTab('instructions')" id="tab-btn-instructions" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800">
-                    <i class="fas fa-book-open"></i> <span class="hidden sm:inline">Instrucciones</span>
-                </button>
-                <button onclick="switchTab('game')" id="tab-btn-game" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800">
-                    <i class="fas fa-gamepad"></i> <span class="hidden sm:inline">Arena de Juego</span>
-                </button>
-                <button onclick="switchTab('podium')" id="tab-btn-podium" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800">
-                    <i class="fas fa-trophy text-amber-400"></i> <span class="hidden sm:inline">Podio & Ranking</span>
-                </button>
-                <button onclick="switchTab('teacher')" id="tab-btn-teacher" class="px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-400 hover:text-white hover:bg-gray-800 border border-dashed border-gray-700">
-                    <i class="fas fa-lock text-cyan-400"></i> <span class="hidden sm:inline">Docente</span>
-                </button>
-            </nav>
-
-            <!-- Status Indicator -->
-            <div id="connection-status" class="flex items-center gap-2 text-xs bg-emerald-950/60 text-emerald-400 px-3 py-1.5 rounded-full border border-emerald-800/50">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span id="status-text">Conectado a Sala Firebase</span>
+            <div>
+                <h1 style="font-size: 1.25rem; font-weight: 700; background: linear-gradient(90deg, #93c5fd, #f472b6, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Desafío Probabilístico</h1>
+                <p style="font-size: 0.7rem; color: #94a3b8;">Colegio Pucará • Matemática 2° Medio | Prof. William López González</p>
             </div>
+        </div>
+        <div id="connectionStatus" style="display: flex; align-items: center; gap: 0.5rem; background: #1e293b; padding: 0.4rem 0.8rem; border-radius: 9999px; border: 1px solid #334155; font-size: 0.75rem; color: #fbbf24;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #fbbf24;" id="statusDot"></span>
+            <span id="statusText">Configurando Sistema...</span>
         </div>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 overflow-y-auto">
+    <!-- Contenedor Principal Dinámico -->
+    <main>
 
-        <!-- ==================== TAB 1: HOME / REGISTRATION ==================== -->
-        <section id="tab-home" class="space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                <!-- Welcome Banner -->
-                <div class="lg:col-span-7 space-y-6 glass-panel p-6 md:p-8 rounded-3xl neon-glow">
-                    <div class="inline-flex items-center gap-2 bg-indigo-500/10 text-indigo-400 px-4 py-1.5 rounded-full text-xs font-semibold border border-indigo-500/20">
-                        <i class="fas fa-star text-amber-400"></i> Guía 2: Variable Aleatoria y Probabilidades
-                    </div>
-                    <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight">
-                        ¡Compite, Responde y <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">Gana el Gran Premio!</span>
-                    </h2>
-                    <p class="text-gray-300 text-sm md:text-base leading-relaxed">
-                        Bienvenidos al desafío interactivo de 2° Medio del Colegio Pucará. Forma tu grupo de hasta 4 integrantes, ingresa desde tu celular (uso permitido exclusivamente para este aprendizaje colaborativo) y enfréntate a 10 etapas apasionantes sobre experimentos aleatorios, regla de Laplace y variables aleatorias discretas.
-                    </p>
-                    
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
-                        <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800 text-center">
-                            <i class="fas fa-users text-indigo-400 text-xl mb-1"></i>
-                            <div class="text-xs text-gray-400">Grupos</div>
-                            <div class="font-bold text-sm">5 a 10 Grupos Max</div>
-                        </div>
-                        <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800 text-center">
-                            <i class="fas fa-user-friends text-cyan-400 text-xl mb-1"></i>
-                            <div class="text-xs text-gray-400">Integrantes</div>
-                            <div class="font-bold text-sm">1 a 4 por equipo</div>
-                        </div>
-                        <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800 text-center col-span-2 sm:col-span-1">
-                            <i class="fas fa-bolt text-amber-400 text-xl mb-1"></i>
-                            <div class="text-xs text-gray-400">Dinámica</div>
-                            <div class="font-bold text-sm">Velocidad + Acierto</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- QR Code & Quick Access Card -->
-                <div class="lg:col-span-5 glass-panel p-6 md:p-8 rounded-3xl border border-cyan-500/20 neon-glow-cyan flex flex-col items-center text-center space-y-4">
-                    <h3 class="text-lg font-bold text-cyan-300 flex items-center gap-2">
-                        <i class="fas fa-qrcode"></i> Acceso Móvil Escaneable
-                    </h3>
-                    <p class="text-xs text-gray-400">
-                        Escanea el código QR con tu celular para unirte directamente a la sala de competencia desde tu dispositivo.
-                    </p>
-                    <div class="bg-white p-4 rounded-2xl shadow-inner inline-block" id="qrcode-container">
-                        <div id="qrcode"></div>
-                    </div>
-                    <div class="text-xs text-gray-500 bg-gray-900 px-3 py-1 rounded-md border border-gray-800 break-all w-full select-all">
-                        <span id="current-url-display"></span>
-                    </div>
-                </div>
+        <!-- VISTA 0: CONFIGURACIÓN INICIAL / SELECCIÓN DE ROL -->
+        <div id="viewRoleSelect" class="glass-panel" style="max-width: 500px; margin: 0 auto; padding: 2.5rem; text-align: center;">
+            <span style="background: #e0e7ff; color: #3730a3; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase;">Actividad Interactiva</span>
+            <h2 style="font-size: 1.8rem; font-weight: 700; margin: 1rem 0 0.5rem; color: #0f172a;">¡Bienvenidos al Reto de Probabilidades!</h2>
+            <p style="font-size: 0.85rem; color: #475569; margin-bottom: 2rem;">Selecciona cómo deseas participar en esta experiencia grupal cronometrada.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <button onclick="app.showStudentJoin()" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; padding: 1.5rem 1rem; border-radius: 1rem; cursor: pointer; text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+                    <div style="font-size: 1rem; font-weight: 700;">Soy Estudiante</div>
+                    <div style="font-size: 0.7rem; color: #c7d2fe; margin-top: 0.25rem;">Únete con tu equipo</div>
+                </button>
+                <button onclick="app.showTeacherAuth()" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: 1px solid #334155; padding: 1.5rem 1rem; border-radius: 1rem; cursor: pointer; text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👨‍🏫</div>
+                    <div style="font-size: 1rem; font-weight: 700;">Panel Docente</div>
+                    <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.25rem;">Controla la partida</div>
+                </button>
             </div>
+        </div>
 
-            <!-- Registration Form Section -->
-            <div class="glass-panel p-6 md:p-8 rounded-3xl border border-indigo-500/30 space-y-6">
-                <div class="flex items-center justify-between flex-wrap gap-4">
-                    <div>
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                            <i class="fas fa-shield-alt text-indigo-400"></i> Registro de Grupo de Trabajo
-                        </h3>
-                        <p class="text-xs text-gray-400">Registra los datos de tu equipo antes de que comience el juego en la arena.</p>
-                    </div>
-                    <div id="registered-team-badge" class="hidden bg-emerald-500/20 border border-emerald-500 text-emerald-300 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
-                        <i class="fas fa-check-circle"></i> Registrado como: <span id="my-registered-name" class="underline"></span>
-                    </div>
-                </div>
-
-                <form id="team-reg-form" onsubmit="handleTeamRegistration(event)" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Group Name -->
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-300">Nombre del Grupo / Equipo *</label>
-                            <input type="text" id="team-name" required placeholder="Ej: Los Probabilistas de Pucará"
-                                class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
-                        </div>
-
-                        <!-- Team Leader Phone -->
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-300">Celular de Contacto / Dispositivo de Juego *</label>
-                            <input type="text" id="team-phone" required placeholder="Ej: +56 9 1234 5678"
-                                class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
-                        </div>
-                    </div>
-
-                    <!-- Members List -->
-                    <div class="space-y-3">
-                        <label class="block text-sm font-medium text-gray-300">Integrantes del Grupo (1 a 4 estudiantes) *</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                            <input type="text" id="member-1" required placeholder="Integrante 1 (Líder)" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                            <input type="text" id="member-2" placeholder="Integrante 2 (Opcional)" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                            <input type="text" id="member-3" placeholder="Integrante 3 (Opcional)" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                            <input type="text" id="member-4" placeholder="Integrante 4 (Opcional)" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                        </div>
-                    </div>
-
-                    <!-- Avatar Selection -->
-                    <div class="space-y-3">
-                        <label class="block text-sm font-medium text-gray-300">Selecciona el Avatar de tu Equipo *</label>
-                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-3" id="avatar-selection-container">
-                            <!-- Injected via JS -->
-                        </div>
-                    </div>
-
-                    <div class="pt-4 flex justify-end">
-                        <button type="submit" class="bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center gap-2">
-                            <i class="fas fa-rocket"></i> Registrar e Ingresar a la Sala
-                        </button>
-                    </div>
-                </form>
+        <!-- VISTA 1: REGISTRO / ACCESO DE ESTUDIANTES + GRUPOS INSCRITOS EN VIVO -->
+        <div id="viewStudentJoin" class="hidden glass-panel" style="max-width: 700px; margin: 0 auto; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.85rem; font-weight: 600;">← Volver</button>
+                <span style="background: #fce7f3; color: #9d174d; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">Inscripción</span>
             </div>
-        </section>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+                <!-- Formulario -->
+                <div>
+                    <h2 style="font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">Registro de Equipo</h2>
+                    <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 1rem;">Crea tu grupo o reingresa si te desconectaste.</p>
 
-        <!-- ==================== TAB 2: INSTRUCTIONS ==================== -->
-        <section id="tab-instructions" class="hidden space-y-6">
-            <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-6">
-                <div class="border-b border-gray-800 pb-4">
-                    <h2 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
-                        Instrucciones de la Actividad & Reglas del Juego
-                    </h2>
-                    <p class="text-gray-400 text-sm mt-1">Guía oficial para estudiantes de 2° Medio - Colegio Pucará</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-3">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-lg">1</div>
-                        <h4 class="font-bold text-white text-lg">Uso del Celular Permitido</h4>
-                        <p class="text-xs text-gray-300 leading-relaxed">
-                            El celular <strong>solo está permitido</strong> para interactuar con esta plataforma interactiva y resolver la guía de ejercicios en grupo. Cualquier otro uso fuera del juego invalidará la participación del equipo.
-                        </p>
-                    </div>
-                    <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-3">
-                        <div class="w-10 h-10 rounded-xl bg-cyan-600/20 text-cyan-400 flex items-center justify-center font-bold text-lg">2</div>
-                        <h4 class="font-bold text-white text-lg">Dinámica de las 10 Etapas</h4>
-                        <p class="text-xs text-gray-300 leading-relaxed">
-                            Enfrentarán 10 ejercicios ordenados por dificultad creciente (desde experimentos aleatorios y espacio muestral hasta variable aleatoria discreta). Verán la pregunta y 4 alternativas (A, B, C, D) en su pantalla.
-                        </p>
-                    </div>
-                    <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold text-lg">3</div>
-                        <h4 class="font-bold text-white text-lg">Sistema de Puntaje</h4>
-                        <p class="text-xs text-gray-300 leading-relaxed">
-                            Cada respuesta correcta otorga puntos base. <strong>¡La velocidad importa!</strong> Quien responda correctamente en menor tiempo acumula un bono de rapidez superior en la tabla general.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="bg-gradient-to-r from-indigo-950/40 to-cyan-950/40 p-6 rounded-2xl border border-indigo-800/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="space-y-1">
-                        <h4 class="font-bold text-white text-base">¿Listo para comenzar el desafío?</h4>
-                        <p class="text-xs text-gray-300">Asegúrate de que tu grupo esté registrado en la pestaña de inicio antes de dar el vamos.</p>
-                    </div>
-                    <button onclick="switchTab('game')" class="bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold px-6 py-2.5 rounded-xl text-sm transition-all shadow-lg flex items-center gap-2">
-                        Ir a la Arena de Juego <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== TAB 3: GAME ARENA / 10 STAGES ==================== -->
-        <section id="tab-game" class="hidden space-y-6">
-            <div class="glass-panel p-6 md:p-8 rounded-3xl relative overflow-hidden">
-                <!-- Header Stats inside Game -->
-                <div class="flex flex-wrap justify-between items-center gap-4 border-b border-gray-800 pb-4 mb-6">
-                    <div>
-                        <div class="text-xs uppercase tracking-wider text-cyan-400 font-semibold" id="game-stage-indicator">Etapa 1 de 10</div>
-                        <h3 class="text-xl md:text-2xl font-extrabold text-white" id="game-stage-title">Espacio Muestral de Dado y Moneda</h3>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <!-- Timer -->
-                        <div id="timer-box" class="bg-gray-900 border border-gray-700 px-4 py-2 rounded-2xl flex items-center gap-2">
-                            <i class="fas fa-hourglass-half text-amber-400 animate-spin"></i>
-                            <span class="text-xs text-gray-400">Tiempo:</span>
-                            <span id="timer-countdown" class="font-bold text-amber-400 text-lg">60</span>s
-                        </div>
-                        <!-- Team Score Badge -->
-                        <div class="bg-indigo-950 border border-indigo-800 px-4 py-2 rounded-2xl">
-                            <span class="text-xs text-indigo-300">Tu Puntaje:</span>
-                            <span id="my-current-score" class="font-bold text-white text-lg ml-1">0 pts</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Active Question Container -->
-                <div id="question-card-container" class="space-y-6">
-                    <div class="bg-gray-900/80 p-6 rounded-2xl border border-gray-800 space-y-4">
-                        <div class="text-sm md:text-base text-gray-200 font-medium leading-relaxed" id="question-text">
-                            Cargando pregunta...
-                        </div>
-                        <div id="question-extra-info" class="text-xs text-cyan-300 italic"></div>
-                    </div>
-
-                    <!-- Options Grid (A, B, C, D) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="options-grid">
-                        <!-- Options generated dynamically -->
-                    </div>
-
-                    <!-- Feedback message after answering -->
-                    <div id="answer-feedback" class="hidden p-4 rounded-2xl text-center font-bold text-sm"></div>
-                </div>
-
-                <!-- Waiting or Control overlay if not started or ended -->
-                <div id="game-state-overlay" class="hidden absolute inset-0 bg-gray-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-4 z-20">
-                    <div id="overlay-icon" class="text-5xl text-cyan-400 animate-bounce mb-2"><i class="fas fa-hourglass-start"></i></div>
-                    <h3 id="overlay-title" class="text-2xl font-bold text-white">Esperando que el Profesor Inicie la Etapa</h3>
-                    <p id="overlay-desc" class="text-sm text-gray-300 max-w-md">El docente controla el avance de cada una de las 10 etapas desde el panel de control.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== TAB 4: PODIUM & RANKING ==================== -->
-        <section id="tab-podium" class="hidden space-y-8">
-            <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-8">
-                <div class="text-center space-y-2">
-                    <div class="inline-flex items-center gap-2 bg-amber-500/10 text-amber-400 px-4 py-1.5 rounded-full text-xs font-semibold border border-amber-500/20">
-                        <i class="fas fa-trophy"></i> Tabla General de Clasificación
-                    </div>
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-white">Podio y Premios Sorpresa</h2>
-                    <p class="text-gray-400 text-sm">Los mejores equipos del Colegio Pucará en Probabilidad y Combinatoria.</p>
-                </div>
-
-                <!-- Visual Podium (Top 3) -->
-                <div class="grid grid-cols-3 gap-2 sm:gap-6 items-end justify-center pt-8 pb-4 max-w-3xl mx-auto" id="visual-podium-container">
-                    <!-- 2nd Place -->
-                    <div class="flex flex-col items-center space-y-2">
-                        <div id="podium-2-avatar" class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-gray-800 border-2 border-gray-400 flex items-center justify-center text-2xl shadow-lg">🥈</div>
-                        <div id="podium-2-name" class="font-bold text-xs sm:text-sm text-center truncate w-24 sm:w-36 text-gray-200">Esperando...</div>
-                        <div class="w-full bg-gradient-to-t from-gray-800 to-gray-700 h-28 sm:h-36 rounded-t-2xl flex flex-col items-center justify-center border-t-2 border-gray-400 shadow-xl">
-                            <span class="text-gray-400 text-xs font-semibold">2° LUGAR</span>
-                            <span id="podium-2-score" class="text-white font-black text-sm sm:text-lg">0 pts</span>
-                        </div>
-                    </div>
-
-                    <!-- 1st Place -->
-                    <div class="flex flex-col items-center space-y-2 -mt-8">
-                        <div class="text-amber-400 text-2xl animate-bounce"><i class="fas fa-crown"></i></div>
-                        <div id="podium-1-avatar" class="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl bg-amber-950 border-2 border-amber-400 flex items-center justify-center text-3xl shadow-2xl neon-glow-gold">🥇</div>
-                        <div id="podium-1-name" class="font-bold text-xs sm:text-base text-center truncate w-28 sm:w-40 text-amber-300">Esperando...</div>
-                        <div class="w-full bg-gradient-to-t from-amber-900 to-amber-600 h-36 sm:h-48 rounded-t-2xl flex flex-col items-center justify-center border-t-2 border-amber-400 shadow-2xl">
-                            <span class="text-amber-200 text-xs font-extrabold">1° LUGAR</span>
-                            <span id="podium-1-score" class="text-white font-black text-base sm:text-2xl">0 pts</span>
-                        </div>
-                    </div>
-
-                    <!-- 3rd Place -->
-                    <div class="flex flex-col items-center space-y-2">
-                        <div id="podium-3-avatar" class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-amber-900/60 border-2 border-amber-700 flex items-center justify-center text-2xl shadow-lg">🥉</div>
-                        <div id="podium-3-name" class="font-bold text-xs sm:text-sm text-center truncate w-24 sm:w-36 text-gray-200">Esperando...</div>
-                        <div class="w-full bg-gradient-to-t from-amber-950 to-amber-900 h-20 sm:h-28 rounded-t-2xl flex flex-col items-center justify-center border-t-2 border-amber-700 shadow-xl">
-                            <span class="text-amber-500 text-xs font-semibold">3° LUGAR</span>
-                            <span id="podium-3-score" class="text-white font-black text-sm sm:text-lg">0 pts</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Surprise Prizes Card -->
-                <div class="bg-gradient-to-r from-indigo-950 via-gray-900 to-cyan-950 p-6 rounded-3xl border border-cyan-500/30 space-y-3">
-                    <h4 class="font-bold text-cyan-300 text-base flex items-center gap-2">
-                        <i class="fas fa-gift text-amber-400 animate-pulse"></i> Premios Sorpresa Revelados por el Docente
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm" id="surprise-prizes-display">
-                        <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800">
-                            <span class="text-amber-400 font-bold block mb-1">🥇 1° Lugar:</span>
-                            <span id="prize-1-text" class="text-gray-300">Cargando premio...</span>
-                        </div>
-                        <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800">
-                            <span class="text-gray-300 font-bold block mb-1">🥈 2° Lugar:</span>
-                            <span id="prize-2-text" class="text-gray-300">Cargando premio...</span>
-                        </div>
-                        <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800">
-                            <span class="text-amber-700 font-bold block mb-1">🥉 3° Lugar:</span>
-                            <span id="prize-3-text" class="text-gray-300">Cargando premio...</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Full Ranking Table (Last to First) -->
-                <div class="space-y-3">
-                    <h4 class="font-bold text-white text-base">Clasificación General (Desde el último al 1° lugar)</h4>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm text-gray-300">
-                            <thead class="bg-gray-900 text-xs uppercase text-gray-400 border-b border-gray-800">
-                                <tr>
-                                    <th class="px-4 py-3 rounded-l-xl">Pos.</th>
-                                    <th class="px-4 py-3">Equipo</th>
-                                    <th class="px-4 py-3">Integrantes</th>
-                                    <th class="px-4 py-3 rounded-r-xl text-right">Puntaje Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="full-ranking-tbody" class="divide-y divide-gray-800">
-                                <!-- Populated via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== TAB 5: TEACHER PANEL ==================== -->
-        <section id="tab-teacher" class="hidden space-y-6">
-            <!-- Password Gate -->
-            <div id="teacher-auth-card" class="glass-panel p-8 rounded-3xl max-w-md mx-auto text-center space-y-4">
-                <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-2xl mx-auto flex items-center justify-center text-xl">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white">Panel de Acceso Docente</h3>
-                <p class="text-xs text-gray-400">Ingresa la contraseña del profesor para gestionar la sala, etapas y premios.</p>
-                <form onsubmit="handleTeacherAuth(event)" class="space-y-4 pt-2">
-                    <input type="password" id="teacher-password" required placeholder="Contraseña (ej: profe123)"
-                        class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white text-center focus:outline-none focus:border-cyan-500 text-sm">
-                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg">
-                        Desbloquear Panel
-                    </button>
-                </form>
-            </div>
-
-            <!-- Teacher Control Dashboard (Hidden until auth) -->
-            <div id="teacher-dashboard" class="hidden space-y-6">
-                <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-6">
-                    <div class="flex flex-wrap justify-between items-center gap-4 border-b border-gray-800 pb-4">
+                    <form onsubmit="app.handleStudentJoin(event)" style="display: flex; flex-direction: column; gap: 0.8rem;">
                         <div>
-                            <h2 class="text-2xl font-extrabold text-cyan-400">Panel de Control Docente</h2>
-                            <p class="text-xs text-gray-400">Prof. William López González • Gestión en Tiempo Real</p>
+                            <label style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Nombre del Grupo</label>
+                            <input type="text" id="inputGroupName" required placeholder="Ej. Los Probabilistas" class="input-field" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">
                         </div>
-                        <button onclick="lockTeacherPanel()" class="bg-red-500/20 border border-red-500 text-red-300 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">
-                            <i class="fas fa-lock"></i> Bloquear Panel
-                        </button>
+                        <div>
+                            <label style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Integrantes (Máx. 4)</label>
+                            <input type="text" id="inputMembers" required placeholder="Ej. Ana, Carlos, Sofía" class="input-field" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.3rem;">Elige tu Avatar</label>
+                            <div id="avatarGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem;"></div>
+                        </div>
+                        <button type="submit" class="btn-primary" style="margin-top: 0.3rem; font-size: 0.9rem; padding: 0.6rem;">¡Entrar al Reto! 🚀</button>
+                    </form>
+                </div>
+
+                <!-- Grupos Ya Inscritos en Vivo -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 1rem; max-height: 420px; overflow-y: auto;">
+                    <h3 style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span>👥 Grupos Inscritos (<span id="joinGroupCount">0</span>)</span>
+                    </h3>
+                    <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.75rem;">Equipos listos para la competencia:</p>
+                    <div id="liveJoinedGroupsList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <!-- Dinámico -->
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Stage Controls -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
-                            <h4 class="font-bold text-white text-base flex items-center gap-2">
-                                <i class="fas fa-play-circle text-indigo-400"></i> Control de Etapas (1 a 10)
-                            </h4>
-                            <div class="space-y-3">
-                                <label class="block text-xs text-gray-400">Seleccionar Etapa Actual:</label>
-                                <select id="teacher-select-stage" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500">
-                                    <!-- Options populated via JS -->
-                                </select>
-                                <div class="flex gap-2 pt-2">
-                                    <button onclick="teacherChangeStage()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all">
-                                        Cambiar Etapa
-                                    </button>
-                                    <button onclick="teacherToggleTimer('start')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all">
-                                        Iniciar Tiempo
-                                    </button>
-                                    <button onclick="teacherToggleTimer('pause')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-all">
-                                        Pausar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Timer & Time config -->
-                        <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
-                            <h4 class="font-bold text-white text-base flex items-center gap-2">
-                                <i class="fas fa-clock text-amber-400"></i> Ajustar Tiempo por Etapa
-                            </h4>
-                            <div class="space-y-3">
-                                <label class="block text-xs text-gray-400">Duración en segundos:</label>
-                                <div class="flex gap-2">
-                                    <input type="number" id="teacher-timer-input" value="60" min="15" max="300"
-                                        class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-amber-500">
-                                    <button onclick="teacherUpdateTimerSetting()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition-all">
-                                        Actualizar
-                                    </button>
-                                </div>
-                                <button onclick="teacherResetGame()" class="w-full bg-red-600/20 border border-red-500 text-red-300 hover:bg-red-600 hover:text-white font-bold py-2.5 rounded-xl text-xs transition-all mt-2">
-                                    Reiniciar Puntajes de Todos los Grupos
-                                </button>
-                            </div>
-                        </div>
+        <!-- VISTA 2: SALA DE ESPERA / INSTRUCCIONES + LECTURA OBLIGATORIA -->
+        <div id="viewStudentLobby" class="hidden glass-panel" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div id="lobbyAvatarDisplay" style="width: 50px; height: 50px; border-radius: 1rem; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;"></div>
+                    <div>
+                        <h2 id="lobbyGroupName" style="font-size: 1.25rem; font-weight: 700; color: #0f172a;"></h2>
+                        <p id="lobbyMembers" style="font-size: 0.75rem; color: #64748b;"></p>
                     </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: #4f46e5;">Tu Puntaje: <span id="lobbyPersonalScore">0</span> pts</div>
+                    <span style="background: #fef3c7; color: #92400e; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Esperando pase docente...</span>
+                </div>
+            </div>
+            
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: #312e81; margin-bottom: 0.75rem;">📖 Instrucciones del Juego (Lee mientras esperas al resto de grupos)</h3>
+                <ul style="font-size: 0.75rem; color: #334155; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;">
+                    <li><strong>Dinámica Grupal:</strong> La actividad consta de 10 etapas secuenciales basadas en la guía de probabilidad de 2° Medio.</li>
+                    <li><strong>Acceso a la Arena:</strong> Ningún grupo puede ingresar a responder hasta que el profesor habilite el acceso general desde su panel.</li>
+                    <li><strong>Tiempos y Pausas:</strong> Cada etapa tiene un tiempo reverso (de 2 a 5 minutos). Entre pregunta y pregunta habrá una pausa docente para conversar, revisar aciertos y debatir.</li>
+                    <li><strong>Puntaje Privado:</strong> Solo tú ves tu puntaje acumulado en tu dispositivo. El ranquin general y los premios sorpresa se revelarán al final en el podio.</li>
+                </ul>
+            </div>
+            <div id="lobbyAccessMessage" style="text-align: center; font-size: 0.85rem; color: #059669; font-weight: 600;">
+                ⏳ El profesor pronto habilitará el ingreso a la Arena de Preguntas...
+            </div>
+        </div>
 
-                    <!-- Surprise Prizes Config -->
-                    <div class="bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
-                        <h4 class="font-bold text-white text-base flex items-center gap-2">
-                            <i class="fas fa-gift text-cyan-400"></i> Configurar Premios Sorpresa (Podio)
-                        </h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-xs text-amber-400 font-bold">Premio 1° Lugar:</label>
-                                <input type="text" id="teacher-prize-1" placeholder="Ej: Nota 7.0 + Certificado de Maestro Probabilístico"
-                                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs text-gray-300 font-bold">Premio 2° Lugar:</label>
-                                <input type="text" id="teacher-prize-2" placeholder="Ej: Nota 7.0 en la siguiente evaluación"
-                                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs text-amber-700 font-bold">Premio 3° Lugar:</label>
-                                <input type="text" id="teacher-prize-3" placeholder="Ej: Premio sorpresa de útiles / dulces"
-                                    class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-                            </div>
-                        </div>
-                        <div class="flex justify-end pt-2">
-                            <button onclick="teacherSavePrizes()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-6 py-2 rounded-xl text-xs transition-all">
-                                Guardar y Publicar Premios
-                            </button>
-                        </div>
+        <!-- VISTA 3: PANTALLA DE JUEGO / ARENA (ESTUDIANTE) -->
+        <div id="viewStudentGame" class="hidden glass-panel" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; padding: 0.75rem 1.25rem; border-radius: 1rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span id="gameStageBadge" style="background: #4f46e5; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">Etapa 1 / 10</span>
+                    <span id="gameTeamDisplay" style="font-size: 0.9rem; font-weight: 700;">Grupo</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="font-size: 0.8rem; color: #34d399; font-weight: 700;">Puntaje: <span id="gameLiveScore">0</span> pts</div>
+                    <div style="display: flex; align-items: center; gap: 0.3rem; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">
+                        ⏱️ <span id="gameTimer">02:00</span>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Connected Groups Table -->
-                    <div class="space-y-3">
-                        <h4 class="font-bold text-white text-base">Grupos Conectados en la Sala (<span id="connected-count">0</span>)</h4>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-gray-300">
-                                <thead class="bg-gray-900 text-xs uppercase text-gray-400 border-b border-gray-800">
-                                    <tr>
-                                        <th class="px-4 py-3 rounded-l-xl">Avatar & Grupo</th>
-                                        <th class="px-4 py-3">Dispositivo / Celular</th>
-                                        <th class="px-4 py-3">Integrantes</th>
-                                        <th class="px-4 py-3">Puntaje</th>
-                                        <th class="px-4 py-3 rounded-r-xl text-center">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="teacher-groups-tbody" class="divide-y divide-gray-800">
-                                    <!-- Populated via JS -->
-                                </tbody>
-                            </table>
+            <!-- Estado: Esperando Inicio de Pregunta por el Docente -->
+            <div id="gameWaitingStart" style="text-align: center; padding: 3rem 1rem;">
+                <div style="width: 70px; height: 70px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem;" class="animate-float">
+                    ⏸️
+                </div>
+                <h3 style="font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Pausa Docente / Esperando Siguiente Pregunta</h3>
+                <p style="font-size: 0.75rem; color: #64748b;">Comenten la pregunta anterior, consulten sus dudas y esperen a que el profesor active la siguiente etapa desde su panel.</p>
+            </div>
+
+            <!-- Estado: Pregunta Activa -->
+            <div id="gameActiveQuestion" class="hidden" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="background: #e0e7ff; border: 1px solid #c7d2fe; padding: 1.25rem; border-radius: 1rem;">
+                    <span id="gameQuestionCategory" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #4f46e5; display: block; margin-bottom: 0.4rem;"></span>
+                    <h3 id="gameQuestionText" style="font-size: 1.05rem; color: #0f172a; font-weight: 600; line-height: 1.5;"></h3>
+                </div>
+                <div id="gameOptionsContainer" style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;"></div>
+            </div>
+
+            <!-- Estado: Standby (Respondido) -->
+            <div id="gameAnsweredStandby" class="hidden" style="text-align: center; padding: 3rem 1rem;">
+                <div style="width: 70px; height: 70px; background: #d1fae5; color: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem;">
+                    ✅
+                </div>
+                <h3 style="font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">¡Respuesta Registrada!</h3>
+                <p style="font-size: 0.75rem; color: #64748b;">Has asegurado tu participación en esta etapa. Espera la pausa docente.</p>
+            </div>
+        </div>
+
+        <!-- VISTA 4: AUTENTICACIÓN DOCENTE -->
+        <div id="viewTeacherAuth" class="hidden glass-panel" style="max-width: 400px; margin: 0 auto; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.85rem; font-weight: 600;">← Volver</button>
+                <span style="background: #fef3c7; color: #92400e; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">Restringido</span>
+            </div>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="width: 50px; height: 50px; background: #fef3c7; color: #d97706; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.75rem;">
+                    🔒
+                </div>
+                <h2 style="font-size: 1.35rem; font-weight: 700; color: #0f172a;">Panel Docente Pucará</h2>
+                <p style="font-size: 0.75rem; color: #64748b;">Ingrese la clave de profesor para continuar.</p>
+            </div>
+            <form onsubmit="app.handleTeacherAuth(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.3rem;">Contraseña Docente</label>
+                    <input type="password" id="inputTeacherPass" required placeholder="••••••••" class="input-field" autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary" style="background: #0f172a; margin-top: 0.5rem;">Acceder al Panel ⚙️</button>
+            </form>
+        </div>
+
+        <!-- VISTA 5: PANEL DE CONTROL DOCENTE -->
+        <div id="viewTeacherDashboard" class="hidden glass-panel" style="max-width: 900px; margin: 0 auto; padding: 2.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: #0f172a;">Panel de Control Docente</h2>
+                    <p style="font-size: 0.75rem; color: #64748b;">Control de acceso a la arena, cronómetros y pausas</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button onclick="app.toggleArenaAccess()" id="btnArenaToggle" style="background: #059669; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">🟢 Habilitar Ingreso a Arena</button>
+                    <button onclick="app.showQRCodeModal()" style="background: #e0e7ff; color: #3730a3; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">📱 QR</button>
+                    <button onclick="app.showRoleSelect()" style="background: #e2e8f0; color: #334155; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Salir</button>
+                </div>
+            </div>
+
+            <!-- Pestañas Docente -->
+            <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+                <button onclick="app.switchTeacherTab('control')" id="tabBtnControl" class="btn-primary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">Control Etapas (1-10)</button>
+                <button onclick="app.switchTeacherTab('groups')" id="tabBtnGroups" style="background: #e2e8f0; color: #334155; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; cursor: pointer;">Grupos (<span id="teacherGroupCount">0</span>)</button>
+                <button onclick="app.switchTeacherTab('settings')" id="tabBtnSettings" style="background: #e2e8f0; color: #334155; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; cursor: pointer;">Premios & Podio</button>
+            </div>
+
+            <!-- Tab 1: Control -->
+            <div id="teacherTabControl" style="display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 1rem; max-height: 400px; overflow-y: auto;">
+                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem;">📋 Etapas (1 al 10)</h4>
+                    <div id="teacherStagesList" style="display: flex; flex-direction: column; gap: 0.4rem;"></div>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <span id="teacherCurrentStageBadge" style="background: #4f46e5; color: white; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Etapa 1 de 10</span>
+                            <span id="teacherStageDifficulty" style="font-size: 0.75rem; color: #64748b; font-weight: 600;"></span>
+                        </div>
+                        <h4 id="teacherQuestionTitle" style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;"></h4>
+                        <p id="teacherQuestionContent" style="font-size: 0.75rem; color: #334155; background: white; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; margin-bottom: 0.5rem;"></p>
+                        <div style="font-size: 0.7rem; color: #64748b;">Alternativas: <span id="teacherQuestionOptionsSummary"></span></div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <label style="font-size: 0.7rem; font-weight: 700; color: #475569;">Tiempo (seg):</label>
+                            <input type="number" id="inputCustomDuration" value="120" style="width: 70px; padding: 0.4rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; text-align: center; font-size: 0.75rem;">
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="app.teacherStartQuestion()" style="background: #059669; color: white; border: none; padding: 0.6rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">▶️ Activar Pregunta</button>
+                            <button onclick="app.teacherNextStage()" style="background: #4f46e5; color: white; border: none; padding: 0.6rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Siguiente ➡️</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <!-- Tab 2: Groups -->
+            <div id="teacherTabGroups" class="hidden" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a;">Grupos Participantes</h3>
+                    <button onclick="app.loadGroups()" style="background: #e0e7ff; color: #3730a3; border: none; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">🔄 Actualizar</button>
+                </div>
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 1rem; overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem;">
+                        <thead>
+                            <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569;">
+                                <th style="padding: 0.75rem;">Avatar & Grupo</th>
+                                <th style="padding: 0.75rem;">Integrantes</th>
+                                <th style="padding: 0.75rem;">Puntaje</th>
+                                <th style="padding: 0.75rem; text-align: center;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherGroupsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 3: Settings & Prizes -->
+            <div id="teacherTabSettings" class="hidden" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">🏆 Configuración de Premios (Podio Top 3)</h3>
+                    <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">Ajusta los premios sorpresa que se revelarán al finalizar el juego.</p>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; font-weight: 700; color: #b45309; margin-bottom: 0.3rem;">🥇 1° Lugar</label>
+                            <input type="text" id="inputPrize1" value="Nota 7.0 acumulativa en Matemática + Premio Sorpresa Pucará" class="input-field" style="font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">🥈 2° Lugar</label>
+                            <input type="text" id="inputPrize2" value="Nota 6.8 acumulativa + Kit escolar especial" class="input-field" style="font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; font-weight: 700; color: #92400e; margin-bottom: 0.3rem;">🥉 3° Lugar</label>
+                            <input type="text" id="inputPrize3" value="Nota 6.5 acumulativa + Dulces institucionales" class="input-field" style="font-size: 0.75rem;">
+                        </div>
+                    </div>
+                    <button onclick="app.savePrizes()" class="btn-primary" style="font-size: 0.75rem; padding: 0.5rem 1rem;">Guardar Premios</button>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">🏁 Finalizar Actividad y Ver Podio</h3>
+                    <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">Calcula el ranking definitivo y muestra el podio de ganadores con confeti y premios.</p>
+                    <button onclick="app.showPodiumScreen()" class="btn-primary" style="background: linear-gradient(135deg, #d97706, #db2777); font-size: 0.9rem;">🏆 Lanzar Podio y Revelar Premios</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 6: PODIO Y RANKING FINAL -->
+        <div id="viewPodium" class="hidden glass-panel" style="max-width: 800px; margin: 0 auto; padding: 2.5rem; text-align: center;">
+            <span style="background: #fef3c7; color: #92400e; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 1rem; border-radius: 9999px; text-transform: uppercase;">🏆 Resultados Finales</span>
+            <h2 style="font-size: 1.8rem; font-weight: 700; color: #0f172a; margin: 0.75rem 0 0.25rem;">Podio de Campeones - 2° Medio</h2>
+            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 2rem;">¡Excelente desempeño en el Reto de Probabilidades y Combinatoria!</p>
+
+            <div id="podiumStage" style="display: flex; justify-content: center; align-items: flex-end; gap: 1rem; margin-bottom: 2.5rem; min-height: 280px;"></div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; text-align: left; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem;">Clasificación General (Desde el último al 1°)</h3>
+                <div id="fullRankingList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+            </div>
+
+            <button onclick="app.showRoleSelect()" class="btn-primary" style="background: #0f172a;">Volver al Inicio</button>
+        </div>
 
     </main>
 
-    <!-- Custom Modal for Alerts -->
-    <div id="custom-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="glass-panel p-6 rounded-3xl max-w-md w-full border border-gray-700 space-y-4 text-center">
-            <div id="modal-icon" class="text-4xl text-indigo-400 mb-1"><i class="fas fa-info-circle"></i></div>
-            <h3 id="modal-title" class="text-lg font-bold text-white">Aviso</h3>
-            <p id="modal-message" class="text-xs text-gray-300 leading-relaxed"></p>
-            <button onclick="closeModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all">
-                Entendido
-            </button>
+    <!-- Modal QR -->
+    <div id="modalQRCode" class="hidden" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 50; display: flex; align-items: center; justify-content: center; padding: 1rem;">
+        <div class="glass-panel" style="max-width: 320px; width: 100%; text-align: center; padding: 2rem; position: relative;">
+            <button onclick="app.closeQRCodeModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Escanea para Unirte</h3>
+            <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 1rem;">Usa tu celular para ingresar a la actividad.</p>
+            <div id="qrcode" style="background: white; padding: 0.75rem; border-radius: 1rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 1rem;"></div>
+            <div id="currentUrlText" style="font-size: 0.65rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.5rem; border-radius: 0.5rem;"></div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- Footer -->
+    <footer>
+        Colegio Pucará • Matemática 2° Medio | Profesor William López González & DIE Yasmín Mardones Guerrero
+    </footer>
 
-        // Global Firebase handles
-        let app, db, auth, currentUser;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pucara-probabilidad-2medio-v1';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-
-        // --- EXERCISE DATA (10 STAGES ADAPTED FROM TEACHER WILLIAM LÓPEZ'S GUIDE) ---
-        const STAGES_DATA = [
-            {
-                id: 1,
-                title: "Etapa 1: Espacio Muestral (Dado Tetraédrico y Moneda)",
-                guideRef: "Guía Ejercicio 1",
-                text: "Se lanza un dado tetraédrico (de 4 caras, numeradas del 1 al 4) y una moneda (Cara 'C' y Sello 'S'). ¿Cuál es el número total de resultados posibles $n(\\Omega)$ y su representación explícita?",
-                options: [
-                    { key: "A", text: "n(Ω) = 6, con Ω = {(1,C), (2,C), (3,C), (4,C)}" },
-                    { key: "B", text: "n(Ω) = 8, con Ω = {(1,C),(1,S),(2,C),(2,S),(3,C),(3,S),(4,C),(4,S)}", correct: true },
-                    { key: "C", text: "n(Ω) = 4, con Ω = {(1,2,3,4)}" },
-                    { key: "D", text: "n(Ω) = 12, combinaciones posibles de dados y monedas" }
-                ],
-                explanation: "El dado tiene 4 opciones {1,2,3,4} y la moneda 2 {C,S}. Por principio multiplicativo: 4 × 2 = 8 elementos."
-            },
-            {
-                id: 2,
-                title: "Etapa 2: Cardinalidad al Lanzar 3 Monedas",
-                guideRef: "Guía Ejercicio 3",
-                text: "Considera el experimento de lanzar 3 monedas al mismo tiempo. ¿Cuál es la cardinalidad de su espacio muestral $n(\\Omega)$?",
-                options: [
-                    { key: "A", text: "n(Ω) = 6" },
-                    { key: "B", text: "n(Ω) = 3" },
-                    { key: "C", text: "n(Ω) = 8", correct: true },
-                    { key: "D", text: "n(Ω) = 9" }
-                ],
-                explanation: "Al lanzar 3 monedas, cada moneda tiene 2 opciones, por lo que n(Ω) = 2³ = 8 resultados posibles."
-            },
-            {
-                id: 3,
-                title: "Etapa 3: Estudiantes que no Juegan Fútbol ni Básquetbol",
-                guideRef: "Guía Ejercicio 5",
-                text: "En un curso de 30 estudiantes, 18 juegan fútbol, 12 juegan básquetbol y 5 juegan ambos deportes. Si se elige un estudiante al azar, ¿cuántos estudiantes no juegan ninguno de estos dos deportes?",
-                options: [
-                    { key: "A", text: "3 estudiantes" },
-                    { key: "B", text: "5 estudiantes", correct: true },
-                    { key: "C", text: "7 estudiantes" },
-                    { key: "D", text: "0 estudiantes" }
-                ],
-                explanation: "Por teoría de conjuntos: |F ∪ B| = |F| + |B| - |F ∩ B| = 18 + 12 - 5 = 25. Estudiantes que no juegan = 30 - 25 = 5."
-            },
-            {
-                id: 4,
-                title: "Etapa 4: Probabilidad de Suma Primo en Dos Dados",
-                guideRef: "Guía Ejercicio 6",
-                text: "Se lanzan dos dados comunes de 6 caras. Se define el evento E: 'La suma de los puntos obtenidos es un número Primo'. ¿Cuál es la probabilidad P(E)?",
-                options: [
-                    { key: "A", text: "15 / 36 (o 5 / 12)", correct: true },
-                    { key: "B", text: "1 / 4" },
-                    { key: "C", text: "11 / 36" },
-                    { key: "D", text: "1 / 2" }
-                ],
-                explanation: "Primos posibles en suma de dos dados (2, 3, 5, 7, 11). Casos favorables: 15 de un total de 36."
-            },
-            {
-                id: 5,
-                title: "Etapa 5: Probabilidad de Extraer Bolita No Roja",
-                guideRef: "Guía Ejercicio 10",
-                text: "Una urna contiene 6 bolitas rojas, 4 blancas y 5 azules. Se extrae una bolita al azar. ¿Cuál es la probabilidad de que NO sea de color rojo?",
-                options: [
-                    { key: "A", text: "6 / 15" },
-                    { key: "B", text: "9 / 15 (o 3 / 5)", correct: true },
-                    { key: "C", text: "4 / 15" },
-                    { key: "D", text: "1 / 3" }
-                ],
-                explanation: "Total = 6 + 4 + 5 = 15. Bolitas no rojas = 4 + 5 = 9. P(No roja) = 9/15 = 3/5."
-            },
-            {
-                id: 6,
-                title: "Etapa 6: Producto Mayor que 20 en Dos Dados",
-                guideRef: "Guía Ejercicio 12",
-                text: "Se lanza un par de dados de 6 caras. ¿Cuál es la probabilidad de que el producto de los números obtenidos sea mayor que 20?",
-                options: [
-                    { key: "A", text: "1 / 9" },
-                    { key: "B", text: "2 / 9", correct: true },
-                    { key: "C", text: "1 / 6" },
-                    { key: "D", text: "5 / 36" }
-                ],
-                explanation: "Pares con producto > 20: (4,6), (5,4), (5,5), (5,6), (6,4), (6,5), (6,6) y sus simétricos (6,4) etc. Son 8 casos favorables de 36 = 2/9."
-            },
-            {
-                id: 7,
-                title: "Etapa 7: Figura o Carta de Oros en Naipe Español",
-                guideRef: "Guía Ejercicio 13",
-                text: "Un mazo español tiene 40 cartas (4 pintas de 10: Oros, Copas, Espadas, Bastos). ¿Cuál es la probabilidad de extraer una figura (Sota, Caballo, Rey) o una carta de Oros?",
-                options: [
-                    { key: "A", text: "19 / 40", correct: true },
-                    { key: "B", text: "7 / 20" },
-                    { key: "C", text: "13 / 40" },
-                    { key: "D", text: "1 / 2" }
-                ],
-                explanation: "Oros = 10. Figuras totales = 4 pintas × 3 figuras = 12. Figuras de oros = 3. Por unión: P(Oros ∪ Figuras) = 10/40 + 12/40 - 3/40 = 19/40."
-            },
-            {
-                id: 8,
-                title: "Etapa 8: Selección Múltiple con 5 Alternativas",
-                guideRef: "Guía Ejercicio 14",
-                text: "Una pregunta de examen tiene 5 alternativas (una sola correcta). Si un estudiante responde completamente al azar, ¿cuál es la probabilidad de errar la respuesta?",
-                options: [
-                    { key: "A", text: "1 / 5" },
-                    { key: "B", text: "4 / 5", correct: true },
-                    { key: "C", text: "3 / 5" },
-                    { key: "D", text: "1 / 4" }
-                ],
-                explanation: "Probabilidad de acertar = 1/5. Probabilidad de errar por complemento = 1 - 1/5 = 4/5."
-            },
-            {
-                id: 9,
-                title: "Etapa 9: Variable Aleatoria (Diferencia Absoluta de Dados)",
-                guideRef: "Guía Ejercicio 23",
-                text: "Se lanzan dos dados estándar. Sea X: 'Diferencia en valor absoluto entre los puntos obtenidos'. ¿Cuál es P(X = 0)?",
-                options: [
-                    { key: "A", text: "1 / 6", correct: true },
-                    { key: "B", text: "1 / 36" },
-                    { key: "C", text: "1 / 12" },
-                    { key: "D", text: "5 / 36" }
-                ],
-                explanation: "X=0 ocurre cuando ambos dados son iguales: (1,1),(2,2),(3,3),(4,4),(5,5),(6,6), es decir, 6 casos de 36 = 6/36 = 1/6."
-            },
-            {
-                id: 10,
-                title: "Etapa 10: Variable Aleatoria y Premios en Dinero (Ruleta)",
-                guideRef: "Guía Ejercicio 27",
-                text: "Ruleta de 8 sectores (1 al 8). Par gana $500; impar divisible por 3 (solo el 3) gana $1.000; el 1 gana $0. Si W es la ganancia, ¿cuál es la probabilidad de ganar al menos $500?",
-                options: [
-                    { key: "A", text: "3 / 8" },
-                    { key: "B", text: "5 / 8" },
-                    { key: "C", text: "7 / 8", correct: true },
-                    { key: "D", text: "1 / 2" }
-                ],
-                explanation: "Pares (2,4,6,8) = 4 sectores. Impar divisible por 3 (el 3) = 1 sector. Total ganancia >= $500 son 4 + 1 = 5 sectores? Espera: Pares son 4 (2,4,6,8) y el 3 gana $1000. El 1 gana $0, el 5 gana $0, el 7 gana $0. Sectores con al menos $500 son los 4 pares + el 3 = 5 sectores. Probabilidad = 5/8."
-            }
-        ];
-
-        const AVATARS_LIST = ["📐", "📊", "🎲", "🪙", "🏆", "🧠", "⚡", "🔢", "🎯", "💡"];
-
-        // State variables
-        let currentTab = 'home';
-        let registeredTeamId = localStorage.getItem('pucara_team_id') || null;
-        let selectedAvatar = "📐";
-        let roomState = {
-            activeStage: 1,
-            timerSeconds: 60,
-            timerActive: false,
-            prizes: {
-                1: "Nota 7.0 + Certificado de Maestro Probabilístico",
-                2: "Nota 7.0 en la próxima evaluación formativa",
-                3: "Premio sorpresa de dulces y material escolar"
-            }
+    <!-- Lógica de la Aplicación -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDummyKeyForPucaraMathApp2026",
+            authDomain: "pucara-math-app.firebaseapp.com",
+            projectId: "pucara-math-app",
+            storageBucket: "pucara-math-app.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef"
         };
 
-        // Initialize App on Load
-        window.addEventListener('DOMContentLoaded', async () => {
-            // Display Current URL for QR
-            const currentUrl = window.location.href.split('#')[0];
-            document.getElementById('current-url-display').innerText = currentUrl;
-            new QRCode(document.getElementById("qrcode"), {
-                text: currentUrl,
-                width: 140,
-                height: 140,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
+        let db;
+        try {
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            document.getElementById('statusText').innerText = "Firebase Conectado";
+            document.getElementById('statusDot').style.background = "#34d399";
+        } catch (e) {
+            document.getElementById('statusText').innerText = "Modo Local Activo";
+            document.getElementById('statusDot').style.background = "#818cf8";
+        }
 
-            // Render Avatar Selection
-            renderAvatarOptions();
+        // 10 Etapas basadas estrictamente en la guía, con tiempos graduados (2 min las fáciles hasta 5 min las de mayor dificultad)
+        const STAGES = [
+            { id: 1, title: "Etapa 1: Espacio Muestral (Dado Tetraédrico y Moneda)", difficulty: "Fácil (2 min)", duration: 120, category: "Parte I: Experimentos Aleatorios", question: "Se lanza un dado tetraédrico (4 caras, del 1 al 4) y una moneda. ¿Cuál es el número total de resultados posibles n(Ω) en el espacio muestral?", options: ["n(Ω) = 6", "n(Ω) = 8", "n(Ω) = 12", "n(Ω) = 4"], correct: 1 },
+            { id: 2, title: "Etapa 2: Eventos en Mazo Inglés", difficulty: "Fácil (2 min)", duration: 120, category: "Parte I: Experimentos Aleatorios", question: "Al extraer una carta de un mazo inglés de 52 cartas, ¿cuántos elementos forman el evento B: 'Extraer una carta de Corazones mayor o igual a 8 (sin contar K, Q, J)'?", options: ["3 cartas (8, 9, 10)", "4 cartas (8, 9, 10, As)", "5 cartas (8, 9, 10, J, Q)", "6 cartas"], correct: 0 },
+            { id: 3, title: "Etapa 3: Probabilidad Clásica (Regla de Laplace)", difficulty: "Media (3 min)", duration: 180, category: "Parte II: Probabilidad Clásica", question: "Una urna contiene 6 bolitas rojas, 4 blancas y 5 azules. Si se extrae una bolita al azar, ¿cuál es la probabilidad de que NO sea de color rojo?", options: ["6/15 (40%)", "9/15 o 3/5 (60%)", "4/15 (26.6%)", "11/15 (73.3%)"], correct: 1 },
+            { id: 4, title: "Etapa 4: Unión de Eventos y Encuestas", difficulty: "Media (3 min)", duration: 180, category: "Parte II: Probabilidad Clásica", question: "En un grupo de 40 personas, 25 hablan inglés, 15 francés y 8 ambos. Al seleccionar una persona, ¿cuál es la probabilidad de que hable inglés O francés?", options: ["32/40 (80%)", "40/40 (100%)", "25/40 (62.5%)", "17/40 (42.5%)"], correct: 0 },
+            { id: 5, title: "Etapa 5: Producto de Probabilidades (Dados)", difficulty: "Media-Alta (3.5 min)", duration: 210, category: "Parte II: Probabilidad Clásica", question: "Se lanza un par de dados comunes de 6 caras. ¿Cuál es la probabilidad de que el producto de los números obtenidos sea mayor que 20?", options: ["5/36", "7/36", "10/36 (o 5/18)", "12/36 (1/3)"], correct: 1 },
+            { id: 6, title: "Etapa 6: Variable Aleatoria Discreta (Lanzamiento de Dado)", difficulty: "Alta (4 min)", duration: 240, category: "Parte III: Variable Aleatoria Discreta", question: "Sea X la variable aleatoria 'Puntaje obtenido al lanzar un dado común'. ¿Cuál es el valor de P(X = x) para cada cara y qué propiedad cumple la sumatoria Σ P(X = x)?", options: ["Cada probabilidad es 1/6 y su suma es igual a 1", "Cada probabilidad es 1/36 y su suma es 1", "Cada probabilidad es 1/6 y su suma es 6", "Cada probabilidad depende del puntaje y suma 0"], correct: 0 },
+            { id: 7, title: "Etapa 7: Distribución de Probabilidad Familiar", difficulty: "Alta (4 min)", duration: 240, category: "Parte III: Variable Aleatoria Discreta", question: "Para una familia con 3 hijos (p=0,5 para niño/niña), sea X = 'Número de niñas'. ¿Cuál es la probabilidad de que en la familia haya AL MENOS 2 niñas P(X ≥ 2)?", options: ["1/8 (12.5%)", "3/8 (37.5%)", "4/8 o 1/2 (50%)", "7/8 (87.5%)"], correct: 2 },
+            { id: 8, title: "Etapa 8: Constante k en Función de Probabilidad", difficulty: "Muy Alta (4.5 min)", duration: 270, category: "Parte III: Variable Aleatoria Discreta", question: "Dada la función P(X = x) = k·x para x en {1, 2, 3, 4}, ¿cuál es el valor exacto de la constante k?", options: ["k = 1/5", "k = 1/10", "k = 1/4", "k = 1/12"], correct: 1 },
+            { id: 9, title: "Etapa 9: Diferencia Absoluta en Dos Dados", difficulty: "Muy Alta (5 min)", duration: 300, category: "Parte III: Variable Aleatoria Discreta", question: "Se lanzan dos dados estándar. Sea X = 'Diferencia en valor absoluto entre los puntos'. ¿Cuál es la probabilidad P(X = 0)?", options: ["1/36", "6/36 (o 1/6)", "12/36 (1/3)", "2/36"], correct: 1 },
+            { id: 10, title: "Etapa 10: Variable Aleatoria con Ruleta de Feria", difficulty: "Desafío Final (5 min)", duration: 300, category: "Parte III: Variable Aleatoria Discreta", question: "Ruleta de 8 sectores (1 al 8): Par gana $500; Impar divisible por 3 (solo el 3) gana $1.000; el 1 gana $0. Si W es el dinero ganado, ¿cuál es la probabilidad P(W ≥ 500)?", options: ["4/8 (pares 2,4,6,8)", "5/8 (pares 2,4,6,8 + el 3)", "3/8", "6/8"], correct: 1 }
+        ];
 
-            // Populate Teacher Stage Select
-            const teacherSelect = document.getElementById('teacher-select-stage');
-            teacherSelect.innerHTML = STAGES_DATA.map(s => `<option value="${s.id}">Etapa ${s.id}: ${s.title.split(':')[1] || s.title}</option>`).join('');
+        const AVATARS = ["🚀", "🦁", "🦊", "⚡", "🤖", "🔥", "💎", "⭐", "🦄", "🍀", "🎯", "👑"];
 
-            // Initialize Firebase
-            if (firebaseConfig) {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
+        class AppState {
+            constructor() {
+                this.groupName = localStorage.getItem('pucara_groupName') || '';
+                this.members = localStorage.getItem('pucara_members') || '';
+                this.avatar = localStorage.getItem('pucara_avatar') || '🚀';
+                this.currentStageIndex = 0;
+                this.remainingSeconds = 120;
+                this.hasAnsweredCurrentStage = false;
+                this.teacherPrizes = {
+                    1: "Nota 7.0 acumulativa en Matemática + Premio Sorpresa Pucará",
+                    2: "Nota 6.8 acumulativa + Kit escolar especial",
+                    3: "Nota 6.5 acumulativa + Dulces institucionales"
+                };
+            }
 
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
+            init() {
+                this.renderAvatarGrid();
+                this.startLiveGroupsPolling();
+            }
+
+            renderAvatarGrid() {
+                const grid = document.getElementById('avatarGrid');
+                if (!grid) return;
+                grid.innerHTML = AVATARS.map(av => `
+                    <button type="button" onclick="app.selectAvatar('${av}')" style="padding: 0.4rem; font-size: 1.3rem; background: #f8fafc; border-radius: 0.5rem; border: 2px solid ${this.avatar === av ? '#4f46e5' : '#e2e8f0'}; cursor: pointer; transition: transform 0.2s;">
+                        ${av}
+                    </button>
+                `).join('');
+            }
+
+            selectAvatar(av) {
+                this.avatar = av;
+                this.renderAvatarGrid();
+            }
+
+            showRoleSelect() {
+                this.hideAllViews();
+                document.getElementById('viewRoleSelect').classList.remove('hidden');
+            }
+
+            async showStudentJoin() {
+                this.hideAllViews();
+                document.getElementById('viewStudentJoin').classList.remove('hidden');
+                if (this.groupName) {
+                    document.getElementById('inputGroupName').value = this.groupName;
+                    document.getElementById('inputMembers').value = this.members;
+                }
+                await this.updateLiveJoinedGroups();
+            }
+
+            startLiveGroupsPolling() {
+                if (this.livePollInterval) clearInterval(this.livePollInterval);
+                this.livePollInterval = setInterval(async () => {
+                    const joinView = document.getElementById('viewStudentJoin');
+                    if (joinView && !joinView.classList.contains('hidden')) {
+                        await this.updateLiveJoinedGroups();
                     }
-                    currentUser = auth.currentUser;
-                    document.getElementById('status-text').innerText = "Conectado a Firebase Cloud";
-                    
-                    // Start Listeners
-                    initFirebaseListeners();
-                } catch (e) {
-                    console.error("Firebase auth error:", e);
-                    document.getElementById('status-text').innerText = "Modo Local / Offline";
+                }, 3000);
+            }
+
+            async updateLiveJoinedGroups() {
+                let groups = {};
+                if (db) {
+                    try {
+                        let snapshot = await db.collection('groups').get();
+                        snapshot.forEach(doc => { groups[doc.id] = doc.data(); });
+                    } catch (e) {}
                 }
-            } else {
-                document.getElementById('status-text').innerText = "Modo Local Simulador";
+                if (Object.keys(groups).length === 0) {
+                    groups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                }
+
+                const listEl = document.getElementById('liveJoinedGroupsList');
+                const countEl = document.getElementById('joinGroupCount');
+                if (!listEl || !countEl) return;
+
+                const groupArray = Object.values(groups);
+                countEl.innerText = groupArray.length;
+
+                if (groupArray.length === 0) {
+                    listEl.innerHTML = `<div style="font-size: 0.7rem; color: #64748b; text-align: center; padding: 1rem;">Aún no hay grupos inscritos. ¡Sé el primero!</div>`;
+                    return;
+                }
+
+                listEl.innerHTML = groupArray.map(g => `
+                    <div style="background: white; border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.2rem;">${g.avatar || '🚀'}</span>
+                            <div>
+                                <span style="font-weight: 700; color: #0f172a; display: block;">${g.name}</span>
+                                <span style="font-size: 0.65rem; color: #64748b;">${g.members}</span>
+                            </div>
+                        </div>
+                        <span style="font-size: 0.65rem; background: #e0e7ff; color: #3730a3; padding: 0.1rem 0.4rem; border-radius: 9999px; font-weight: 600;">Listo</span>
+                    </div>
+                `).join('');
             }
 
-            // Check if team already registered locally
-            if (registeredTeamId) {
-                checkExistingRegistration();
-            }
-        });
+            async handleStudentJoin(e) {
+                e.preventDefault();
+                const gName = document.getElementById('inputGroupName').value.trim();
+                const mems = document.getElementById('inputMembers').value.trim();
+                if (!gName || !mems) return;
 
-        // Tab Navigation
-        window.switchTab = function(tabId) {
-            currentTab = tabId;
-            ['home', 'instructions', 'game', 'podium', 'teacher'].forEach(t => {
-                const el = document.getElementById(`tab-${t}`);
-                const btn = document.getElementById(`tab-btn-${t}`);
-                if (el) el.classList.toggle('hidden', t !== tabId);
-                if (btn) {
-                    if (t === tabId) {
-                        btn.className = "px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md";
-                    } else {
-                        btn.className = "px-3 py-1.5 rounded-xl font-medium transition-all flex items-center gap-2 text-gray-300 hover:text-white hover:bg-gray-800";
+                this.groupName = gName;
+                this.members = mems;
+                localStorage.setItem('pucara_groupName', gName);
+                localStorage.setItem('pucara_members', mems);
+                localStorage.setItem('pucara_avatar', this.avatar);
+
+                await this.saveGroupToDatabase({
+                    name: gName,
+                    members: mems,
+                    avatar: this.avatar,
+                    score: 0,
+                    lastActive: new Date().toISOString()
+                });
+
+                this.showStudentLobby();
+            }
+
+            async saveGroupToDatabase(groupData) {
+                if (db) {
+                    try { await db.collection('groups').doc(groupData.name).set(groupData, { merge: true }); } catch (e) {}
+                }
+                let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                localGroups[groupData.name] = { ...(localGroups[groupData.name] || {}), ...groupData };
+                localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
+            }
+
+            async showStudentLobby() {
+                this.hideAllViews();
+                document.getElementById('viewStudentLobby').classList.remove('hidden');
+                document.getElementById('lobbyGroupName').innerText = `${this.avatar} ${this.groupName}`;
+                document.getElementById('lobbyMembers').innerText = `Integrantes: ${this.members}`;
+                document.getElementById('lobbyAvatarDisplay').innerText = this.avatar;
+
+                await this.updatePersonalScoreDisplay();
+                this.startStudentPolling();
+            }
+
+            async updatePersonalScoreDisplay() {
+                let score = 0;
+                if (db) {
+                    try {
+                        let doc = await db.collection('groups').doc(this.groupName).get();
+                        if (doc.exists) score = doc.data().score || 0;
+                    } catch (e) {}
+                }
+                if (score === 0) {
+                    let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                    if (localGroups[this.groupName]) score = localGroups[this.groupName].score || 0;
+                }
+                const scoreEl = document.getElementById('lobbyPersonalScore');
+                if (scoreEl) scoreEl.innerText = score;
+                const liveScoreEl = document.getElementById('gameLiveScore');
+                if (liveScoreEl) liveScoreEl.innerText = score;
+            }
+
+            startStudentPolling() {
+                if (this.studentPollInterval) clearInterval(this.studentPollInterval);
+                this.studentPollInterval = setInterval(async () => {
+                    let gameState = await this.fetchGameState();
+                    await this.updatePersonalScoreDisplay();
+
+                    if (gameState && gameState.arenaOpen) {
+                        this.currentStageIndex = gameState.currentStage || 0;
+                        this.showStudentGameScreen(gameState);
                     }
+                }, 2000);
+            }
+
+            async fetchGameState() {
+                if (db) {
+                    try {
+                        let doc = await db.collection('game_state').doc('current').get();
+                        if (doc.exists) return doc.data();
+                    } catch (e) {}
                 }
-            });
-            if (tabId === 'game') {
-                renderCurrentStageGame();
-            } else if (tabId === 'podium') {
-                renderPodiumAndRanking();
-            } else if (tabId === 'teacher') {
-                checkTeacherAuthStatus();
+                return JSON.parse(localStorage.getItem('pucara_gameState') || '{"arenaOpen":false, "currentStage":0, "active":false}');
             }
-        }
 
-        // Render Avatars
-        function renderAvatarOptions() {
-            const container = document.getElementById('avatar-selection-container');
-            container.innerHTML = AVATARS_LIST.map((av, idx) => `
-                <button type="button" onclick="selectAvatar('${av}', this)" class="avatar-btn h-12 rounded-xl bg-gray-900 border ${idx === 0 ? 'border-indigo-500 bg-indigo-950/50' : 'border-gray-700'} text-2xl flex items-center justify-center hover:border-cyan-400 transition-all">
-                    ${av}
-                </button>
-            `).join('');
-            selectedAvatar = AVATARS_LIST[0];
-        }
-
-        window.selectAvatar = function(av, btnEl) {
-            selectedAvatar = av;
-            document.querySelectorAll('.avatar-btn').forEach(b => {
-                b.classList.remove('border-indigo-500', 'bg-indigo-950/50');
-                b.classList.add('border-gray-700', 'bg-gray-900');
-            });
-            btnEl.classList.remove('border-gray-700', 'bg-gray-900');
-            btnEl.classList.add('border-indigo-500', 'bg-indigo-950/50');
-        }
-
-        // Team Registration
-        window.handleTeamRegistration = async function(event) {
-            event.preventDefault();
-            const name = document.getElementById('team-name').value.trim();
-            const phone = document.getElementById('team-phone').value.trim();
-            const m1 = document.getElementById('member-1').value.trim();
-            const m2 = document.getElementById('member-2').value.trim();
-            const m3 = document.getElementById('member-3').value.trim();
-            const m4 = document.getElementById('member-4').value.trim();
-
-            if (!name) return showModal("Error", "Debes ingresar un nombre para el grupo.");
-
-            const teamId = 'team_' + Date.now();
-            const members = [m1, m2, m3, m4].filter(m => m.length > 0);
-
-            const teamData = {
-                id: teamId,
-                name: name,
-                phone: phone,
-                members: members,
-                avatar: selectedAvatar,
-                score: 0,
-                lastAnsweredStage: 0,
-                createdAt: Date.now()
-            };
-
-            if (db && currentUser) {
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teams', teamId), teamData);
-                } catch (e) {
-                    console.error("Error saving team:", e);
+            showStudentGameScreen(state) {
+                const viewGame = document.getElementById('viewStudentGame');
+                if (viewGame.classList.contains('hidden')) {
+                    this.hideAllViews();
+                    viewGame.classList.remove('hidden');
+                    document.getElementById('gameTeamDisplay').innerText = `${this.avatar} ${this.groupName}`;
                 }
-            }
 
-            // Save locally
-            localStorage.setItem('pucara_team_id', teamId);
-            localStorage.setItem('pucara_team_name', name);
-            registeredTeamId = teamId;
+                const stage = STAGES[this.currentStageIndex];
+                document.getElementById('gameStageBadge').innerText = `Etapa ${stage.id} / 10`;
 
-            document.getElementById('team-reg-form').reset();
-            checkExistingRegistration();
-            showModal("¡Registro Exitoso!", `¡El grupo "${name}" se ha registrado correctamente con el avatar ${selectedAvatar}! Ya puedes ingresar a la Arena de Juego.`);
-            switchTab('game');
-        }
+                if (state.active) {
+                    document.getElementById('gameWaitingStart').classList.add('hidden');
+                    document.getElementById('gameActiveQuestion').classList.remove('hidden');
+                    document.getElementById('gameQuestionCategory').innerText = stage.category;
+                    document.getElementById('gameQuestionText').innerText = stage.question;
 
-        function checkExistingRegistration() {
-            const name = localStorage.getItem('pucara_team_name');
-            if (name) {
-                document.getElementById('registered-team-badge').classList.remove('hidden');
-                document.getElementById('my-registered-name').innerText = name;
-            }
-        }
+                    const optContainer = document.getElementById('gameOptionsContainer');
+                    if (!this.renderedStageId || this.renderedStageId !== stage.id) {
+                        this.hasAnsweredCurrentStage = false;
+                        document.getElementById('gameAnsweredStandby').classList.add('hidden');
+                        document.getElementById('gameActiveQuestion').classList.remove('hidden');
 
-        // Firebase Realtime Listeners
-        function initFirebaseListeners() {
-            if (!db) return;
+                        optContainer.innerHTML = stage.options.map((opt, idx) => `
+                            <button onclick="app.submitAnswer(${idx})" style="text-align: left; padding: 1rem; border-radius: 0.75rem; border: 2px solid #cbd5e1; background: white; font-weight: 500; font-size: 0.85rem; color: #1e293b; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#4f46e5'; this.style.background='#e0e7ff'" onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='white'">
+                                <span style="font-weight: 700; color: #4f46e5; margin-right: 0.5rem;">${['A)', 'B)', 'C)', 'D)'][idx]}</span> ${opt}
+                            </button>
+                        `).join('');
+                        this.renderedStageId = stage.id;
+                    }
 
-            // Listen to Room State
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), (docSnap) => {
-                if (docSnap.exists()) {
-                    roomState = docSnap.data();
-                    updateRoomUI();
+                    document.getElementById('gameTimer').innerText = this.formatTime(state.remainingSeconds || stage.duration);
                 } else {
-                    // Initialize default state
-                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
+                    document.getElementById('gameActiveQuestion').classList.add('hidden');
+                    document.getElementById('gameAnsweredStandby').classList.add('hidden');
+                    document.getElementById('gameWaitingStart').classList.remove('hidden');
                 }
-            }, (err) => console.error("Room listener error:", err));
-
-            // Listen to Teams
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'teams'), (snapshot) => {
-                const teams = [];
-                snapshot.forEach(d => teams.push(d.data()));
-                updateTeamsUI(teams);
-            }, (err) => console.error("Teams listener error:", err));
-        }
-
-        function updateRoomUI() {
-            const stageInd = document.getElementById('game-stage-indicator');
-            if (stageInd) stageInd.innerText = `Etapa ${roomState.activeStage} de 10`;
-            
-            const stageSelect = document.getElementById('teacher-select-stage');
-            if (stageSelect) stageSelect.value = roomState.activeStage;
-
-            const timerBox = document.getElementById('timer-countdown');
-            if (timerBox) timerBox.innerText = roomState.timerSeconds;
-
-            // Update Prizes Display in Podium
-            if (roomState.prizes) {
-                if (document.getElementById('prize-1-text')) document.getElementById('prize-1-text').innerText = roomState.prizes[1] || 'Por revelar';
-                if (document.getElementById('prize-2-text')) document.getElementById('prize-2-text').innerText = roomState.prizes[2] || 'Por revelar';
-                if (document.getElementById('prize-3-text')) document.getElementById('prize-3-text').innerText = roomState.prizes[3] || 'Por revelar';
             }
 
-            if (currentTab === 'game') {
-                renderCurrentStageGame();
+            async submitAnswer(optionIndex) {
+                if (this.hasAnsweredCurrentStage) return;
+                this.hasAnsweredCurrentStage = true;
+
+                const stage = STAGES[this.currentStageIndex];
+                const isCorrect = (optionIndex === stage.correct);
+                let pointsEarned = isCorrect ? (1000 + Math.floor(this.remainingSeconds * 2)) : 0;
+
+                await this.addScoreToGroup(this.groupName, pointsEarned, stage.id, isCorrect);
+
+                document.getElementById('gameActiveQuestion').classList.add('hidden');
+                document.getElementById('gameAnsweredStandby').classList.remove('hidden');
             }
-        }
 
-        let allTeamsCache = [];
-        function updateTeamsUI(teams) {
-            allTeamsCache = teams;
-            document.getElementById('connected-count').innerText = teams.length;
+            async addScoreToGroup(gName, points, stageId, isCorrect) {
+                let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                if (localGroups[gName]) {
+                    localGroups[gName].score = (localGroups[gName].score || 0) + points;
+                    localGroups[gName][`stage_${stageId}`] = { answered: true, correct: isCorrect, points };
+                    localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
+                }
+                if (db) {
+                    try {
+                        let ref = db.collection('groups').doc(gName);
+                        let doc = await ref.get();
+                        let currentScore = doc.exists ? (doc.data().score || 0) : 0;
+                        await ref.update({
+                            score: currentScore + points,
+                            [`stage_${stageId}`]: { answered: true, correct: isCorrect, points }
+                        });
+                    } catch (e) {}
+                }
+                await this.updatePersonalScoreDisplay();
+            }
 
-            // Teacher table
-            const teacherTbody = document.getElementById('teacher-groups-tbody');
-            if (teacherTbody) {
-                teacherTbody.innerHTML = teams.map(t => `
-                    <tr class="border-b border-gray-800 hover:bg-gray-900/40">
-                        <td class="px-4 py-3 font-bold text-white flex items-center gap-2"><span class="text-xl">${t.avatar}</span> ${t.name}</td>
-                        <td class="px-4 py-3 text-xs text-gray-400">${t.phone}</td>
-                        <td class="px-4 py-3 text-xs text-gray-300">${t.members ? t.members.join(', ') : 'Sin integrantes'}</td>
-                        <td class="px-4 py-3 font-extrabold text-cyan-400">${t.score || 0} pts</td>
-                        <td class="px-4 py-3 text-center">
-                            <button onclick="teacherDeleteTeam('${t.id}')" class="text-red-400 hover:text-red-300 text-xs px-2 py-1 bg-red-950/40 rounded-lg border border-red-800">Eliminar</button>
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            showTeacherAuth() {
+                this.hideAllViews();
+                document.getElementById('viewTeacherAuth').classList.remove('hidden');
+            }
+
+            handleTeacherAuth(e) {
+                e.preventDefault();
+                const pass = document.getElementById('inputTeacherPass').value;
+                if (pass.length >= 4) {
+                    this.showTeacherDashboard();
+                } else {
+                    alert('Clave inválida.');
+                }
+            }
+
+            showTeacherDashboard() {
+                this.hideAllViews();
+                document.getElementById('viewTeacherDashboard').classList.remove('hidden');
+                this.renderTeacherStagesList();
+                this.selectTeacherStage(0);
+                this.loadGroups();
+                this.syncTeacherArenaButton();
+            }
+
+            async toggleArenaAccess() {
+                let state = await this.fetchGameState();
+                state.arenaOpen = !state.arenaOpen;
+                if (db) {
+                    try { await db.collection('game_state').doc('current').set(state, { merge: true }); } catch (e) {}
+                }
+                localStorage.setItem('pucara_gameState', JSON.stringify(state));
+                this.syncTeacherArenaButton();
+                alert(state.arenaOpen ? "¡Ingreso a la Arena HABILITADO! Los estudiantes ya pueden entrar." : "Ingreso a la Arena CERRADO.");
+            }
+
+            async syncTeacherArenaButton() {
+                let state = await this.fetchGameState();
+                const btn = document.getElementById('btnArenaToggle');
+                if (!btn) return;
+                if (state.arenaOpen) {
+                    btn.style.background = "#dc2626";
+                    btn.innerText = "🔴 Cerrar Ingreso a Arena";
+                } else {
+                    btn.style.background = "#059669";
+                    btn.innerText = "🟢 Habilitar Ingreso a Arena";
+                }
+            }
+
+            switchTeacherTab(tabName) {
+                ['Control', 'Groups', 'Settings'].forEach(t => {
+                    document.getElementById(`teacherTab${t}`).classList.add('hidden');
+                    const btn = document.getElementById(`tabBtn${t}`);
+                    btn.style.background = '#e2e8f0';
+                    btn.style.color = '#334155';
+                });
+                document.getElementById(`teacherTab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.remove('hidden');
+                const activeBtn = document.getElementById(`tabBtn${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+                activeBtn.style.background = 'linear-gradient(135deg, #4f46e5, #db2777)';
+                activeBtn.style.color = 'white';
+            }
+
+            renderTeacherStagesList() {
+                const list = document.getElementById('teacherStagesList');
+                list.innerHTML = STAGES.map((s, idx) => `
+                    <button onclick="app.selectTeacherStage(${idx})" style="width: 100%; text-align: left; padding: 0.6rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; border: 1px solid #cbd5e1; cursor: pointer; background: ${idx === this.currentStageIndex ? '#4f46e5' : 'white'}; color: ${idx === this.currentStageIndex ? 'white' : '#334155'}; display: flex; justify-content: space-between;">
+                        <span>Etapa ${s.id}</span>
+                        <span>${Math.floor(s.duration/60)}m</span>
+                    </button>
+                `).join('');
+            }
+
+            selectTeacherStage(idx) {
+                this.currentStageIndex = idx;
+                const stage = STAGES[idx];
+                this.renderTeacherStagesList();
+
+                document.getElementById('teacherCurrentStageBadge').innerText = `Etapa ${stage.id} de 10`;
+                document.getElementById('teacherStageDifficulty').innerText = `Dificultad: ${stage.difficulty}`;
+                document.getElementById('teacherQuestionTitle').innerText = stage.title;
+                document.getElementById('teacherQuestionContent').innerText = stage.question;
+                document.getElementById('teacherQuestionOptionsSummary').innerText = stage.options.join(' | ');
+                document.getElementById('inputCustomDuration').value = stage.duration;
+            }
+
+            async teacherStartQuestion() {
+                const customDuration = parseInt(document.getElementById('inputCustomDuration').value) || STAGES[this.currentStageIndex].duration;
+                let state = await this.fetchGameState();
+                state.isStarted = true;
+                state.currentStage = this.currentStageIndex;
+                state.active = true;
+                state.remainingSeconds = customDuration;
+                state.startTime = Date.now();
+
+                if (db) {
+                    try { await db.collection('game_state').doc('current').set(state, { merge: true }); } catch (e) {}
+                }
+                localStorage.setItem('pucara_gameState', JSON.stringify(state));
+                alert(`¡Pregunta de Etapa ${this.currentStageIndex + 1} activada! El cronómetro corre.`);
+                this.startTeacherTimer(customDuration);
+            }
+
+            startTeacherTimer(duration) {
+                if (this.teacherTimerInterval) clearInterval(this.teacherTimerInterval);
+                let remaining = duration;
+
+                this.teacherTimerInterval = setInterval(async () => {
+                    remaining--;
+                    let state = await this.fetchGameState();
+                    state.remainingSeconds = remaining;
+                    if (db) {
+                        try { await db.collection('game_state').doc('current').update({ remainingSeconds: remaining }); } catch (e) {}
+                    }
+                    localStorage.setItem('pucara_gameState', JSON.stringify(state));
+
+                    if (remaining <= 0) {
+                        clearInterval(this.teacherTimerInterval);
+                        state.active = false;
+                        if (db) {
+                            try { await db.collection('game_state').doc('current').update({ active: false }); } catch (e) {}
+                        }
+                        localStorage.setItem('pucara_gameState', JSON.stringify(state));
+                    }
+                }, 1000);
+            }
+
+            async teacherNextStage() {
+                if (this.currentStageIndex < STAGES.length - 1) {
+                    this.selectTeacherStage(this.currentStageIndex + 1);
+                    let state = await this.fetchGameState();
+                    state.currentStage = this.currentStageIndex;
+                    state.active = false;
+                    state.remainingSeconds = STAGES[this.currentStageIndex].duration;
+
+                    if (db) db.collection('game_state').doc('current').set(state, { merge: true }).catch(()=>{});
+                    localStorage.setItem('pucara_gameState', JSON.stringify(state));
+                    alert(`Avanzado a Etapa ${this.currentStageIndex + 1}. Disfruten la pausa y presione "Activar Pregunta" cuando deseen.`);
+                } else {
+                    alert('Última etapa alcanzada. Puedes lanzar el Podio.');
+                }
+            }
+
+            async loadGroups() {
+                let groups = {};
+                if (db) {
+                    try {
+                        let snapshot = await db.collection('groups').get();
+                        snapshot.forEach(doc => { groups[doc.id] = doc.data(); });
+                    } catch (e) {}
+                }
+                if (Object.keys(groups).length === 0) {
+                    groups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                }
+
+                document.getElementById('teacherGroupCount').innerText = Object.keys(groups).length;
+                const tbody = document.getElementById('teacherGroupsTableBody');
+                
+                if (Object.keys(groups).length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="padding: 1rem; text-align: center; color: #64748b;">No hay grupos registrados aún.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = Object.values(groups).sort((a,b) => (b.score || 0) - (a.score || 0)).map(g => `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 0.75rem; font-weight: 700;"><span style="font-size: 1.2rem; margin-right: 0.4rem;">${g.avatar || '🚀'}</span> ${g.name}</td>
+                        <td style="padding: 0.75rem; color: #64748b;">${g.members}</td>
+                        <td style="padding: 0.75rem; font-weight: 700; color: #4f46e5;">${g.score || 0} pts</td>
+                        <td style="padding: 0.75rem; text-align: center;">
+                            <button onclick="app.resetGroupScore('${g.name}')" style="background: #fee2e2; color: #991b1b; border: none; padding: 0.3rem 0.6rem; border-radius: 0.4rem; font-size: 0.7rem; font-weight: 600; cursor: pointer;">Reiniciar</button>
                         </td>
                     </tr>
-                `).join('') || `<tr><td colspan="5" class="text-center py-4 text-gray-500">No hay grupos registrados aún.</td></tr>`;
+                `).join('');
             }
 
-            if (currentTab === 'podium') {
-                renderPodiumAndRanking();
-            }
-            if (currentTab === 'game' && registeredTeamId) {
-                const myTeam = teams.find(t => t.id === registeredTeamId);
-                if (myTeam && document.getElementById('my-current-score')) {
-                    document.getElementById('my-current-score').innerText = (myTeam.score || 0) + ' pts';
-                }
-            }
-        }
-
-        // Render Current Stage in Game Arena
-        function renderCurrentStageGame() {
-            const stageNum = roomState.activeStage || 1;
-            const stage = STAGES_DATA.find(s => s.id === stageNum) || STAGES_DATA[0];
-
-            document.getElementById('game-stage-indicator').innerText = `Etapa ${stage.id} de 10 (${stage.guideRef})`;
-            document.getElementById('game-stage-title').innerText = stage.title.split(': ')[1] || stage.title;
-            document.getElementById('question-text').innerText = stage.text;
-            document.getElementById('question-extra-info').innerText = `Referencia oficial: ${stage.guideRef} - Colegio Pucará 2° Medio`;
-
-            const optionsGrid = document.getElementById('options-grid');
-            optionsGrid.innerHTML = stage.options.map(opt => `
-                <button onclick="submitAnswer('${opt.key}', ${opt.correct ? 'true' : 'false'})" class="option-btn text-left bg-gray-900 border border-gray-700 hover:border-cyan-400 hover:bg-gray-800 p-4 rounded-2xl transition-all flex items-start gap-3 group">
-                    <span class="w-8 h-8 rounded-xl bg-gray-800 group-hover:bg-cyan-500 group-hover:text-gray-950 font-bold flex items-center justify-center shrink-0 transition-all text-sm">${opt.key}</span>
-                    <span class="text-sm text-gray-200 mt-1">${opt.text}</span>
-                </button>
-            `).join('');
-
-            // Check if registered team
-            const overlay = document.getElementById('game-state-overlay');
-            if (!registeredTeamId) {
-                overlay.classList.remove('hidden');
-                document.getElementById('overlay-title').innerText = "Debes Registrar tu Grupo";
-                document.getElementById('overlay-desc').innerText = "Por favor, ve a la pestaña de Inicio para registrar el nombre de tu equipo y tus compañeros antes de participar.";
-            } else {
-                overlay.classList.add('hidden');
-            }
-        }
-
-        // Submit Answer logic
-        window.submitAnswer = async function(selectedKey, isCorrect) {
-            if (!registeredTeamId) return showModal("Atención", "Debes registrar tu grupo primero en el inicio.");
-
-            const feedbackEl = document.getElementById('answer-feedback');
-            feedbackEl.classList.remove('hidden');
-
-            const currentTeam = allTeamsCache.find(t => t.id === registeredTeamId);
-            if (currentTeam && currentTeam.lastAnsweredStage === roomState.activeStage) {
-                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-sm bg-amber-500/20 text-amber-300 border border-amber-500";
-                feedbackEl.innerText = "⚠️ ¡Tu equipo ya respondió esta etapa! Espera a la siguiente.";
-                return;
-            }
-
-            let pointsEarned = 0;
-            if (isCorrect) {
-                pointsEarned = 100 + (roomState.timerSeconds * 2); // Speed bonus
-                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-sm bg-emerald-500/20 text-emerald-300 border border-emerald-500";
-                feedbackEl.innerHTML = `<i class="fas fa-check-circle text-lg"></i> ¡Respuesta Correcta! +${pointsEarned} pts (incluye bono de velocidad).`;
-            } else {
-                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-sm bg-red-500/20 text-red-300 border border-red-500";
-                feedbackEl.innerHTML = `<i class="fas fa-times-circle text-lg"></i> Respuesta Incorrecta. ¡Sigue intentándolo en la siguiente etapa!`;
-            }
-
-            // Update team score in Firestore
-            if (db) {
-                try {
-                    const newScore = (currentTeam ? currentTeam.score : 0) + pointsEarned;
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teams', registeredTeamId), {
-                        score: newScore,
-                        lastAnsweredStage: roomState.activeStage
-                    });
-                } catch (e) {
-                    console.error("Error updating score:", e);
-                }
-            }
-        }
-
-        // Render Podium and Ranking
-        function renderPodiumAndRanking() {
-            const sortedTeams = [...allTeamsCache].sort((a, b) => (b.score || 0) - (a.score || 0));
-
-            // Podium Top 3
-            const t1 = sortedTeams[0] || { name: 'Sin equipo', avatar: '🥇', score: 0 };
-            const t2 = sortedTeams[1] || { name: 'Sin equipo', avatar: '🥈', score: 0 };
-            const t3 = sortedTeams[2] || { name: 'Sin equipo', avatar: '🥉', score: 0 };
-
-            document.getElementById('podium-1-name').innerText = t1.name;
-            document.getElementById('podium-1-avatar').innerText = t1.avatar || '🥇';
-            document.getElementById('podium-1-score').innerText = (t1.score || 0) + ' pts';
-
-            document.getElementById('podium-2-name').innerText = t2.name;
-            document.getElementById('podium-2-avatar').innerText = t2.avatar || '🥈';
-            document.getElementById('podium-2-score').innerText = (t2.score || 0) + ' pts';
-
-            document.getElementById('podium-3-name').innerText = t3.name;
-            document.getElementById('podium-3-avatar').innerText = t3.avatar || '🥉';
-            document.getElementById('podium-3-score').innerText = (t3.score || 0) + ' pts';
-
-            // Full Ranking Table (Last to First as requested)
-            const rankingTbody = document.getElementById('full-ranking-tbody');
-            const reversedTeams = [...sortedTeams].reverse(); // from last to first
-            rankingTbody.innerHTML = reversedTeams.map((t, idx) => {
-                const actualPos = sortedTeams.length - idx;
-                let badgeClass = "text-gray-400";
-                if (actualPos === 1) badgeClass = "text-amber-400 font-extrabold";
-                if (actualPos === 2) badgeClass = "text-gray-200 font-bold";
-                if (actualPos === 3) badgeClass = "text-amber-600 font-bold";
-
-                return `
-                    <tr class="border-b border-gray-800 hover:bg-gray-900/40">
-                        <td class="px-4 py-3 ${badgeClass}">#${actualPos}</td>
-                        <td class="px-4 py-3 font-bold text-white flex items-center gap-2"><span class="text-xl">${t.avatar}</span> ${t.name}</td>
-                        <td class="px-4 py-3 text-xs text-gray-400">${t.members ? t.members.join(', ') : '-'}</td>
-                        <td class="px-4 py-3 text-right font-extrabold text-cyan-400">${t.score || 0} pts</td>
-                    </tr>
-                `;
-            }).join('') || `<tr><td colspan="4" class="text-center py-4 text-gray-500">No hay equipos en la clasificación todavía.</td></tr>`;
-        }
-
-        // Teacher Panel Auth & Controls
-        window.handleTeacherAuth = function(event) {
-            event.preventDefault();
-            const pass = document.getElementById('teacher-password').value;
-            if (pass === 'profe123') {
-                document.getElementById('teacher-auth-card').classList.add('hidden');
-                document.getElementById('teacher-dashboard').classList.remove('hidden');
-            } else {
-                showModal("Contraseña Incorrecta", "La contraseña docente es 'profe123'. Inténtalo de nuevo.");
-            }
-        }
-
-        window.lockTeacherPanel = function() {
-            document.getElementById('teacher-auth-card').classList.remove('hidden');
-            document.getElementById('teacher-dashboard').classList.add('hidden');
-            document.getElementById('teacher-password').value = '';
-        }
-
-        function checkTeacherAuthStatus() {
-            // keep state if already unlocked
-        }
-
-        window.teacherChangeStage = async function() {
-            const newStage = parseInt(document.getElementById('teacher-select-stage').value);
-            roomState.activeStage = newStage;
-            roomState.timerSeconds = 60;
-            if (db) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
-            }
-            showModal("Etapa Cambiada", `Se ha cambiado la sala a la Etapa ${newStage}.`);
-        }
-
-        window.teacherToggleTimer = async function(action) {
-            if (action === 'start') roomState.timerActive = true;
-            if (action === 'pause') roomState.timerActive = false;
-            if (db) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
-            }
-        }
-
-        window.teacherUpdateTimerSetting = async function() {
-            const val = parseInt(document.getElementById('teacher-timer-input').value) || 60;
-            roomState.timerSeconds = val;
-            if (db) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
-            }
-            showModal("Tiempo Actualizado", `El temporizador se ha fijado en ${val} segundos.`);
-        }
-
-        window.teacherSavePrizes = async function() {
-            const p1 = document.getElementById('teacher-prize-1').value.trim();
-            const p2 = document.getElementById('teacher-prize-2').value.trim();
-            const p3 = document.getElementById('teacher-prize-3').value.trim();
-
-            if (p1) roomState.prizes[1] = p1;
-            if (p2) roomState.prizes[2] = p2;
-            if (p3) roomState.prizes[3] = p3;
-
-            if (db) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'room', 'state'), roomState);
-            }
-            showModal("Premios Actualizados", "Los premios sorpresa para el podio han sido publicados con éxito.");
-        }
-
-        window.teacherResetGame = async function() {
-            if (confirm("¿Estás seguro de reiniciar los puntajes de todos los grupos?")) {
-                for (const t of allTeamsCache) {
-                    if (db) {
-                        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teams', t.id), {
-                            score: 0,
-                            lastAnsweredStage: 0
-                        });
+            async resetGroupScore(gName) {
+                if (confirm(`¿Reiniciar puntaje de ${gName}?`)) {
+                    let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                    if (localGroups[gName]) {
+                        localGroups[gName].score = 0;
+                        localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
                     }
+                    if (db) { try { await db.collection('groups').doc(gName).update({ score: 0 }); } catch(e){} }
+                    this.loadGroups();
                 }
-                showModal("Juego Reiniciado", "Todos los puntajes han vuelto a 0.");
             }
-        }
 
-        window.teacherDeleteTeam = async function(teamId) {
-            if (confirm("¿Eliminar este grupo de la sala?")) {
+            savePrizes() {
+                this.teacherPrizes[1] = document.getElementById('inputPrize1').value;
+                this.teacherPrizes[2] = document.getElementById('inputPrize2').value;
+                this.teacherPrizes[3] = document.getElementById('inputPrize3').value;
+                alert('¡Premios guardados!');
+            }
+
+            async showPodiumScreen() {
+                this.hideAllViews();
+                document.getElementById('viewPodium').classList.remove('hidden');
+
+                let groups = {};
                 if (db) {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teams', teamId));
+                    try {
+                        let snapshot = await db.collection('groups').get();
+                        snapshot.forEach(doc => { groups[doc.id] = doc.data(); });
+                    } catch (e) {}
                 }
+                if (Object.keys(groups).length === 0) {
+                    groups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                }
+
+                const sortedGroups = Object.values(groups).sort((a,b) => (b.score || 0) - (a.score || 0));
+                const podiumStage = document.getElementById('podiumStage');
+                const podiumOrder = [
+                    { rank: 2, height: '140px', bg: '#cbd5e1', color: '#1e293b', crown: '🥈' },
+                    { rank: 1, height: '190px', bg: '#fbbf24', color: '#78350f', crown: '👑 🥇' },
+                    { rank: 3, height: '110px', bg: '#b45309', color: '#fef3c7', crown: '🥉' }
+                ];
+
+                podiumStage.innerHTML = podiumOrder.map(p => {
+                    const group = sortedGroups[p.rank - 1];
+                    if (!group) return `<div style="width: 100px;"></div>`;
+                    const prizeText = this.teacherPrizes[p.rank] || 'Premio Sorpresa';
+                    return `
+                        <div style="width: 120px; display: flex; flex-direction: column; align-items: center;" class="animate-float">
+                            <div style="text-align: center; margin-bottom: 0.5rem;">
+                                <div style="font-size: 1.8rem;">${group.avatar || '🚀'}</div>
+                                <div style="font-size: 0.8rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;">${group.name}</div>
+                                <div style="font-size: 0.7rem; font-weight: 700; color: #4f46e5;">${group.score || 0} pts</div>
+                                <div style="font-size: 0.65rem; background: #fce7f3; color: #9d174d; padding: 0.1rem 0.4rem; border-radius: 9999px; margin-top: 0.2rem;">🎁 ${prizeText}</div>
+                            </div>
+                            <div style="height: ${p.height}; width: 100%; background: ${p.bg}; color: ${p.color}; border-radius: 1rem 1rem 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);">
+                                <span>${p.crown}</span>
+                                <span style="font-size: 0.75rem;">#${p.rank}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const fullList = document.getElementById('fullRankingList');
+                fullList.innerHTML = sortedGroups.map((g, idx) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 1rem; background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; font-size: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-weight: 700; color: #94a3b8;">#${sortedGroups.length - idx}</span>
+                            <span style="font-size: 1.2rem;">${g.avatar || '🚀'}</span>
+                            <div>
+                                <span style="font-weight: 700; color: #0f172a;">${g.name}</span>
+                                <span style="font-size: 0.65rem; color: #64748b; display: block;">${g.members}</span>
+                            </div>
+                        </div>
+                        <span style="font-weight: 700; color: #4f46e5; font-size: 0.9rem;">${g.score || 0} pts</span>
+                    </div>
+                `).reverse().join('');
+
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+            }
+
+            showQRCodeModal() {
+                document.getElementById('modalQRCode').classList.remove('hidden');
+                const url = window.location.href;
+                document.getElementById('currentUrlText').innerText = url;
+                document.getElementById('qrcode').innerHTML = '';
+                new QRCode(document.getElementById('qrcode'), { text: url, width: 160, height: 160, colorDark: "#0f172a", colorLight: "#ffffff" });
+            }
+
+            closeQRCodeModal() { document.getElementById('modalQRCode').classList.add('hidden'); }
+
+            hideAllViews() {
+                ['viewRoleSelect', 'viewStudentJoin', 'viewStudentLobby', 'viewStudentGame', 'viewTeacherAuth', 'viewTeacherDashboard', 'viewPodium'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
             }
         }
 
-        // Modal Helper
-        window.showModal = function(title, message) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-message').innerText = message;
-            document.getElementById('custom-modal').classList.remove('hidden');
-            document.getElementById('custom-modal').classList.add('flex');
-        }
-
-        window.closeModal = function() {
-            document.getElementById('custom-modal').classList.remove('flex');
-            document.getElementById('custom-modal').classList.add('hidden');
-        }
-
+        const app = new AppState();
+        window.onload = () => app.init();
     </script>
 </body>
 </html>
