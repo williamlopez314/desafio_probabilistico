@@ -329,8 +329,8 @@
                 <li><strong>Modalidad Grupal:</strong> Resuelvan las preguntas en equipo. La actividad consta de 10 etapas secuenciales de probabilidad.</li>
                 <li><strong>Acceso a la Arena:</strong> El botón de ingreso solo se activa cuando el profesor deshabilite el bloqueo docente desde su panel.</li>
                 <li><strong>Tiempos y Pausas:</strong> Cada etapa incluye un cronómetro en vivo. Al vencer el tiempo o responder, hay una pausa para dialogar y revisar la respuesta antes de la siguiente etapa.</li>
+                <li><strong>Puntaje por Velocidad y Acierto:</strong> Cada respuesta correcta otorga una base fija de 500 puntos más un bono proporcional al tiempo restante.</li>
                 <li><strong>Avatares Únicos:</strong> Cada equipo debe seleccionar un avatar que no haya sido tomado por otro grupo.</li>
-                <li><strong>Puntaje Privado:</strong> Durante el juego, solo verás tu propio puntaje acumulado en tu pantalla. La tabla general se mostrará al final en el Podio.</li>
             </ul>
             <button onclick="app.closeInstructions()" class="btn-primary" style="margin-top: 1.25rem; width: 100%; font-size: 0.8rem; padding: 0.6rem;">Entendido, ¡volver!</button>
         </div>
@@ -468,6 +468,9 @@
             }
 
             onGameStateUpdated(state) {
+                if (state.remainingSeconds !== undefined) {
+                    this.remainingSeconds = state.remainingSeconds;
+                }
                 if (state.arenaOpen && !document.getElementById('viewStudentLobby').classList.contains('hidden')) {
                     this.currentStageIndex = state.currentStage || 0;
                     this.showStudentGameScreen(state);
@@ -653,7 +656,9 @@
 
                 const stage = STAGES[this.currentStageIndex];
                 const isCorrect = (optionIndex === stage.correct);
-                let pointsEarned = isCorrect ? (1000 + Math.floor(this.remainingSeconds * 2)) : 0;
+                
+                // CÁLCULO DE PUNTAJE: 500 base por acierto + puntos proporcionales al tiempo restante a favor
+                let pointsEarned = isCorrect ? (500 + Math.floor(this.remainingSeconds * 5)) : 0;
 
                 if (db) {
                     try {
@@ -782,6 +787,7 @@
 
                 this.teacherTimerInterval = setInterval(async () => {
                     remaining--;
+                    this.remainingSeconds = remaining;
                     if (db) {
                         try { await db.collection('game_state').doc('current').update({ remainingSeconds: remaining }); } catch (e) {}
                     }
