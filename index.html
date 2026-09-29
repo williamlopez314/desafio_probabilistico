@@ -178,10 +178,12 @@
             </div>
 
             <!-- Estado: Pausa Docente -->
-            <div id="gameWaitingStart" style="text-align: center; padding: 2.5rem 1rem;">
+            <div id="gameWaitingStart" style="text-align: center; padding: 2rem 1rem;">
                 <div style="font-size: 2.5rem; margin-bottom: 0.5rem;" class="animate-float">⏸️</div>
                 <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">Pausa Docente / Debate en Clase</h3>
-                <p style="font-size: 0.75rem; color: #64748b;">Comenten la pregunta anterior. El profesor activará la siguiente etapa en breve.</p>
+                <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">Comenten la pregunta anterior. El profesor activará la siguiente etapa en breve.</p>
+                <!-- Feedback de la etapa anterior -->
+                <div id="gameResultFeedback" class="hidden" style="margin-top: 1rem; text-align: left;"></div>
             </div>
 
             <!-- Estado: Pregunta Activa -->
@@ -193,11 +195,11 @@
                 <div id="gameOptionsContainer" style="display: grid; grid-template-columns: 1fr; gap: 0.6rem;"></div>
             </div>
 
-            <!-- Estado: Respondido -->
+            <!-- Estado: Respondido (Silencioso para evitar filtración) -->
             <div id="gameAnsweredStandby" class="hidden" style="text-align: center; padding: 2.5rem 1rem;">
                 <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✅</div>
                 <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">¡Respuesta Registrada!</h3>
-                <p style="font-size: 0.75rem; color: #64748b;">Espera a que finalice el tiempo o el profesor avance de etapa.</p>
+                <p style="font-size: 0.75rem; color: #64748b;">Tu respuesta ha sido guardada. El resultado y puntaje se revelarán al finalizar el tiempo de la etapa.</p>
             </div>
         </div>
 
@@ -336,7 +338,7 @@
             <ul style="font-size: 0.75rem; color: #334155; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; line-height: 1.4;">
                 <li><strong>Modalidad Grupal:</strong> Resuelvan las preguntas en equipo. La actividad consta de 10 etapas secuenciales de probabilidad.</li>
                 <li><strong>Acceso a la Arena:</strong> El botón de ingreso solo se activa cuando el profesor deshabilite el bloqueo docente desde su panel.</li>
-                <li><strong>Tiempos y Pausas:</strong> Cada etapa incluye un cronómetro en vivo. Al vencer el tiempo o responder, hay una pausa para dialogar y revisar la respuesta antes de la siguiente etapa.</li>
+                <li><strong>Resultados Ocultos:</strong> Al responder, el puntaje y acierto no se muestran de inmediato para evitar filtraciones; se revelan al concluir el tiempo de cada etapa.</li>
                 <li><strong>Puntaje por Velocidad y Acierto:</strong> Cada respuesta correcta otorga 500 puntos base más un bono proporcional al tiempo restante.</li>
                 <li><strong>Avatares Únicos:</strong> Cada equipo debe seleccionar un avatar que no haya sido tomado por otro grupo.</li>
             </ul>
@@ -398,6 +400,9 @@
                 this.currentStageIndex = 0;
                 this.remainingSeconds = 120;
                 this.hasAnsweredCurrentStage = false;
+                this.lastSelectedOption = null;
+                this.lastScoredStageId = null;
+                this.wasActive = false;
                 this.groupsData = {};
                 this.teacherPrizes = {
                     1: "Nota 7.0 acumulativa en Matemática",
@@ -493,6 +498,13 @@
                 if (state.remainingSeconds !== undefined) {
                     this.remainingSeconds = state.remainingSeconds;
                 }
+
+                // Detectar cuando el docente cierra/termina la etapa (active pasa de true a false)
+                if (this.wasActive && !state.active) {
+                    this.processStageResults();
+                }
+                this.wasActive = state.active;
+
                 if (state.arenaOpen && !document.getElementById('viewStudentLobby').classList.contains('hidden')) {
                     this.currentStageIndex = state.currentStage || 0;
                     this.showStudentGameScreen(state);
@@ -653,6 +665,8 @@
                     const optContainer = document.getElementById('gameOptionsContainer');
                     if (!this.renderedStageId || this.renderedStageId !== stage.id) {
                         this.hasAnsweredCurrentStage = false;
+                        this.lastSelectedOption = null;
+                        document.getElementById('gameResultFeedback').classList.add('hidden');
                         document.getElementById('gameAnsweredStandby').classList.add('hidden');
                         document.getElementById('gameActiveQuestion').classList.remove('hidden');
 
@@ -675,27 +689,51 @@
             async submitAnswer(optionIndex) {
                 if (this.hasAnsweredCurrentStage) return;
                 this.hasAnsweredCurrentStage = true;
+                this.lastSelectedOption = optionIndex;
 
                 const stage = STAGES[this.currentStageIndex];
-                const isCorrect = (optionIndex === stage.correct);
-                
-                // CÁLCULO DE PUNTAJE: 500 puntos base por acierto + bono proporcional al tiempo restante
-                let pointsEarned = isCorrect ? (500 + Math.floor(this.remainingSeconds * 5)) : 0;
 
+                // Guardamos de forma silenciosa sin calcular ni mostrar puntos aún
                 if (db) {
                     try {
-                        let ref = db.collection('groups').doc(this.groupName);
-                        let doc = await ref.get();
-                        let curScore = doc.exists ? (doc.data().score || 0) : 0;
-                        await ref.update({
-                            score: curScore + pointsEarned,
-                            [`stage_${stage.id}`]: { answered: true, correct: isCorrect, points: pointsEarned }
+                        await db.collection('groups').doc(this.groupName).update({
+                            [`pending_answer_${stage.id}`]: optionIndex
                         });
                     } catch (e) {}
                 }
 
                 document.getElementById('gameActiveQuestion').classList.add('hidden');
                 document.getElementById('gameAnsweredStandby').classList.remove('hidden');
+            }
+
+            async processStageResults() {
+                const stage = STAGES[this.currentStageIndex];
+                if (this.hasAnsweredCurrentStage && this.lastScoredStageId !== stage.id) {
+                    this.lastScoredStageId = stage.id;
+                    const isCorrect = (this.lastSelectedOption === stage.correct);
+                    const pointsEarned = isCorrect ? (500 + Math.floor(this.remainingSeconds * 5)) : 0;
+
+                    if (db) {
+                        try {
+                            let ref = db.collection('groups').doc(this.groupName);
+                            let doc = await ref.get();
+                            let curScore = doc.exists ? (doc.data().score || 0) : 0;
+                            await ref.update({
+                                score: curScore + pointsEarned,
+                                [`stage_${stage.id}`]: { answered: true, correct: isCorrect, points: pointsEarned }
+                            });
+                        } catch (e) {}
+                    }
+
+                    // Mostrar el resultado en la pantalla de pausa solo ahora que terminó el tiempo
+                    const feedbackEl = document.getElementById('gameResultFeedback');
+                    if (feedbackEl) {
+                        feedbackEl.innerHTML = isCorrect
+                            ? `<div style="background: #d1fae5; color: #065f46; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid #34d399; font-weight: 700; font-size: 0.75rem;">🎉 ¡Correcto! Ganaste ${pointsEarned} puntos en esta etapa.</div>`
+                            : `<div style="background: #fee2e2; color: #991b1b; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid #f87171; font-weight: 700; font-size: 0.75rem;">❌ Incorrecto. No sumaste puntos en esta etapa. (La alternativa correcta era la ${['A', 'B', 'C', 'D'][stage.correct]}).</div>`;
+                        feedbackEl.classList.remove('hidden');
+                    }
+                }
             }
 
             formatTime(seconds) {
