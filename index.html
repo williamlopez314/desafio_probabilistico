@@ -15,43 +15,52 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: system-ui, -apple-system, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%); min-height: 100vh; color: #f8fafc; display: flex; flex-direction: column; justify-content: space-between; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); color: #1e293b; border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); }
-        .btn-primary { background: linear-gradient(135deg, #4f46e5 0%, #db2777 100%); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
+        
+        /* Contenedor móvil optimizado y estrecho */
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); color: #1e293b; border-radius: 1.25rem; box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.3); padding: 1rem; width: 100%; max-width: 480px; margin: 0 auto; }
+        
+        .btn-primary { background: linear-gradient(135deg, #4f46e5 0%, #db2777 100%); color: white; border: none; padding: 0.7rem 1rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, opacity 0.2s; width: 100%; text-align: center; font-size: 0.85rem; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
-        .input-field { width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #cbd5e1; font-size: 0.9rem; color: #1e293b; outline: none; transition: border-color 0.2s; }
+        .input-field { width: 100%; padding: 0.65rem 0.85rem; border-radius: 0.75rem; border: 1px solid #cbd5e1; font-size: 0.85rem; color: #1e293b; outline: none; transition: border-color 0.2s; }
         .input-field:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
         .hidden { display: none !important; }
         .animate-float { animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-        header { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); border-bottom: 1px solid #334155; padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; gap: 0.5rem; }
-        main { flex-grow: 1; max-width: 1000px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; display: flex; flex-direction: column; justify-content: center; }
-        footer { text-align: center; padding: 1.25rem; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid #1e293b; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+        
+        header { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #334155; padding: 0.5rem 0.75rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; gap: 0.4rem; flex-wrap: wrap; }
+        main { flex-grow: 1; max-width: 500px; width: 100%; margin: 0.75rem auto; padding: 0 0.5rem; display: flex; flex-direction: column; justify-content: center; }
+        footer { text-align: center; padding: 0.75rem; font-size: 0.65rem; color: #94a3b8; border-top: 1px solid #1e293b; }
+
+        /* Ajustes para pantallas amplias (solo escritorio/docente) */
+        .desktop-wide-panel { max-width: 900px !important; }
+        .responsive-grid { display: grid; grid-template-columns: 1fr; gap: 0.85rem; }
+        @media (min-width: 768px) {
+            .responsive-grid { grid-template-columns: 1fr 1fr; }
+            main { max-width: 850px; }
+        }
     </style>
 </head>
 <body>
 
     <!-- Header Principal Permanente -->
     <header>
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div style="background: linear-gradient(135deg, #4f46e5, #db2777); padding: 0.5rem; border-radius: 0.8rem; color: white;" class="animate-float">
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <div style="background: linear-gradient(135deg, #4f46e5, #db2777); padding: 0.35rem; border-radius: 0.5rem; color: white;" class="animate-float">
                 🎲
             </div>
             <div>
-                <h1 style="font-size: 1.1rem; font-weight: 700; background: linear-gradient(90deg, #93c5fd, #f472b6, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Desafío Probabilístico</h1>
-                <p style="font-size: 0.65rem; color: #94a3b8;">Colegio Pucará • 2° Medio | Prof. William López González</p>
+                <h1 style="font-size: 0.85rem; font-weight: 700; background: linear-gradient(90deg, #93c5fd, #f472b6, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Desafío Probabilístico</h1>
+                <p style="font-size: 0.5rem; color: #94a3b8;">Colegio Pucará • 2° Medio | Prof. William López</p>
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <!-- BOTÓN DE INSTRUCCIONES SIEMPRE VISIBLE -->
-            <button onclick="app.openInstructions()" style="background: #312e81; color: #c7d2fe; border: 1px solid #4338ca; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
-                📖 Instrucciones
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <button onclick="app.openInstructions()" style="background: #312e81; color: #c7d2fe; border: 1px solid #4338ca; padding: 0.3rem 0.5rem; border-radius: 0.35rem; font-size: 0.65rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.2rem;">
+                📖 Reglas y QR
             </button>
-
-            <!-- Estado de Conexión BD -->
-            <div id="connectionStatus" style="display: flex; align-items: center; gap: 0.4rem; background: #1e293b; padding: 0.35rem 0.7rem; border-radius: 9999px; border: 1px solid #334155; font-size: 0.7rem; color: #fbbf24;">
-                <span style="width: 7px; height: 7px; border-radius: 50%; background: #fbbf24;" id="statusDot"></span>
-                <span id="statusText">Cargando BD...</span>
+            <div id="connectionStatus" style="display: flex; align-items: center; gap: 0.3rem; background: #1e293b; padding: 0.2rem 0.4rem; border-radius: 9999px; border: 1px solid #334155; font-size: 0.55rem; color: #fbbf24;">
+                <span style="width: 5px; height: 5px; border-radius: 50%; background: #fbbf24;" id="statusDot"></span>
+                <span id="statusText">BD...</span>
             </div>
         </div>
     </header>
@@ -60,226 +69,266 @@
     <main>
 
         <!-- VISTA 0: INICIO / SELECCIÓN DE ROL + QR INICIAL -->
-        <div id="viewRoleSelect" class="glass-panel" style="max-width: 750px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center;">
+        <div id="viewRoleSelect" class="glass-panel responsive-grid" style="align-items: center;">
             <div style="text-align: left;">
-                <span style="background: #e0e7ff; color: #3730a3; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px; text-transform: uppercase;">Actividad Grupal</span>
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0.5rem 0 0.4rem; color: #0f172a;">¡Bienvenidos al Reto de Probabilidades!</h2>
-                <p style="font-size: 0.75rem; color: #475569; margin-bottom: 1.25rem;">Selecciona cómo deseas participar en esta experiencia grupal cronometrada.</p>
+                <span style="background: #e0e7ff; color: #3730a3; font-size: 0.55rem; font-weight: 700; padding: 0.15rem 0.4rem; border-radius: 9999px; text-transform: uppercase;">Actividad Grupal</span>
+                <h2 style="font-size: 1.15rem; font-weight: 700; margin: 0.3rem 0; color: #0f172a;">¡Bienvenidos al Reto!</h2>
+                <p style="font-size: 0.7rem; color: #475569; margin-bottom: 0.85rem;">Selecciona cómo participar en esta experiencia colaborativa.</p>
                 
-                <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-                    <button onclick="app.showStudentJoin()" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; padding: 0.85rem; border-radius: 0.85rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 0.8rem;">
-                        <div style="font-size: 1.6rem;">👥</div>
+                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                    <button onclick="app.showStudentJoin()" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; padding: 0.65rem; border-radius: 0.65rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 0.6rem;">
+                        <div style="font-size: 1.2rem;">👥</div>
                         <div>
-                            <div style="font-size: 0.9rem; font-weight: 700;">Soy Estudiante</div>
-                            <div style="font-size: 0.6rem; color: #c7d2fe;">Inscribe a tu equipo</div>
+                            <div style="font-size: 0.8rem; font-weight: 700;">Soy Estudiante</div>
+                            <div style="font-size: 0.5rem; color: #c7d2fe;">Inscribe a tu equipo</div>
                         </div>
                     </button>
-                    <button onclick="app.showTeacherAuth()" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: 1px solid #334155; padding: 0.85rem; border-radius: 0.85rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 0.8rem;">
-                        <div style="font-size: 1.6rem;">👨‍🏫</div>
+                    <button onclick="app.showTeacherAuth()" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: 1px solid #334155; padding: 0.65rem; border-radius: 0.65rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 0.6rem;">
+                        <div style="font-size: 1.2rem;">👨‍🏫</div>
                         <div>
-                            <div style="font-size: 0.9rem; font-weight: 700;">Panel Docente</div>
-                            <div style="font-size: 0.6rem; color: #94a3b8;">Control de la sala</div>
+                            <div style="font-size: 0.8rem; font-weight: 700;">Panel Docente (PC)</div>
+                            <div style="font-size: 0.5rem; color: #94a3b8;">Control de sala</div>
                         </div>
                     </button>
                 </div>
             </div>
 
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; text-align: center;">
-                <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">📱 Escanea para Entrar</h3>
-                <p style="font-size: 0.6rem; color: #64748b; margin-bottom: 0.6rem;">Abre el juego desde tu celular.</p>
-                <div id="homeQrcodeContainer" style="background: white; padding: 0.4rem; border-radius: 0.6rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.4rem;"></div>
-                <div id="homeUrlText" style="font-size: 0.55rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.3rem; border-radius: 0.4rem;"></div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 0.75rem; text-align: center;">
+                <h3 style="font-size: 0.75rem; font-weight: 700; color: #0f172a; margin-bottom: 0.15rem;">📱 Escanea para Entrar</h3>
+                <p style="font-size: 0.5rem; color: #64748b; margin-bottom: 0.4rem;">Abre el juego desde el celular.</p>
+                <div id="homeQrcodeContainer" style="background: white; padding: 0.25rem; border-radius: 0.4rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.2rem;"></div>
+                <div id="homeUrlText" style="font-size: 0.45rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.2rem; border-radius: 0.3rem;"></div>
             </div>
         </div>
 
         <!-- VISTA 1: INSCRIPCIÓN DE ESTUDIANTES + QR + GRUPOS EN VIVO -->
-        <div id="viewStudentJoin" class="hidden glass-panel" style="max-width: 850px; margin: 0 auto; padding: 1.75rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.8rem; font-weight: 600;">← Volver</button>
-                <span style="background: #fce7f3; color: #9d174d; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Registro de Equipos</span>
+        <div id="viewStudentJoin" class="hidden glass-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.7rem; font-weight: 600;">← Volver</button>
+                <span style="background: #fce7f3; color: #9d174d; font-size: 0.55rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 9999px;">Registro de Equipos</span>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 200px 1fr; gap: 1.25rem; align-items: start;">
-                <!-- Formulario -->
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
                 <div>
-                    <h2 style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">Tu Equipo</h2>
-                    <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.6rem;">Selecciona un avatar único.</p>
+                    <h2 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.1rem;">Tu Equipo</h2>
+                    <p style="font-size: 0.55rem; color: #64748b; margin-bottom: 0.4rem;">Selecciona un avatar único.</p>
 
-                    <form onsubmit="app.handleStudentJoin(event)" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <form onsubmit="app.handleStudentJoin(event)" style="display: flex; flex-direction: column; gap: 0.45rem;">
                         <div>
-                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.15rem;">Nombre del Grupo</label>
-                            <input type="text" id="inputGroupName" required placeholder="Ej. Los Probabilistas" class="input-field" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
+                            <label style="display: block; font-size: 0.5rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.1rem;">Nombre del Grupo</label>
+                            <input type="text" id="inputGroupName" required placeholder="Ej. Los Probabilistas" class="input-field" style="padding: 0.35rem 0.5rem; font-size: 0.7rem;">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.15rem;">Integrantes (Máx. 4)</label>
-                            <input type="text" id="inputMembers" required placeholder="Ej. Ana, Carlos, Sofía" class="input-field" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
+                            <label style="display: block; font-size: 0.5rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.1rem;">Integrantes (Máx. 4)</label>
+                            <input type="text" id="inputMembers" required placeholder="Ej. Ana, Carlos, Sofía" class="input-field" style="padding: 0.35rem 0.5rem; font-size: 0.7rem;">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Elige tu Avatar (No repetibles)</label>
-                            <div id="avatarGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.25rem;"></div>
+                            <label style="display: block; font-size: 0.5rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.1rem;">Elige tu Avatar</label>
+                            <div id="avatarGrid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.2rem;"></div>
                         </div>
-                        <button type="submit" class="btn-primary" style="margin-top: 0.2rem; font-size: 0.8rem; padding: 0.5rem;">¡Unirse a la Espera! 🚀</button>
+                        <button type="submit" class="btn-primary" style="margin-top: 0.2rem; font-size: 0.7rem; padding: 0.45rem;">¡Unirse al Repaso! 🚀</button>
                     </form>
                 </div>
 
-                <!-- Código QR de la Pestaña -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem; border-radius: 0.85rem; text-align: center;">
-                    <h3 style="font-size: 0.75rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">📱 Código QR</h3>
-                    <p style="font-size: 0.55rem; color: #64748b; margin-bottom: 0.5rem;">Escanear desde otro móvil</p>
-                    <div id="joinQrcodeContainer" style="background: white; padding: 0.3rem; border-radius: 0.5rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.3rem;"></div>
-                    <div id="joinUrlText" style="font-size: 0.5rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.25rem; border-radius: 0.3rem;"></div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem; border-radius: 0.6rem; text-align: center;">
+                    <h3 style="font-size: 0.65rem; font-weight: 700; color: #0f172a; margin-bottom: 0.1rem;">📱 Código QR de Acceso</h3>
+                    <div id="joinQrcodeContainer" style="background: white; padding: 0.2rem; border-radius: 0.3rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.2rem;"></div>
+                    <div id="joinUrlText" style="font-size: 0.4rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.15rem; border-radius: 0.25rem;"></div>
                 </div>
 
-                <!-- Grupos Inscritos en Vivo -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem; border-radius: 0.85rem; max-height: 380px; overflow-y: auto;">
-                    <h3 style="font-size: 0.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">👥 Grupos Inscritos (<span id="joinGroupCount">0</span>)</h3>
-                    <div id="liveJoinedGroupsList" style="display: flex; flex-direction: column; gap: 0.35rem;"></div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem; border-radius: 0.6rem; max-height: 130px; overflow-y: auto;">
+                    <h3 style="font-size: 0.65rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">👥 Conectados (<span id="joinGroupCount">0</span>)</h3>
+                    <div id="liveJoinedGroupsList" style="display: flex; flex-direction: column; gap: 0.25rem;"></div>
                 </div>
+            </div>
+        </div>
+
+        <!-- VISTA 1.5: ETAPA PREVIA DE REPASO (10 MINUTOS) -->
+        <div id="viewStudentReview" class="hidden glass-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 0.75rem;">
+                <div>
+                    <span style="background: #fef3c7; color: #92400e; font-size: 0.55rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 9999px;">Fase 1: Preparación</span>
+                    <h2 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-top: 0.15rem;">📚 Repaso (10 min)</h2>
+                </div>
+                <div style="text-align: right; background: #e0e7ff; padding: 0.25rem 0.5rem; border-radius: 0.4rem; color: #3730a3; font-weight: 700; font-size: 0.75rem;">
+                    ⏱️ <span id="reviewTimer">10:00</span>
+                </div>
+            </div>
+
+            <p style="font-size: 0.7rem; color: #475569; margin-bottom: 0.65rem; line-height: 1.35;">
+                Revisen en equipo los conceptos clave antes del desafío:
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem; max-height: 260px; overflow-y: auto; padding-right: 0.2rem;">
+                <div style="background: #f8fafc; border-left: 3px solid #4f46e5; padding: 0.5rem; border-radius: 0.35rem;">
+                    <h4 style="font-size: 0.7rem; font-weight: 700; color: #1e293b; margin-bottom: 0.1rem;">1. Regla de Laplace</h4>
+                    <p style="font-size: 0.6rem; color: #475569;">$P(A) = \frac{\text{Favorables}}{\text{Total}}$</p>
+                </div>
+
+                <div style="background: #f8fafc; border-left: 3px solid #db2777; padding: 0.5rem; border-radius: 0.35rem;">
+                    <h4 style="font-size: 0.7rem; font-weight: 700; color: #1e293b; margin-bottom: 0.1rem;">2. Suma (O / Unión)</h4>
+                    <p style="font-size: 0.6rem; color: #475569;">Ocurre A <strong>o</strong> B. Se suman sus probabilidades si son excluyentes.</p>
+                </div>
+
+                <div style="background: #f8fafc; border-left: 3px solid #059669; padding: 0.5rem; border-radius: 0.35rem;">
+                    <h4 style="font-size: 0.7rem; font-weight: 700; color: #1e293b; margin-bottom: 0.1rem;">3. Multiplicación (Y / Intersección)</h4>
+                    <p style="font-size: 0.6rem; color: #475569;">Eventos sucesivos (A <strong>y</strong> B). Se multiplican.</p>
+                </div>
+
+                <div style="background: #f8fafc; border-left: 3px solid #d97706; padding: 0.5rem; border-radius: 0.35rem;">
+                    <h4 style="font-size: 0.7rem; font-weight: 700; color: #1e293b; margin-bottom: 0.1rem;">4. Independientes vs Dependientes</h4>
+                    <p style="font-size: 0.6rem; color: #475569;">Independientes no se afectan; dependientes cambian según el primer resultado.</p>
+                </div>
+            </div>
+
+            <div style="background: #f1f5f9; padding: 0.6rem; border-radius: 0.6rem; text-align: center;">
+                <h4 style="font-size: 0.7rem; font-weight: 700; color: #0f172a; margin-bottom: 0.15rem;">Esperando inicio del profesor</h4>
+                <p style="font-size: 0.55rem; color: #64748b; margin-bottom: 0.4rem;">La pantalla cambiará al activarse la Arena.</p>
+                <button onclick="app.openInstructions()" class="btn-primary" style="background: #312e81; font-size: 0.65rem; padding: 0.35rem 0.7rem; width: auto; display: inline-block;">📖 Ver Instrucciones y QR</button>
             </div>
         </div>
 
         <!-- VISTA 2: SALA DE ESPERA DE ESTUDIANTES -->
-        <div id="viewStudentLobby" class="hidden glass-panel" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div id="lobbyAvatarDisplay" style="width: 50px; height: 50px; border-radius: 1rem; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;"></div>
+        <div id="viewStudentLobby" class="hidden glass-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div id="lobbyAvatarDisplay" style="width: 35px; height: 35px; border-radius: 0.5rem; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;"></div>
                     <div>
-                        <h2 id="lobbyGroupName" style="font-size: 1.2rem; font-weight: 700; color: #0f172a;"></h2>
-                        <p id="lobbyMembers" style="font-size: 0.7rem; color: #64748b;"></p>
+                        <h2 id="lobbyGroupName" style="font-size: 0.9rem; font-weight: 700; color: #0f172a;"></h2>
+                        <p id="lobbyMembers" style="font-size: 0.55rem; color: #64748b;"></p>
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: #4f46e5;">Tu Puntaje: <span id="lobbyPersonalScore">0</span> pts</div>
-                    <span style="background: #fef3c7; color: #92400e; font-size: 0.6rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px;">En sala de espera</span>
+                    <div style="font-size: 0.65rem; font-weight: 700; color: #4f46e5;">Puntaje: <span id="lobbyPersonalScore">0</span> pts</div>
+                    <span style="background: #fef3c7; color: #92400e; font-size: 0.5rem; font-weight: 700; padding: 0.1rem 0.3rem; border-radius: 9999px;">En espera</span>
                 </div>
             </div>
             
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; text-align: center;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;" class="animate-float">⏳</div>
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">Esperando la indicación del Profesor</h3>
-                <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">El botón de la Arena se activará en tu dispositivo cuando el docente inicie la ronda.</p>
-                <button onclick="app.openInstructions()" class="btn-primary" style="font-size: 0.75rem; padding: 0.5rem 1rem;">📖 Repasar Instrucciones del Juego</button>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem; border-radius: 0.7rem; text-align: center;">
+                <div style="font-size: 1.8rem; margin-bottom: 0.3rem;" class="animate-float">⏳</div>
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">Listo para la Competencia</h3>
+                <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.7rem;">El profesor habilitará la Arena en breve.</p>
+                <button onclick="app.showStudentReview()" style="background: #4f46e5; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-size: 0.65rem; font-weight: 700; cursor: pointer; margin-bottom: 0.4rem;">📚 Volver al Repaso</button>
             </div>
         </div>
 
         <!-- VISTA 3: ARENA DE JUEGO (ESTUDIANTE) -->
-        <div id="viewStudentGame" class="hidden glass-panel" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; padding: 0.75rem 1.25rem; border-radius: 1rem; margin-bottom: 1.5rem;">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <span id="gameStageBadge" style="background: #4f46e5; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">Etapa 1 / 10</span>
-                    <span id="gameTeamDisplay" style="font-size: 0.9rem; font-weight: 700;">Grupo</span>
+        <div id="viewStudentGame" class="hidden glass-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; padding: 0.5rem 0.75rem; border-radius: 0.6rem; margin-bottom: 0.75rem; font-size: 0.7rem;">
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                    <span id="gameStageBadge" style="background: #4f46e5; font-size: 0.6rem; font-weight: 700; padding: 0.15rem 0.4rem; border-radius: 9999px;">Etapa 1 / 10</span>
+                    <span id="gameTeamDisplay" style="font-weight: 700; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Grupo</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div style="font-size: 0.8rem; color: #34d399; font-weight: 700;">Tu Puntaje: <span id="gameLiveScore">0</span> pts</div>
-                    <div style="display: flex; align-items: center; gap: 0.3rem; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="color: #34d399; font-weight: 700;"><span id="gameLiveScore">0</span> pts</div>
+                    <div style="display: flex; align-items: center; gap: 0.2rem; color: #fbbf24; font-weight: 700;">
                         ⏱️ <span id="gameTimer">02:00</span>
                     </div>
                 </div>
             </div>
 
             <!-- Estado: Pausa Docente -->
-            <div id="gameWaitingStart" style="text-align: center; padding: 2.5rem 1rem;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;" class="animate-float">⏸️</div>
-                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">Pausa Docente / Debate en Clase</h3>
-                <p style="font-size: 0.75rem; color: #64748b;">Comenten la pregunta anterior. El profesor activará la siguiente etapa en breve.</p>
+            <div id="gameWaitingStart" style="text-align: center; padding: 1.25rem 0.25rem;">
+                <div style="font-size: 1.8rem; margin-bottom: 0.3rem;" class="animate-float">⏸️</div>
+                <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">Pausa Docente / Debate</h3>
+                <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.6rem;">Comenten la respuesta. El profesor activará la siguiente etapa pronto.</p>
+                <div id="gameResultFeedback" class="hidden" style="margin-top: 0.6rem; text-align: left;"></div>
             </div>
 
             <!-- Estado: Pregunta Activa -->
-            <div id="gameActiveQuestion" class="hidden" style="display: flex; flex-direction: column; gap: 1.25rem;">
-                <div style="background: #e0e7ff; border: 1px solid #c7d2fe; padding: 1.1rem; border-radius: 1rem;">
-                    <span id="gameQuestionCategory" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #4f46e5; display: block; margin-bottom: 0.3rem;"></span>
-                    <h3 id="gameQuestionText" style="font-size: 1rem; color: #0f172a; font-weight: 600; line-height: 1.4;"></h3>
+            <div id="gameActiveQuestion" class="hidden" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="background: #e0e7ff; border: 1px solid #c7d2fe; padding: 0.75rem; border-radius: 0.6rem;">
+                    <span id="gameQuestionCategory" style="font-size: 0.55rem; font-weight: 700; text-transform: uppercase; color: #4f46e5; display: block; margin-bottom: 0.15rem;"></span>
+                    <h3 id="gameQuestionText" style="font-size: 0.85rem; color: #0f172a; font-weight: 600; line-height: 1.3;"></h3>
                 </div>
-                <div id="gameOptionsContainer" style="display: grid; grid-template-columns: 1fr; gap: 0.6rem;"></div>
+                <div id="gameOptionsContainer" style="display: grid; grid-template-columns: 1fr; gap: 0.4rem;"></div>
             </div>
 
             <!-- Estado: Respondido -->
-            <div id="gameAnsweredStandby" class="hidden" style="text-align: center; padding: 2.5rem 1rem;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✅</div>
-                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">¡Respuesta Registrada!</h3>
-                <p style="font-size: 0.75rem; color: #64748b;">Espera a que finalice el tiempo o el profesor avance de etapa.</p>
+            <div id="gameAnsweredStandby" class="hidden" style="text-align: center; padding: 1.5rem 0.25rem;">
+                <div style="font-size: 1.8rem; margin-bottom: 0.3rem;">✅</div>
+                <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">¡Respuesta Registrada!</h3>
+                <p style="font-size: 0.65rem; color: #64748b;">Guardada de forma secreta. El puntaje se revelará al finalizar la etapa.</p>
             </div>
         </div>
 
         <!-- VISTA 4: LOGIN DOCENTE -->
-        <div id="viewTeacherAuth" class="hidden glass-panel" style="max-width: 400px; margin: 0 auto; padding: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.8rem; font-weight: 600;">← Volver</button>
-                <span style="background: #fef3c7; color: #92400e; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Restringido</span>
+        <div id="viewTeacherAuth" class="hidden glass-panel desktop-wide-panel" style="max-width: 380px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.7rem; font-weight: 600;">← Volver</button>
+                <span style="background: #fef3c7; color: #92400e; font-size: 0.55rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 9999px;">Restringido PC</span>
             </div>
-            <div style="text-align: center; margin-bottom: 1.25rem;">
-                <h2 style="font-size: 1.3rem; font-weight: 700; color: #0f172a;">Panel Docente</h2>
-                <p style="font-size: 0.75rem; color: #64748b;">Clave de acceso institucional</p>
+            <div style="text-align: center; margin-bottom: 0.85rem;">
+                <h2 style="font-size: 1.1rem; font-weight: 700; color: #0f172a;">Panel Docente</h2>
+                <p style="font-size: 0.65rem; color: #64748b;">Clave institucional</p>
             </div>
-            <form onsubmit="app.handleTeacherAuth(event)" style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <form onsubmit="app.handleTeacherAuth(event)" style="display: flex; flex-direction: column; gap: 0.6rem;">
                 <input type="password" id="inputTeacherPass" required placeholder="••••••••" class="input-field" autocomplete="current-password">
                 <button type="submit" class="btn-primary" style="background: #0f172a;">Acceder al Panel ⚙️</button>
             </form>
         </div>
 
         <!-- VISTA 5: PANEL DOCENTE -->
-        <div id="viewTeacherDashboard" class="hidden glass-panel" style="max-width: 900px; margin: 0 auto; padding: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div id="viewTeacherDashboard" class="hidden glass-panel desktop-wide-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.6rem; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.4rem;">
                 <div>
-                    <h2 style="font-size: 1.4rem; font-weight: 700; color: #0f172a;">Control General Docente</h2>
-                    <p style="font-size: 0.7rem; color: #64748b;">Sincronizado en tiempo real con los estudiantes</p>
+                    <h2 style="font-size: 1.1rem; font-weight: 700; color: #0f172a;">Control General Docente</h2>
+                    <p style="font-size: 0.6rem; color: #64748b;">Sincronizado en tiempo real</p>
                 </div>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <button onclick="app.toggleArenaAccess()" id="btnArenaToggle" style="background: #059669; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">🟢 Habilitar Ingreso a Arena</button>
-                    <button onclick="app.showRoleSelect()" style="background: #e2e8f0; color: #334155; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Salir</button>
+                <div style="display: flex; gap: 0.35rem; align-items: center;">
+                    <button onclick="app.toggleArenaAccess()" id="btnArenaToggle" style="background: #059669; color: white; border: none; padding: 0.35rem 0.7rem; border-radius: 0.35rem; font-size: 0.65rem; font-weight: 700; cursor: pointer;">🟢 Habilitar Ingreso a Arena</button>
+                    <button onclick="app.showRoleSelect()" style="background: #e2e8f0; color: #334155; border: none; padding: 0.35rem 0.7rem; border-radius: 0.35rem; font-size: 0.65rem; font-weight: 600; cursor: pointer;">Salir</button>
                 </div>
             </div>
 
             <!-- Pestañas Docente -->
-            <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
-                <button onclick="app.switchTeacherTab('control')" id="tabBtnControl" class="btn-primary" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">Control Etapas (1-10)</button>
-                <button onclick="app.switchTeacherTab('groups')" id="tabBtnGroups" style="background: #e2e8f0; color: #334155; border: none; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Grupos (<span id="teacherGroupCount">0</span>)</button>
-                <button onclick="app.switchTeacherTab('settings')" id="tabBtnSettings" style="background: #e2e8f0; color: #334155; border: none; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Premios & Podio</button>
+            <div style="display: flex; gap: 0.35rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.35rem; margin-bottom: 0.85rem; overflow-x: auto;">
+                <button onclick="app.switchTeacherTab('control')" id="tabBtnControl" class="btn-primary" style="font-size: 0.65rem; padding: 0.3rem 0.6rem; width: auto;">Control Etapas (1-10)</button>
+                <button onclick="app.switchTeacherTab('groups')" id="tabBtnGroups" style="background: #e2e8f0; color: #334155; border: none; padding: 0.3rem 0.6rem; border-radius: 0.35rem; font-size: 0.65rem; font-weight: 600; cursor: pointer;">Grupos (<span id="teacherGroupCount">0</span>)</button>
+                <button onclick="app.switchTeacherTab('settings')" id="tabBtnSettings" style="background: #e2e8f0; color: #334155; border: none; padding: 0.3rem 0.6rem; border-radius: 0.35rem; font-size: 0.65rem; font-weight: 600; cursor: pointer;">Premios & Podio</button>
             </div>
 
             <!-- Tab 1: Control -->
-            <div id="teacherTabControl" style="display: grid; grid-template-columns: 250px 1fr; gap: 1.25rem;">
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem; border-radius: 0.85rem; max-height: 380px; overflow-y: auto;">
-                    <h4 style="font-size: 0.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">📋 Lista de Etapas</h4>
-                    <div id="teacherStagesList" style="display: flex; flex-direction: column; gap: 0.35rem;"></div>
+            <div id="teacherTabControl" class="responsive-grid">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem; border-radius: 0.6rem; max-height: 280px; overflow-y: auto;">
+                    <h4 style="font-size: 0.7rem; font-weight: 700; color: #0f172a; margin-bottom: 0.3rem;">📋 Lista de Etapas</h4>
+                    <div id="teacherStagesList" style="display: flex; flex-direction: column; gap: 0.25rem;"></div>
                 </div>
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.1rem; border-radius: 0.85rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem; border-radius: 0.6rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.6rem;">
                     <div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <span id="teacherCurrentStageBadge" style="background: #4f46e5; color: white; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px;">Etapa 1 de 10</span>
-                            <span id="teacherStageDifficulty" style="font-size: 0.7rem; color: #64748b; font-weight: 600;"></span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                            <span id="teacherCurrentStageBadge" style="background: #4f46e5; color: white; font-size: 0.55rem; font-weight: 700; padding: 0.1rem 0.35rem; border-radius: 9999px;">Etapa 1 de 10</span>
+                            <span id="teacherStageDifficulty" style="font-size: 0.6rem; color: #64748b; font-weight: 600;"></span>
                         </div>
-                        <h4 id="teacherQuestionTitle" style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;"></h4>
-                        <p id="teacherQuestionContent" style="font-size: 0.75rem; color: #334155; background: white; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; margin-bottom: 0.5rem;"></p>
-                        <div style="font-size: 0.65rem; color: #64748b;">Alternativas: <span id="teacherQuestionOptionsSummary"></span></div>
+                        <h4 id="teacherQuestionTitle" style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;"></h4>
+                        <p id="teacherQuestionContent" style="font-size: 0.65rem; color: #334155; background: white; padding: 0.5rem; border-radius: 0.35rem; border: 1px solid #e2e8f0; margin-bottom: 0.35rem;"></p>
+                        <div style="font-size: 0.55rem; color: #64748b;">Alternativas: <span id="teacherQuestionOptionsSummary"></span></div>
                     </div>
                     
-                    <div style="border-top: 1px solid #e2e8f0; padding-top: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                        <div style="display: flex; align-items: center; gap: 0.4rem;">
-                            <label style="font-size: 0.65rem; font-weight: 700; color: #475569;">Tiempo (seg):</label>
-                            <input type="number" id="inputCustomDuration" value="120" style="width: 65px; padding: 0.35rem; border-radius: 0.4rem; border: 1px solid #cbd5e1; text-align: center; font-size: 0.75rem;">
+                    <div style="border-top: 1px solid #e2e8f0; padding-top: 0.6rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
+                        <div style="display: flex; align-items: center; gap: 0.25rem;">
+                            <label style="font-size: 0.55rem; font-weight: 700; color: #475569;">Tiempo (s):</label>
+                            <input type="number" id="inputCustomDuration" value="120" style="width: 50px; padding: 0.25rem; border-radius: 0.25rem; border: 1px solid #cbd5e1; text-align: center; font-size: 0.65rem;">
                         </div>
-                        <div style="display: flex; gap: 0.4rem;">
-                            <button onclick="app.teacherStartQuestion()" style="background: #059669; color: white; border: none; padding: 0.5rem 0.85rem; border-radius: 0.4rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">▶️ Activar Pregunta</button>
-                            <button onclick="app.teacherNextStage()" style="background: #4f46e5; color: white; border: none; padding: 0.5rem 0.85rem; border-radius: 0.4rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Siguiente ➡️</button>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <button onclick="app.teacherStartQuestion()" style="background: #059669; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 0.25rem; font-size: 0.65rem; font-weight: 700; cursor: pointer;">▶️ Activar</button>
+                            <button onclick="app.teacherNextStage()" style="background: #4f46e5; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 0.25rem; font-size: 0.65rem; font-weight: 700; cursor: pointer;">Siguiente ➡️</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Tab 2: Groups -->
-            <div id="teacherTabGroups" class="hidden" style="display: flex; flex-direction: column; gap: 0.85rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Grupos Conectados en Tiempo Real</h3>
-                </div>
-                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 0.85rem; overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem;">
+            <div id="teacherTabGroups" class="hidden" style="display: flex; flex-direction: column; gap: 0.6rem;">
+                <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a;">Grupos Conectados</h3>
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 0.6rem; overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.65rem;">
                         <thead>
                             <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569;">
-                                <th style="padding: 0.6rem;">Avatar & Grupo</th>
-                                <th style="padding: 0.6rem;">Integrantes</th>
-                                <th style="padding: 0.6rem;">Puntaje</th>
-                                <th style="padding: 0.6rem; text-align: center;">Acción</th>
+                                <th style="padding: 0.4rem;">Avatar & Grupo</th>
+                                <th style="padding: 0.4rem;">Integrantes</th>
+                                <th style="padding: 0.4rem;">Puntaje</th>
+                                <th style="padding: 0.4rem; text-align: center;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="teacherGroupsTableBody"></tbody>
@@ -288,57 +337,64 @@
             </div>
 
             <!-- Tab 3: Settings -->
-            <div id="teacherTabSettings" class="hidden" style="display: flex; flex-direction: column; gap: 1.25rem;">
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.85rem;">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">🏆 Configurar Premios</h3>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 0.85rem;">
-                        <input type="text" id="inputPrize1" value="Nota 7.0 acumulativa en Matemática" class="input-field" style="font-size: 0.7rem;">
-                        <input type="text" id="inputPrize2" value="Nota 6.8 acumulativa" class="input-field" style="font-size: 0.7rem;">
-                        <input type="text" id="inputPrize3" value="Nota 6.5 acumulativa" class="input-field" style="font-size: 0.7rem;">
+            <div id="teacherTabSettings" class="hidden" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 0.6rem;">
+                    <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">🏆 Configurar Premios</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-bottom: 0.6rem;">
+                        <input type="text" id="inputPrize1" value="Nota 7.0 acumulativa en Matemática" class="input-field" style="font-size: 0.6rem;">
+                        <input type="text" id="inputPrize2" value="Nota 6.8 acumulativa" class="input-field" style="font-size: 0.6rem;">
+                        <input type="text" id="inputPrize3" value="Nota 6.5 acumulativa" class="input-field" style="font-size: 0.6rem;">
                     </div>
-                    <button onclick="app.savePrizes()" class="btn-primary" style="font-size: 0.7rem; padding: 0.4rem 0.8rem;">Guardar Premios</button>
+                    <button onclick="app.savePrizes()" class="btn-primary" style="font-size: 0.6rem; padding: 0.3rem 0.6rem; width: auto;">Guardar Premios</button>
                 </div>
 
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.85rem;">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">🏁 Podio Final</h3>
-                    <button onclick="app.showPodiumScreen()" class="btn-primary" style="background: linear-gradient(135deg, #d97706, #db2777); font-size: 0.85rem;">🏆 Revelar Podio General</button>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 0.6rem;">
+                    <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">🏁 Podio Final</h3>
+                    <button onclick="app.showPodiumScreen()" class="btn-primary" style="background: linear-gradient(135deg, #d97706, #db2777); font-size: 0.75rem;">🏆 Revelar Podio General</button>
                 </div>
             </div>
         </div>
 
         <!-- VISTA 6: PODIO Y RANKING FINAL -->
-        <div id="viewPodium" class="hidden glass-panel" style="max-width: 800px; margin: 0 auto; padding: 2rem; text-align: center;">
-            <span style="background: #fef3c7; color: #92400e; font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.8rem; border-radius: 9999px;">🏆 Resultados Finales</span>
-            <h2 style="font-size: 1.6rem; font-weight: 700; color: #0f172a; margin: 0.5rem 0 0.2rem;">Podio de Campeones</h2>
-            <div id="podiumStage" style="display: flex; justify-content: center; align-items: flex-end; gap: 0.8rem; margin: 1.5rem 0; min-height: 250px;"></div>
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.85rem; text-align: left; margin-bottom: 1.25rem;">
-                <h3 style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Clasificación General</h3>
-                <div id="fullRankingList" style="display: flex; flex-direction: column; gap: 0.4rem;"></div>
+        <div id="viewPodium" class="hidden glass-panel desktop-wide-panel" style="text-align: center;">
+            <span style="background: #fef3c7; color: #92400e; font-size: 0.55rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 9999px;">🏆 Resultados Finales</span>
+            <h2 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0.3rem 0 0.15rem;">Podio de Campeones</h2>
+            <div id="podiumStage" style="display: flex; justify-content: center; align-items: flex-end; gap: 0.5rem; margin: 1rem 0; min-height: 190px;"></div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 0.6rem; text-align: left; margin-bottom: 0.85rem;">
+                <h3 style="font-size: 0.75rem; font-weight: 700; color: #0f172a; margin-bottom: 0.3rem;">Clasificación General</h3>
+                <div id="fullRankingList" style="display: flex; flex-direction: column; gap: 0.3rem;"></div>
             </div>
-            <button onclick="app.showRoleSelect()" class="btn-primary" style="background: #0f172a;">Volver al Inicio</button>
+            <button onclick="app.showRoleSelect()" class="btn-primary" style="background: #0f172a; font-size: 0.75rem; padding: 0.5rem;">Volver al Inicio</button>
         </div>
 
     </main>
 
-    <!-- MODAL DE INSTRUCCIONES PERMANENTE -->
-    <div id="modalInstructions" class="hidden" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;">
-        <div class="glass-panel" style="max-width: 550px; width: 100%; padding: 1.75rem; position: relative;">
-            <button onclick="app.closeInstructions()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
-            <h3 style="font-size: 1.2rem; font-weight: 700; color: #312e81; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">📖 Reglamento del Juego</h3>
-            <ul style="font-size: 0.75rem; color: #334155; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; line-height: 1.4;">
-                <li><strong>Modalidad Grupal:</strong> Resuelvan las preguntas en equipo. La actividad consta de 10 etapas secuenciales de probabilidad.</li>
-                <li><strong>Acceso a la Arena:</strong> El botón de ingreso solo se activa cuando el profesor deshabilite el bloqueo docente desde su panel.</li>
-                <li><strong>Tiempos y Pausas:</strong> Cada etapa incluye un cronómetro en vivo. Al vencer el tiempo o responder, hay una pausa para dialogar y revisar la respuesta antes de la siguiente etapa.</li>
-                <li><strong>Avatares Únicos:</strong> Cada equipo debe seleccionar un avatar que no haya sido tomado por otro grupo.</li>
-                <li><strong>Puntaje Privado:</strong> Durante el juego, solo verás tu propio puntaje acumulado en tu pantalla. La tabla general se mostrará al final en el Podio.</li>
+    <!-- MODAL DE INSTRUCCIONES Y QR PERMANENTE -->
+    <div id="modalInstructions" class="hidden" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 0.5rem;">
+        <div class="glass-panel" style="max-width: 420px; width: 100%; padding: 1rem; position: relative; max-height: 90vh; overflow-y: auto;">
+            <button onclick="app.closeInstructions()" style="position: absolute; top: 0.6rem; right: 0.6rem; background: none; border: none; font-size: 1rem; cursor: pointer; color: #64748b;">✕</button>
+            <h3 style="font-size: 1rem; font-weight: 700; color: #312e81; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem;">📖 Reglamento y QR</h3>
+            
+            <!-- QR dentro de las instrucciones (mantenido) -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.5rem; border-radius: 0.5rem; text-align: center; margin-bottom: 0.75rem;">
+                <p style="font-size: 0.55rem; color: #64748b; margin-bottom: 0.25rem; font-weight: 600;">📱 Escanea para unirte desde tu celular</p>
+                <div id="modalQrcodeContainer" style="background: white; padding: 0.2rem; border-radius: 0.3rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.2rem;"></div>
+                <div id="modalUrlText" style="font-size: 0.4rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.15rem; border-radius: 0.25rem;"></div>
+            </div>
+
+            <ul style="font-size: 0.65rem; color: #334155; padding-left: 1rem; display: flex; flex-direction: column; gap: 0.35rem; line-height: 1.3;">
+                <li><strong>Fase de Repaso:</strong> 10 minutos iniciales para acordarse de Laplace, suma y multiplicación.</li>
+                <li><strong>Modalidad Grupal:</strong> Actividad de 10 etapas secuenciales.</li>
+                <li><strong>Resultados Ocultos:</strong> Tu respuesta se guarda de forma secreta y los puntos se revelan al finalizar cada etapa.</li>
+                <li><strong>Puntaje:</strong> 500 puntos base + bono por tiempo restante.</li>
             </ul>
-            <button onclick="app.closeInstructions()" class="btn-primary" style="margin-top: 1.25rem; width: 100%; font-size: 0.8rem; padding: 0.6rem;">Entendido, ¡volver!</button>
+            <button onclick="app.closeInstructions()" class="btn-primary" style="margin-top: 0.85rem; font-size: 0.7rem; padding: 0.45rem;">Entendido, ¡volver!</button>
         </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        Colegio Pucará • Matemática 2° Medio | Profesor William López González & DIE Yasmín Mardones Guerrero
+        Colegio Pucará • Matemática 2° Medio | Prof. William López González & DIE Yasmín Mardones Guerrero
     </footer>
 
     <!-- Lógica de la Aplicación -->
@@ -360,24 +416,24 @@
                 firebase.analytics();
             }
             db = firebase.firestore();
-            document.getElementById('statusText').innerText = "BD en Línea";
+            document.getElementById('statusText').innerText = "Online";
             document.getElementById('statusDot').style.background = "#34d399";
         } catch (e) {
-            document.getElementById('statusText').innerText = "Modo Local";
+            document.getElementById('statusText').innerText = "Local";
             document.getElementById('statusDot').style.background = "#818cf8";
         }
 
         const STAGES = [
-            { id: 1, title: "Etapa 1: Espacio Muestral (Dado Tetraédrico y Moneda)", difficulty: "Fácil (2 min)", duration: 120, category: "Parte I: Experimentos Aleatorios", question: "Se lanza un dado tetraédrico (4 caras, del 1 al 4) y una moneda. ¿Cuál es el número total de resultados posibles n(Ω) en el espacio muestral?", options: ["n(Ω) = 6", "n(Ω) = 8", "n(Ω) = 12", "n(Ω) = 4"], correct: 1 },
-            { id: 2, title: "Etapa 2: Eventos en Mazo Inglés", difficulty: "Fácil (2 min)", duration: 120, category: "Parte I: Experimentos Aleatorios", question: "Al extraer una carta de un mazo inglés de 52 cartas, ¿cuántos elementos forman el evento B: 'Extraer una carta de Corazones mayor o igual a 8 (sin contar K, Q, J)'?", options: ["3 cartas (8, 9, 10)", "4 cartas (8, 9, 10, As)", "5 cartas (8, 9, 10, J, Q)", "6 cartas"], correct: 0 },
-            { id: 3, title: "Etapa 3: Probabilidad Clásica (Regla de Laplace)", difficulty: "Media (3 min)", duration: 180, category: "Parte II: Probabilidad Clásica", question: "Una urna contiene 6 bolitas rojas, 4 blancas y 5 azules. Si se extrae una bolita al azar, ¿cuál es la probabilidad de que NO sea de color rojo?", options: ["6/15 (40%)", "9/15 o 3/5 (60%)", "4/15 (26.6%)", "11/15 (73.3%)"], correct: 1 },
-            { id: 4, title: "Etapa 4: Unión de Eventos y Encuestas", difficulty: "Media (3 min)", duration: 180, category: "Parte II: Probabilidad Clásica", question: "En un grupo de 40 personas, 25 hablan inglés, 15 francés y 8 ambos. Al seleccionar una persona, ¿cuál es la probabilidad de que hable inglés O francés?", options: ["32/40 (80%)", "40/40 (100%)", "25/40 (62.5%)", "17/40 (42.5%)"], correct: 0 },
-            { id: 5, title: "Etapa 5: Producto de Probabilidades (Dados)", difficulty: "Media-Alta (3.5 min)", duration: 210, category: "Parte II: Probabilidad Clásica", question: "Se lanza un par de dados comunes de 6 caras. ¿Cuál es la probabilidad de que el producto de los números obtenidos sea mayor que 20?", options: ["5/36", "7/36", "10/36 (o 5/18)", "12/36 (1/3)"], correct: 1 },
-            { id: 6, title: "Etapa 6: Variable Aleatoria Discreta (Lanzamiento de Dado)", difficulty: "Alta (4 min)", duration: 240, category: "Parte III: Variable Aleatoria Discreta", question: "Sea X la variable aleatoria 'Puntaje obtenido al lanzar un dado común'. ¿Cuál es el valor de P(X = x) para cada cara y qué propiedad cumple la sumatoria Σ P(X = x)?", options: ["Cada probabilidad es 1/6 y su suma es igual a 1", "Cada probabilidad es 1/36 y su suma es 1", "Cada probabilidad es 1/6 y su suma es 6", "Cada probabilidad depende del puntaje y suma 0"], correct: 0 },
-            { id: 7, title: "Etapa 7: Distribución de Probabilidad Familiar", difficulty: "Alta (4 min)", duration: 240, category: "Parte III: Variable Aleatoria Discreta", question: "Para una familia con 3 hijos (p=0,5 para niño/niña), sea X = 'Número de niñas'. ¿Cuál es la probabilidad de que en la familia haya AL MENOS 2 niñas P(X ≥ 2)?", options: ["1/8 (12.5%)", "3/8 (37.5%)", "4/8 o 1/2 (50%)", "7/8 (87.5%)"], correct: 2 },
-            { id: 8, title: "Etapa 8: Constante k en Función de Probabilidad", difficulty: "Muy Alta (4.5 min)", duration: 270, category: "Parte III: Variable Aleatoria Discreta", question: "Dada la función P(X = x) = k·x para x en {1, 2, 3, 4}, ¿cuál es el valor exacto de la constante k?", options: ["k = 1/5", "k = 1/10", "k = 1/4", "k = 1/12"], correct: 1 },
-            { id: 9, title: "Etapa 9: Diferencia Absoluta en Dos Dados", difficulty: "Muy Alta (5 min)", duration: 300, category: "Parte III: Variable Aleatoria Discreta", question: "Se lanzan dos dados estándar. Sea X = 'Diferencia en valor absoluto entre los puntos'. ¿Cuál es la probabilidad P(X = 0)?", options: ["1/36", "6/36 (o 1/6)", "12/36 (1/3)", "2/36"], correct: 1 },
-            { id: 10, title: "Etapa 10: Variable Aleatoria con Ruleta de Feria", difficulty: "Desafío Final (5 min)", duration: 300, category: "Parte III: Variable Aleatoria Discreta", question: "Ruleta de 8 sectores (1 al 8): Par gana $500; Impar divisible por 3 (solo el 3) gana $1.000; el 1 gana $0. Si W es el dinero ganado, ¿cuál es la probabilidad P(W ≥ 500)?", options: ["4/8 (pares 2,4,6,8)", "5/8 (pares 2,4,6,8 + el 3)", "3/8", "6/8"], correct: 1 }
+            { id: 1, title: "Etapa 1: Espacio Muestral (Dado y Moneda)", difficulty: "Fácil (2 min)", duration: 120, category: "Nivel 1: Conceptos Básicos", question: "Se lanza un dado tetraédrico (4 caras, del 1 al 4) y una moneda. ¿Cuál es el número total de resultados posibles n(Ω) en el espacio muestral?", options: ["n(Ω) = 6", "n(Ω) = 8", "n(Ω) = 12", "n(Ω) = 4"], correct: 1 },
+            { id: 2, title: "Etapa 2: Eventos en Mazo Inglés", difficulty: "Fácil (2 min)", duration: 120, category: "Nivel 1: Conceptos Básicos", question: "Al extraer una carta de un mazo inglés de 52 cartas, ¿cuántos elementos forman el evento B: 'Extraer una carta de Corazones que sea un 8, 9, 10, J, Q o K'?", options: ["3 cartas (8, 9, 10)", "4 cartas (8, 9, 10, J)", "5 cartas (8, 9, 10, J, Q)", "6 cartas (8, 9, 10, J, Q, K)"], correct: 3 },
+            { id: 3, title: "Etapa 3: Probabilidad Clásica (Urna de Colores)", difficulty: "Media (2.5 min)", duration: 150, category: "Nivel 2: Regla de Laplace", question: "Una urna contiene 6 bolitas rojas, 4 blancas y 5 azules. Si se extrae una bolita al azar, ¿cuál es la probabilidad de que NO sea de color rojo?", options: ["6/15 (40%)", "9/15 o 3/5 (60%)", "4/15 (26.6%)", "11/15 (73.3%)"], correct: 1 },
+            { id: 4, title: "Etapa 4: Unión de Eventos (Encuesta Escolar)", difficulty: "Media (3 min)", duration: 180, category: "Nivel 2: Regla de Laplace y Unión", question: "En un grupo de 40 estudiantes, 25 practican fútbol, 15 básquetbol y 8 ambos deportes. Al elegir uno al azar, ¿cuál es la probabilidad de que practique fútbol O básquetbol?", options: ["32/40 (80%)", "40/40 (100%)", "25/40 (62.5%)", "17/40 (42.5%)"], correct: 0 },
+            { id: 5, title: "Etapa 5: Producto de Probabilidades (Dados)", difficulty: "Media-Alta (3 min)", duration: 180, category: "Nivel 3: Experimentos Compuestos", question: "Se lanza un par de dados comunes de 6 caras. ¿Cuál es la probabilidad de que el producto de los números obtenidos sea mayor que 20?", options: ["5/36", "7/36", "10/36 (o 5/18)", "12/36 (1/3)"], correct: 1 },
+            { id: 6, title: "Etapa 6: El Torneo de Videojuegos (Unión Simple)", difficulty: "Media-Alta (3.5 min)", duration: 210, category: "Nivel 3: Unión de Eventos", question: "En un torneo escolar, el 50% de los alumnos juega Minecraft, el 30% juega Roblox y el 10% juega ambos. Si se elige un alumno al azar, ¿cuál es la probabilidad de que juegue Minecraft O Roblox?", options: ["80% (0,8)", "70% (0,7)", "60% (0,6)", "50% (0,5)"], correct: 1 },
+            { id: 7, title: "Etapa 7: Intersección y Clima (Días Lluviosos y Fríos)", difficulty: "Alta (4 min)", duration: 240, category: "Nivel 4: Intersección de Eventos", question: "En el mes de junio (30 días), hubo 12 días con lluvia, 18 días con frío y 8 días en que ocurrió lluvia Y frío simultáneamente. Al elegir un día al azar, ¿cuál es la probabilidad de que haya llovido Y hecho frío?", options: ["8/30 (o 4/15)", "12/30", "18/30", "20/30"], correct: 0 },
+            { id: 8, title: "Etapa 8: El Desafío de la Ruleta y los Colores", difficulty: "Alta (4 min)", duration: 240, category: "Nivel 4: Espacios Muestrales Condicionados", question: "Una ruleta tiene 12 sectores iguales numerados del 1 al 12. Sea A el evento 'obtener un número primo' y B el evento 'obtener un número par'. ¿Cuál es la probabilidad de la Intersección (A ∩ B)?", options: ["1/12 (solo el 2)", "2/12 (2 y 3)", "4/12", "3/12"], correct: 0 },
+            { id: 9, title: "Etapa 9: Selección de Delegación Escolar", difficulty: "Muy Alta (4.5 min)", duration: 270, category: "Nivel 5: Combinatoria y Probabilidad", question: "Se debe elegir una directiva de 2 personas (Presidente y Tesorero) de un grupo de 5 estudiantes (Ana, Bruno, Carla, Diego, Elena). ¿Cuántos resultados posibles tiene este espacio muestral ordenado y cuál es la probabilidad de que la directiva esté formada exclusivamente por mujeres si hay 3 mujeres y 2 hombres?", options: ["20 posibilidades totales; P = 3/20", "25 posibilidades totales; P = 4/25", "10 posibilidades totales; P = 1/5", "12 posibilidades totales; P = 1/4"], correct: 0 },
+            { id: 10, title: "Etapa 10: El Gran Dilema de las Urnas Múltiples", difficulty: "Desafío Final (5 min)", duration: 300, category: "Nivel 5: Desafío Complejo de Probabilidad", question: "Urna A tiene 3 bolitas rojas y 2 azules. Urna B tiene 2 bolitas rojas y 4 azules. Se lanza una moneda: si sale cara, se extrae de la Urna A; si sale sello, de la Urna B. ¿Cuál es la probabilidad total de extraer una bolita roja?", options: ["19/30", "1/2", "7/12", "11/30"], correct: 0 }
         ];
 
         const AVATARS = ["🚀", "🦁", "🦊", "⚡", "🤖", "🔥", "💎", "⭐", "🦄", "🍀", "🎯", "👑"];
@@ -390,7 +446,12 @@
                 this.currentStageIndex = 0;
                 this.remainingSeconds = 120;
                 this.hasAnsweredCurrentStage = false;
+                this.lastSelectedOption = null;
+                this.lastScoredStageId = null;
+                this.wasActive = false;
                 this.groupsData = {};
+                this.reviewSeconds = 600;
+                this.reviewInterval = null;
                 this.teacherPrizes = {
                     1: "Nota 7.0 acumulativa en Matemática",
                     2: "Nota 6.8 acumulativa",
@@ -401,9 +462,29 @@
             init() {
                 this.renderHomeQRCode();
                 this.subscribeToRealtimeDatabase();
+                this.startReviewTimer();
             }
 
-            openInstructions() { document.getElementById('modalInstructions').classList.remove('hidden'); }
+            startReviewTimer() {
+                if (this.reviewInterval) clearInterval(this.reviewInterval);
+                this.reviewInterval = setInterval(() => {
+                    if (this.reviewSeconds > 0) {
+                        this.reviewSeconds--;
+                        const mins = Math.floor(this.reviewSeconds / 60);
+                        const secs = this.reviewSeconds % 60;
+                        const timerEl = document.getElementById('reviewTimer');
+                        if (timerEl) {
+                            timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                        }
+                    }
+                }, 1000);
+            }
+
+            openInstructions() {
+                document.getElementById('modalInstructions').classList.remove('hidden');
+                this.renderModalQRCode();
+            }
+
             closeInstructions() { document.getElementById('modalInstructions').classList.add('hidden'); }
 
             renderHomeQRCode() {
@@ -413,7 +494,7 @@
                 const currentUrl = window.location.href;
                 urlText.innerText = currentUrl;
                 container.innerHTML = '';
-                new QRCode(container, { text: currentUrl, width: 130, height: 130, colorDark: "#0f172a", colorLight: "#ffffff" });
+                new QRCode(container, { text: currentUrl, width: 95, height: 95, colorDark: "#0f172a", colorLight: "#ffffff" });
             }
 
             renderJoinQRCode() {
@@ -423,7 +504,17 @@
                 const currentUrl = window.location.href;
                 urlText.innerText = currentUrl;
                 container.innerHTML = '';
-                new QRCode(container, { text: currentUrl, width: 110, height: 110, colorDark: "#0f172a", colorLight: "#ffffff" });
+                new QRCode(container, { text: currentUrl, width: 85, height: 85, colorDark: "#0f172a", colorLight: "#ffffff" });
+            }
+
+            renderModalQRCode() {
+                const container = document.getElementById('modalQrcodeContainer');
+                const urlText = document.getElementById('modalUrlText');
+                if (!container || !urlText) return;
+                const currentUrl = window.location.href;
+                urlText.innerText = currentUrl;
+                container.innerHTML = '';
+                new QRCode(container, { text: currentUrl, width: 85, height: 85, colorDark: "#0f172a", colorLight: "#ffffff" });
             }
 
             subscribeToRealtimeDatabase() {
@@ -436,7 +527,6 @@
                         this.groupsData = newGroups;
                         this.onGroupsUpdated();
                     }, error => {
-                        console.error("Error en Firestore onSnapshot:", error);
                         this.useLocalStorageFallback();
                     });
 
@@ -468,10 +558,16 @@
             }
 
             onGameStateUpdated(state) {
-                if (state.arenaOpen && !document.getElementById('viewStudentLobby').classList.contains('hidden')) {
-                    this.currentStageIndex = state.currentStage || 0;
-                    this.showStudentGameScreen(state);
-                } else if (state.arenaOpen && !document.getElementById('viewStudentGame').classList.contains('hidden')) {
+                if (state.remainingSeconds !== undefined) {
+                    this.remainingSeconds = state.remainingSeconds;
+                }
+
+                if (this.wasActive && !state.active) {
+                    this.processStageResults();
+                }
+                this.wasActive = state.active;
+
+                if (state.arenaOpen) {
                     this.currentStageIndex = state.currentStage || 0;
                     this.showStudentGameScreen(state);
                 }
@@ -492,9 +588,9 @@
                     const isSelected = (this.avatar === av);
 
                     if (isTaken) {
-                        return `<div style="padding: 0.35rem; font-size: 1.1rem; background: #e2e8f0; border-radius: 0.5rem; border: 1px solid #cbd5e1; text-align: center; opacity: 0.35; cursor: not-allowed;" title="Ocupado">${av}</div>`;
+                        return `<div style="padding: 0.2rem; font-size: 0.9rem; background: #e2e8f0; border-radius: 0.3rem; text-align: center; opacity: 0.35;">${av}</div>`;
                     }
-                    return `<button type="button" onclick="app.selectAvatar('${av}')" style="padding: 0.35rem; font-size: 1.1rem; background: #f8fafc; border-radius: 0.5rem; border: 2px solid ${isSelected ? '#4f46e5' : '#e2e8f0'}; cursor: pointer;">${av}</button>`;
+                    return `<button type="button" onclick="app.selectAvatar('${av}')" style="padding: 0.2rem; font-size: 0.9rem; background: #f8fafc; border-radius: 0.3rem; border: 2px solid ${isSelected ? '#4f46e5' : '#e2e8f0'}; cursor: pointer;">${av}</button>`;
                 }).join('');
             }
 
@@ -521,6 +617,11 @@
                 this.renderJoinQRCode();
             }
 
+            showStudentReview() {
+                this.hideAllViews();
+                document.getElementById('viewStudentReview').classList.remove('hidden');
+            }
+
             updateLiveJoinedGroupsUI() {
                 const listEl = document.getElementById('liveJoinedGroupsList');
                 const countEl = document.getElementById('joinGroupCount');
@@ -530,20 +631,17 @@
                 countEl.innerText = groupArray.length;
 
                 if (groupArray.length === 0) {
-                    listEl.innerHTML = `<div style="font-size: 0.65rem; color: #64748b; text-align: center; padding: 0.75rem;">Aún no hay grupos inscritos. ¡Sé el primero!</div>`;
+                    listEl.innerHTML = `<div style="font-size: 0.55rem; color: #64748b; text-align: center; padding: 0.3rem;">Aún no hay grupos.</div>`;
                     return;
                 }
 
                 listEl.innerHTML = groupArray.map(g => `
-                    <div style="background: white; border: 1px solid #e2e8f0; padding: 0.35rem 0.5rem; border-radius: 0.4rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.65rem;">
-                        <div style="display: flex; align-items: center; gap: 0.35rem;">
-                            <span style="font-size: 1rem;">${g.avatar || '🚀'}</span>
-                            <div>
-                                <span style="font-weight: 700; color: #0f172a; display: block;">${g.name}</span>
-                                <span style="font-size: 0.55rem; color: #64748b;">${g.members}</span>
-                            </div>
+                    <div style="background: white; border: 1px solid #e2e8f0; padding: 0.25rem 0.35rem; border-radius: 0.3rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.55rem;">
+                        <div style="display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="font-size: 0.8rem;">${g.avatar || '🚀'}</span>
+                            <span style="font-weight: 700; color: #0f172a;">${g.name}</span>
                         </div>
-                        <span style="font-size: 0.5rem; background: #e0e7ff; color: #3730a3; padding: 0.1rem 0.3rem; border-radius: 9999px; font-weight: 600;">En línea</span>
+                        <span style="font-size: 0.45rem; background: #e0e7ff; color: #3730a3; padding: 0.05rem 0.2rem; border-radius: 9999px;">OK</span>
                     </div>
                 `).join('');
             }
@@ -576,25 +674,14 @@
                 if (db) {
                     try {
                         await db.collection('groups').doc(gName).set(groupObj, { merge: true });
-                    } catch (err) {
-                        console.error("Error al registrar grupo en Firebase:", err);
-                    }
+                    } catch (err) {}
                 }
 
                 let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
                 localGroups[gName] = groupObj;
                 localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
 
-                this.showStudentLobby();
-            }
-
-            showStudentLobby() {
-                this.hideAllViews();
-                document.getElementById('viewStudentLobby').classList.remove('hidden');
-                document.getElementById('lobbyGroupName').innerText = `${this.avatar} ${this.groupName}`;
-                document.getElementById('lobbyMembers').innerText = `Integrantes: ${this.members}`;
-                document.getElementById('lobbyAvatarDisplay').innerText = this.avatar;
-                this.updatePersonalScoreDisplay();
+                this.showStudentReview();
             }
 
             updatePersonalScoreDisplay() {
@@ -628,12 +715,14 @@
                     const optContainer = document.getElementById('gameOptionsContainer');
                     if (!this.renderedStageId || this.renderedStageId !== stage.id) {
                         this.hasAnsweredCurrentStage = false;
+                        this.lastSelectedOption = null;
+                        document.getElementById('gameResultFeedback').classList.add('hidden');
                         document.getElementById('gameAnsweredStandby').classList.add('hidden');
                         document.getElementById('gameActiveQuestion').classList.remove('hidden');
 
                         optContainer.innerHTML = stage.options.map((opt, idx) => `
-                            <button onclick="app.submitAnswer(${idx})" style="text-align: left; padding: 0.85rem; border-radius: 0.65rem; border: 2px solid #cbd5e1; background: white; font-weight: 500; font-size: 0.8rem; color: #1e293b; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#4f46e5'; this.style.background='#e0e7ff'" onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='white'">
-                                <span style="font-weight: 700; color: #4f46e5; margin-right: 0.4rem;">${['A)', 'B)', 'C)', 'D)'][idx]}</span> ${opt}
+                            <button onclick="app.submitAnswer(${idx})" style="text-align: left; padding: 0.65rem; border-radius: 0.5rem; border: 2px solid #cbd5e1; background: white; font-weight: 500; font-size: 0.7rem; color: #1e293b; cursor: pointer;">
+                                <span style="font-weight: 700; color: #4f46e5; margin-right: 0.25rem;">${['A)', 'B)', 'C)', 'D)'][idx]}</span> ${opt}
                             </button>
                         `).join('');
                         this.renderedStageId = stage.id;
@@ -650,25 +739,49 @@
             async submitAnswer(optionIndex) {
                 if (this.hasAnsweredCurrentStage) return;
                 this.hasAnsweredCurrentStage = true;
+                this.lastSelectedOption = optionIndex;
 
                 const stage = STAGES[this.currentStageIndex];
-                const isCorrect = (optionIndex === stage.correct);
-                let pointsEarned = isCorrect ? (1000 + Math.floor(this.remainingSeconds * 2)) : 0;
 
                 if (db) {
                     try {
-                        let ref = db.collection('groups').doc(this.groupName);
-                        let doc = await ref.get();
-                        let curScore = doc.exists ? (doc.data().score || 0) : 0;
-                        await ref.update({
-                            score: curScore + pointsEarned,
-                            [`stage_${stage.id}`]: { answered: true, correct: isCorrect, points: pointsEarned }
+                        await db.collection('groups').doc(this.groupName).update({
+                            [`pending_answer_${stage.id}`]: optionIndex
                         });
                     } catch (e) {}
                 }
 
                 document.getElementById('gameActiveQuestion').classList.add('hidden');
                 document.getElementById('gameAnsweredStandby').classList.remove('hidden');
+            }
+
+            async processStageResults() {
+                const stage = STAGES[this.currentStageIndex];
+                if (this.hasAnsweredCurrentStage && this.lastScoredStageId !== stage.id) {
+                    this.lastScoredStageId = stage.id;
+                    const isCorrect = (this.lastSelectedOption === stage.correct);
+                    const pointsEarned = isCorrect ? (500 + Math.floor(this.remainingSeconds * 5)) : 0;
+
+                    if (db) {
+                        try {
+                            let ref = db.collection('groups').doc(this.groupName);
+                            let doc = await ref.get();
+                            let curScore = doc.exists ? (doc.data().score || 0) : 0;
+                            await ref.update({
+                                score: curScore + pointsEarned,
+                                [`stage_${stage.id}`]: { answered: true, correct: isCorrect, points: pointsEarned }
+                            });
+                        } catch (e) {}
+                    }
+
+                    const feedbackEl = document.getElementById('gameResultFeedback');
+                    if (feedbackEl) {
+                        feedbackEl.innerHTML = isCorrect
+                            ? `<div style="background: #d1fae5; color: #065f46; padding: 0.6rem; border-radius: 0.5rem; border: 1px solid #34d399; font-weight: 700; font-size: 0.65rem;">🎉 ¡Correcto! Ganaste ${pointsEarned} puntos.</div>`
+                            : `<div style="background: #fee2e2; color: #991b1b; padding: 0.6rem; border-radius: 0.5rem; border: 1px solid #f87171; font-weight: 700; font-size: 0.65rem;">❌ Incorrecto. La correcta era la ${['A', 'B', 'C', 'D'][stage.correct]}.</div>`;
+                        feedbackEl.classList.remove('hidden');
+                    }
+                }
             }
 
             formatTime(seconds) {
@@ -713,12 +826,12 @@
                 const btn = document.getElementById('btnArenaToggle');
                 if (state.arenaOpen) {
                     btn.style.background = "#dc2626";
-                    btn.innerText = "🔴 Bloquear Ingreso a Arena";
-                    alert("¡Acceso a la Arena HABILITADO para los estudiantes!");
+                    btn.innerText = "🔴 Bloquear Arena";
+                    alert("¡Arena HABILITADA para los estudiantes!");
                 } else {
                     btn.style.background = "#059669";
-                    btn.innerText = "🟢 Habilitar Ingreso a Arena";
-                    alert("Ingreso a la Arena BLOQUEADO.");
+                    btn.innerText = "🟢 Habilitar Arena";
+                    alert("Arena BLOQUEADA.");
                 }
             }
 
@@ -738,7 +851,7 @@
             renderTeacherStagesList() {
                 const list = document.getElementById('teacherStagesList');
                 list.innerHTML = STAGES.map((s, idx) => `
-                    <button onclick="app.selectTeacherStage(${idx})" style="width: 100%; text-align: left; padding: 0.5rem; border-radius: 0.4rem; font-size: 0.7rem; font-weight: 600; border: 1px solid #cbd5e1; cursor: pointer; background: ${idx === this.currentStageIndex ? '#4f46e5' : 'white'}; color: ${idx === this.currentStageIndex ? 'white' : '#334155'}; display: flex; justify-content: space-between;">
+                    <button onclick="app.selectTeacherStage(${idx})" style="width: 100%; text-align: left; padding: 0.35rem 0.45rem; border-radius: 0.3rem; font-size: 0.6rem; font-weight: 600; border: 1px solid #cbd5e1; cursor: pointer; background: ${idx === this.currentStageIndex ? '#4f46e5' : 'white'}; color: ${idx === this.currentStageIndex ? 'white' : '#334155'}; display: flex; justify-content: space-between;">
                         <span>Etapa ${s.id}</span>
                         <span>${Math.floor(s.duration/60)}m</span>
                     </button>
@@ -772,7 +885,7 @@
                 if (db) {
                     try { await db.collection('game_state').doc('current').set(state, { merge: true }); } catch (e) {}
                 }
-                alert(`¡Etapa ${this.currentStageIndex + 1} activada en vivo para todos los dispositivos!`);
+                alert(`¡Etapa ${this.currentStageIndex + 1} activada en vivo!`);
                 this.startTeacherTimer(customDuration);
             }
 
@@ -782,6 +895,7 @@
 
                 this.teacherTimerInterval = setInterval(async () => {
                     remaining--;
+                    this.remainingSeconds = remaining;
                     if (db) {
                         try { await db.collection('game_state').doc('current').update({ remainingSeconds: remaining }); } catch (e) {}
                     }
@@ -804,7 +918,7 @@
                             remainingSeconds: STAGES[this.currentStageIndex].duration
                         }, { merge: true }).catch(()=>{});
                     }
-                    alert(`Avanzado a Etapa ${this.currentStageIndex + 1}. Tienen pausa para dialogar antes de presionar 'Activar Pregunta'.`);
+                    alert(`Avanzado a Etapa ${this.currentStageIndex + 1}.`);
                 } else {
                     alert('Llegaron a la última etapa. Puedes mostrar el Podio.');
                 }
@@ -815,17 +929,18 @@
                 const tbody = document.getElementById('teacherGroupsTableBody');
 
                 if (Object.keys(this.groupsData).length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="padding: 0.75rem; text-align: center; color: #64748b;">No hay grupos inscritos.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" style="padding: 0.5rem; text-align: center; color: #64748b;">No hay grupos inscritos.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = Object.values(this.groupsData).sort((a,b) => (b.score || 0) - (a.score || 0)).map(g => `
                     <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 0.6rem; font-weight: 700;"><span style="font-size: 1.1rem; margin-right: 0.3rem;">${g.avatar || '🚀'}</span> ${g.name}</td>
-                        <td style="padding: 0.6rem; color: #64748b;">${g.members}</td>
-                        <td style="padding: 0.6rem; font-weight: 700; color: #4f46e5;">${g.score || 0} pts</td>
-                        <td style="padding: 0.6rem; text-align: center;">
-                            <button onclick="app.resetGroupScore('${g.name}')" style="background: #fee2e2; color: #991b1b; border: none; padding: 0.25rem 0.5rem; border-radius: 0.3rem; font-size: 0.65rem; font-weight: 600; cursor: pointer;">Reiniciar</button>
+                        <td style="padding: 0.4rem; font-weight: 700;"><span style="font-size: 0.9rem; margin-right: 0.2rem;">${g.avatar || '🚀'}</span> ${g.name}</td>
+                        <td style="padding: 0.4rem; color: #64748b;">${g.members}</td>
+                        <td style="padding: 0.4rem; font-weight: 700; color: #4f46e5;">${g.score || 0} pts</td>
+                        <td style="padding: 0.4rem; text-align: center; display: flex; gap: 0.25rem; justify-content: center;">
+                            <button onclick="app.resetGroupScore('${g.name}')" style="background: #fef3c7; color: #92400e; border: none; padding: 0.15rem 0.35rem; border-radius: 0.2rem; font-size: 0.55rem; cursor: pointer;">Reiniciar</button>
+                            <button onclick="app.deleteGroup('${g.name}')" style="background: #fee2e2; color: #991b1b; border: none; padding: 0.15rem 0.35rem; border-radius: 0.2rem; font-size: 0.55rem; cursor: pointer;">Eliminar</button>
                         </td>
                     </tr>
                 `).join('');
@@ -834,6 +949,16 @@
             async resetGroupScore(gName) {
                 if (confirm(`¿Reiniciar puntaje de ${gName}?`)) {
                     if (db) { try { await db.collection('groups').doc(gName).update({ score: 0 }); } catch(e){} }
+                }
+            }
+
+            async deleteGroup(gName) {
+                if (confirm(`¿Eliminar al grupo "${gName}"?`)) {
+                    if (db) { try { await db.collection('groups').doc(gName).delete(); } catch(e){} }
+                    let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                    delete localGroups[gName];
+                    localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
+                    this.loadGroupsTable();
                 }
             }
 
@@ -850,27 +975,28 @@
 
                 const sortedGroups = Object.values(this.groupsData).sort((a,b) => (b.score || 0) - (a.score || 0));
                 const podiumStage = document.getElementById('podiumStage');
+                
                 const podiumOrder = [
-                    { rank: 2, height: '130px', bg: '#cbd5e1', color: '#1e293b', crown: '🥈' },
-                    { rank: 1, height: '170px', bg: '#fbbf24', color: '#78350f', crown: '👑 🥇' },
-                    { rank: 3, height: '100px', bg: '#b45309', color: '#fef3c7', crown: '🥉' }
+                    { rank: 2, index: 1, height: '110px', bg: '#cbd5e1', color: '#1e293b', crown: '🥈' },
+                    { rank: 1, index: 0, height: '140px', bg: '#fbbf24', color: '#78350f', crown: '👑 🥇' },
+                    { rank: 3, index: 2, height: '80px', bg: '#b45309', color: '#fef3c7', crown: '🥉' }
                 ];
 
                 podiumStage.innerHTML = podiumOrder.map(p => {
-                    const group = sortedGroups[p.rank - 1];
-                    if (!group) return `<div style="width: 90px;"></div>`;
-                    const prizeText = this.teacherPrizes[p.rank] || 'Premio Sorpresa';
+                    const group = sortedGroups[p.index];
+                    if (!group) return `<div style="width: 85px;"></div>`;
+                    const prizeText = this.teacherPrizes[p.rank] || 'Premio';
                     return `
-                        <div style="width: 110px; display: flex; flex-direction: column; align-items: center;" class="animate-float">
-                            <div style="text-align: center; margin-bottom: 0.4rem;">
-                                <div style="font-size: 1.6rem;">${group.avatar || '🚀'}</div>
-                                <div style="font-size: 0.75rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">${group.name}</div>
-                                <div style="font-size: 0.65rem; font-weight: 700; color: #4f46e5;">${group.score || 0} pts</div>
-                                <div style="font-size: 0.55rem; background: #fce7f3; color: #9d174d; padding: 0.1rem 0.3rem; border-radius: 9999px; margin-top: 0.2rem;">🎁 ${prizeText}</div>
+                        <div style="width: 85px; display: flex; flex-direction: column; align-items: center;" class="animate-float">
+                            <div style="text-align: center; margin-bottom: 0.25rem;">
+                                <div style="font-size: 1.2rem;">${group.avatar || '🚀'}</div>
+                                <div style="font-size: 0.6rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px;">${group.name}</div>
+                                <div style="font-size: 0.55rem; font-weight: 700; color: #4f46e5;">${group.score || 0} pts</div>
+                                <div style="font-size: 0.45rem; background: #fce7f3; color: #9d174d; padding: 0.05rem 0.2rem; border-radius: 9999px; margin-top: 0.1rem;">🎁 ${prizeText}</div>
                             </div>
-                            <div style="height: ${p.height}; width: 100%; background: ${p.bg}; color: ${p.color}; border-radius: 0.85rem 0.85rem 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);">
+                            <div style="height: ${p.height}; width: 100%; background: ${p.bg}; color: ${p.color}; border-radius: 0.6rem 0.6rem 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; box-shadow: 0 6px 10px -2px rgba(0,0,0,0.2);">
                                 <span>${p.crown}</span>
-                                <span style="font-size: 0.7rem;">#${p.rank}</span>
+                                <span style="font-size: 0.55rem;">#${p.rank}</span>
                             </div>
                         </div>
                     `;
@@ -878,24 +1004,24 @@
 
                 const fullList = document.getElementById('fullRankingList');
                 fullList.innerHTML = sortedGroups.map((g, idx) => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.85rem; background: white; border-radius: 0.4rem; border: 1px solid #e2e8f0; font-size: 0.7rem;">
-                        <div style="display: flex; align-items: center; gap: 0.6rem;">
-                            <span style="font-weight: 700; color: #94a3b8;">#${sortedGroups.length - idx}</span>
-                            <span style="font-size: 1.1rem;">${g.avatar || '🚀'}</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.6rem; background: white; border-radius: 0.3rem; border: 1px solid #e2e8f0; font-size: 0.6rem;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="font-weight: 700; color: #4f46e5;">#${idx + 1}</span>
+                            <span style="font-size: 0.9rem;">${g.avatar || '🚀'}</span>
                             <div>
                                 <span style="font-weight: 700; color: #0f172a;">${g.name}</span>
-                                <span style="font-size: 0.6rem; color: #64748b; display: block;">${g.members}</span>
+                                <span style="font-size: 0.5rem; color: #64748b; display: block;">${g.members}</span>
                             </div>
                         </div>
-                        <span style="font-weight: 700; color: #4f46e5; font-size: 0.85rem;">${g.score || 0} pts</span>
+                        <span style="font-weight: 700; color: #4f46e5; font-size: 0.7rem;">${g.score || 0} pts</span>
                     </div>
-                `).reverse().join('');
+                `).join('');
 
                 confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
             }
 
             hideAllViews() {
-                ['viewRoleSelect', 'viewStudentJoin', 'viewStudentLobby', 'viewStudentGame', 'viewTeacherAuth', 'viewTeacherDashboard', 'viewPodium'].forEach(id => {
+                ['viewRoleSelect', 'viewStudentJoin', 'viewStudentReview', 'viewStudentLobby', 'viewStudentGame', 'viewTeacherAuth', 'viewTeacherDashboard', 'viewPodium'].forEach(id => {
                     document.getElementById(id).classList.add('hidden');
                 });
             }
