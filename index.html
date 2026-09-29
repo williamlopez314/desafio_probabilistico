@@ -69,43 +69,48 @@
             </div>
         </div>
 
-        <!-- VISTA 1: REGISTRO / ACCESO DE ESTUDIANTES + GRUPOS INSCRITOS EN VIVO -->
-        <div id="viewStudentJoin" class="hidden glass-panel" style="max-width: 700px; margin: 0 auto; padding: 2rem;">
+        <!-- VISTA 1: REGISTRO / ACCESO DE ESTUDIANTES + QR + GRUPOS EN VIVO -->
+        <div id="viewStudentJoin" class="hidden glass-panel" style="max-width: 850px; margin: 0 auto; padding: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.85rem; font-weight: 600;">← Volver</button>
-                <span style="background: #fce7f3; color: #9d174d; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">Inscripción</span>
+                <span style="background: #fce7f3; color: #9d174d; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">Inscripción de Equipos</span>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
-                <!-- Formulario -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; align-items: start;">
+                <!-- Columna 1: Formulario -->
                 <div>
-                    <h2 style="font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">Registro de Equipo</h2>
-                    <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 1rem;">Crea tu grupo o reingresa si te desconectaste.</p>
+                    <h2 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">Registro de Grupo</h2>
+                    <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.75rem;">Crea tu grupo o reingresa si te desconectaste.</p>
 
-                    <form onsubmit="app.handleStudentJoin(event)" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <form onsubmit="app.handleStudentJoin(event)" style="display: flex; flex-direction: column; gap: 0.6rem;">
                         <div>
-                            <label style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Nombre del Grupo</label>
-                            <input type="text" id="inputGroupName" required placeholder="Ej. Los Probabilistas" class="input-field" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">
+                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Nombre del Grupo</label>
+                            <input type="text" id="inputGroupName" required placeholder="Ej. Los Probabilistas" class="input-field" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Integrantes (Máx. 4)</label>
-                            <input type="text" id="inputMembers" required placeholder="Ej. Ana, Carlos, Sofía" class="input-field" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">
+                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Integrantes (Máx. 4)</label>
+                            <input type="text" id="inputMembers" required placeholder="Ej. Ana, Carlos, Sofía" class="input-field" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.3rem;">Elige tu Avatar</label>
-                            <div id="avatarGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem;"></div>
+                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Elige tu Avatar (No repetibles)</label>
+                            <div id="avatarGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.25rem;"></div>
                         </div>
-                        <button type="submit" class="btn-primary" style="margin-top: 0.3rem; font-size: 0.9rem; padding: 0.6rem;">¡Entrar al Reto! 🚀</button>
+                        <button type="submit" class="btn-primary" style="margin-top: 0.2rem; font-size: 0.85rem; padding: 0.5rem;">¡Entrar al Reto! 🚀</button>
                     </form>
                 </div>
 
-                <!-- Grupos Ya Inscritos en Vivo -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 1rem; max-height: 420px; overflow-y: auto;">
-                    <h3 style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-                        <span>👥 Grupos Inscritos (<span id="joinGroupCount">0</span>)</span>
-                    </h3>
-                    <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.75rem;">Equipos listos para la competencia:</p>
-                    <div id="liveJoinedGroupsList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <!-- Columna 2: Código QR de Acceso -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 1rem; text-align: center;">
+                    <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.3rem;">📱 Escanea con tu Celular</h3>
+                    <p style="font-size: 0.6rem; color: #64748b; margin-bottom: 0.75rem;">Accede instantáneamente a la actividad.</p>
+                    <div id="joinQrcodeContainer" style="background: white; padding: 0.5rem; border-radius: 0.75rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.5rem;"></div>
+                    <div id="joinUrlText" style="font-size: 0.55rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.4rem; border-radius: 0.4rem;"></div>
+                </div>
+
+                <!-- Columna 3: Grupos Inscritos en Vivo -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 1rem; max-height: 400px; overflow-y: auto;">
+                    <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">👥 Inscritos (<span id="joinGroupCount">0</span>)</h3>
+                    <div id="liveJoinedGroupsList" style="display: flex; flex-direction: column; gap: 0.4rem;">
                         <!-- Dinámico -->
                     </div>
                 </div>
@@ -216,7 +221,6 @@
                 </div>
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
                     <button onclick="app.toggleArenaAccess()" id="btnArenaToggle" style="background: #059669; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">🟢 Habilitar Ingreso a Arena</button>
-                    <button onclick="app.showQRCodeModal()" style="background: #e0e7ff; color: #3730a3; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">📱 QR</button>
                     <button onclick="app.showRoleSelect()" style="background: #e2e8f0; color: #334155; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Salir</button>
                 </div>
             </div>
@@ -327,17 +331,6 @@
 
     </main>
 
-    <!-- Modal QR -->
-    <div id="modalQRCode" class="hidden" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 50; display: flex; align-items: center; justify-content: center; padding: 1rem;">
-        <div class="glass-panel" style="max-width: 320px; width: 100%; text-align: center; padding: 2rem; position: relative;">
-            <button onclick="app.closeQRCodeModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
-            <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Escanea para Unirte</h3>
-            <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 1rem;">Usa tu celular para ingresar a la actividad.</p>
-            <div id="qrcode" style="background: white; padding: 0.75rem; border-radius: 1rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 1rem;"></div>
-            <div id="currentUrlText" style="font-size: 0.65rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.5rem; border-radius: 0.5rem;"></div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer>
         Colegio Pucará • Matemática 2° Medio | Profesor William López González & DIE Yasmín Mardones Guerrero
@@ -365,7 +358,6 @@
             document.getElementById('statusDot').style.background = "#818cf8";
         }
 
-        // 10 Etapas basadas estrictamente en la guía, con tiempos graduados (2 min las fáciles hasta 5 min las de mayor dificultad)
         const STAGES = [
             { id: 1, title: "Etapa 1: Espacio Muestral (Dado Tetraédrico y Moneda)", difficulty: "Fácil (2 min)", duration: 120, category: "Parte I: Experimentos Aleatorios", question: "Se lanza un dado tetraédrico (4 caras, del 1 al 4) y una moneda. ¿Cuál es el número total de resultados posibles n(Ω) en el espacio muestral?", options: ["n(Ω) = 6", "n(Ω) = 8", "n(Ω) = 12", "n(Ω) = 4"], correct: 1 },
             { id: 2, title: "Etapa 2: Eventos en Mazo Inglés", difficulty: "Fácil (2 min)", duration: 120, category: "Parte I: Experimentos Aleatorios", question: "Al extraer una carta de un mazo inglés de 52 cartas, ¿cuántos elementos forman el evento B: 'Extraer una carta de Corazones mayor o igual a 8 (sin contar K, Q, J)'?", options: ["3 cartas (8, 9, 10)", "4 cartas (8, 9, 10, As)", "5 cartas (8, 9, 10, J, Q)", "6 cartas"], correct: 0 },
@@ -385,7 +377,7 @@
             constructor() {
                 this.groupName = localStorage.getItem('pucara_groupName') || '';
                 this.members = localStorage.getItem('pucara_members') || '';
-                this.avatar = localStorage.getItem('pucara_avatar') || '🚀';
+                this.avatar = localStorage.getItem('pucara_avatar') || '';
                 this.currentStageIndex = 0;
                 this.remainingSeconds = 120;
                 this.hasAnsweredCurrentStage = false;
@@ -397,18 +389,56 @@
             }
 
             init() {
-                this.renderAvatarGrid();
                 this.startLiveGroupsPolling();
             }
 
-            renderAvatarGrid() {
+            async getStoredGroups() {
+                let groups = {};
+                if (db) {
+                    try {
+                        let snapshot = await db.collection('groups').get();
+                        snapshot.forEach(doc => { groups[doc.id] = doc.data(); });
+                    } catch (e) {}
+                }
+                if (Object.keys(groups).length === 0) {
+                    groups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                }
+                return groups;
+            }
+
+            async renderAvatarGrid() {
                 const grid = document.getElementById('avatarGrid');
                 if (!grid) return;
-                grid.innerHTML = AVATARS.map(av => `
-                    <button type="button" onclick="app.selectAvatar('${av}')" style="padding: 0.4rem; font-size: 1.3rem; background: #f8fafc; border-radius: 0.5rem; border: 2px solid ${this.avatar === av ? '#4f46e5' : '#e2e8f0'}; cursor: pointer; transition: transform 0.2s;">
-                        ${av}
-                    </button>
-                `).join('');
+                
+                const groups = await this.getStoredGroups();
+                // Obtener avatares ya elegidos por otros grupos (excluyendo el grupo actual si ya está registrado)
+                const takenAvatars = Object.values(groups)
+                    .filter(g => g.name !== this.groupName)
+                    .map(g => g.avatar);
+
+                // Si el avatar actual del usuario está tomado por otro (raro caso de conflicto), limpiarlo
+                if (takenAvatars.includes(this.avatar)) {
+                    this.avatar = '';
+                }
+
+                grid.innerHTML = AVATARS.map(av => {
+                    const isTaken = takenAvatars.includes(av);
+                    const isSelected = (this.avatar === av);
+                    
+                    if (isTaken) {
+                        return `
+                            <div style="padding: 0.4rem; font-size: 1.2rem; background: #e2e8f0; border-radius: 0.5rem; border: 2px solid #cbd5e1; text-align: center; opacity: 0.4; cursor: not-allowed;" title="Avatar Ocupado">
+                                ${av}
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <button type="button" onclick="app.selectAvatar('${av}')" style="padding: 0.4rem; font-size: 1.2rem; background: #f8fafc; border-radius: 0.5rem; border: 2px solid ${isSelected ? '#4f46e5' : '#e2e8f0'}; cursor: pointer; transition: transform 0.2s;">
+                            ${av}
+                        </button>
+                    `;
+                }).join('');
             }
 
             selectAvatar(av) {
@@ -428,7 +458,26 @@
                     document.getElementById('inputGroupName').value = this.groupName;
                     document.getElementById('inputMembers').value = this.members;
                 }
+                await this.renderAvatarGrid();
                 await this.updateLiveJoinedGroups();
+                this.renderJoinQRCode();
+            }
+
+            renderJoinQRCode() {
+                const container = document.getElementById('joinQrcodeContainer');
+                const urlText = document.getElementById('joinUrlText');
+                if (!container || !urlText) return;
+
+                const currentUrl = window.location.href;
+                urlText.innerText = currentUrl;
+                container.innerHTML = '';
+                new QRCode(container, {
+                    text: currentUrl,
+                    width: 130,
+                    height: 130,
+                    colorDark: "#0f172a",
+                    colorLight: "#ffffff"
+                });
             }
 
             startLiveGroupsPolling() {
@@ -442,17 +491,7 @@
             }
 
             async updateLiveJoinedGroups() {
-                let groups = {};
-                if (db) {
-                    try {
-                        let snapshot = await db.collection('groups').get();
-                        snapshot.forEach(doc => { groups[doc.id] = doc.data(); });
-                    } catch (e) {}
-                }
-                if (Object.keys(groups).length === 0) {
-                    groups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
-                }
-
+                let groups = await this.getStoredGroups();
                 const listEl = document.getElementById('liveJoinedGroupsList');
                 const countEl = document.getElementById('joinGroupCount');
                 if (!listEl || !countEl) return;
@@ -461,20 +500,20 @@
                 countEl.innerText = groupArray.length;
 
                 if (groupArray.length === 0) {
-                    listEl.innerHTML = `<div style="font-size: 0.7rem; color: #64748b; text-align: center; padding: 1rem;">Aún no hay grupos inscritos. ¡Sé el primero!</div>`;
+                    listEl.innerHTML = `<div style="font-size: 0.65rem; color: #64748b; text-align: center; padding: 1rem;">Aún no hay grupos inscritos. ¡Sé el primero!</div>`;
                     return;
                 }
 
                 listEl.innerHTML = groupArray.map(g => `
-                    <div style="background: white; border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-size: 1.2rem;">${g.avatar || '🚀'}</span>
+                    <div style="background: white; border: 1px solid #e2e8f0; padding: 0.4rem 0.6rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="font-size: 1.1rem;">${g.avatar || '🚀'}</span>
                             <div>
                                 <span style="font-weight: 700; color: #0f172a; display: block;">${g.name}</span>
-                                <span style="font-size: 0.65rem; color: #64748b;">${g.members}</span>
+                                <span style="font-size: 0.6rem; color: #64748b;">${g.members}</span>
                             </div>
                         </div>
-                        <span style="font-size: 0.65rem; background: #e0e7ff; color: #3730a3; padding: 0.1rem 0.4rem; border-radius: 9999px; font-weight: 600;">Listo</span>
+                        <span style="font-size: 0.55rem; background: #e0e7ff; color: #3730a3; padding: 0.1rem 0.3rem; border-radius: 9999px; font-weight: 600;">Registrado</span>
                     </div>
                 `).join('');
             }
@@ -483,7 +522,12 @@
                 e.preventDefault();
                 const gName = document.getElementById('inputGroupName').value.trim();
                 const mems = document.getElementById('inputMembers').value.trim();
+                
                 if (!gName || !mems) return;
+                if (!this.avatar) {
+                    alert("Por favor selecciona un avatar disponible.");
+                    return;
+                }
 
                 this.groupName = gName;
                 this.members = mems;
@@ -524,15 +568,9 @@
 
             async updatePersonalScoreDisplay() {
                 let score = 0;
-                if (db) {
-                    try {
-                        let doc = await db.collection('groups').doc(this.groupName).get();
-                        if (doc.exists) score = doc.data().score || 0;
-                    } catch (e) {}
-                }
-                if (score === 0) {
-                    let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
-                    if (localGroups[this.groupName]) score = localGroups[this.groupName].score || 0;
+                let groups = await this.getStoredGroups();
+                if (groups[this.groupName]) {
+                    score = groups[this.groupName].score || 0;
                 }
                 const scoreEl = document.getElementById('lobbyPersonalScore');
                 if (scoreEl) scoreEl.innerText = score;
@@ -617,11 +655,11 @@
             }
 
             async addScoreToGroup(gName, points, stageId, isCorrect) {
-                let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
-                if (localGroups[gName]) {
-                    localGroups[gName].score = (localGroups[gName].score || 0) + points;
-                    localGroups[gName][`stage_${stageId}`] = { answered: true, correct: isCorrect, points };
-                    localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
+                let groups = await this.getStoredGroups();
+                if (groups[gName]) {
+                    groups[gName].score = (groups[gName].score || 0) + points;
+                    groups[gName][`stage_${stageId}`] = { answered: true, correct: isCorrect, points };
+                    localStorage.setItem('pucara_groups', JSON.stringify(groups));
                 }
                 if (db) {
                     try {
@@ -785,17 +823,7 @@
             }
 
             async loadGroups() {
-                let groups = {};
-                if (db) {
-                    try {
-                        let snapshot = await db.collection('groups').get();
-                        snapshot.forEach(doc => { groups[doc.id] = doc.data(); });
-                    } catch (e) {}
-                }
-                if (Object.keys(groups).length === 0) {
-                    groups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
-                }
-
+                let groups = await this.getStoredGroups();
                 document.getElementById('teacherGroupCount').innerText = Object.keys(groups).length;
                 const tbody = document.getElementById('teacherGroupsTableBody');
                 
@@ -818,10 +846,10 @@
 
             async resetGroupScore(gName) {
                 if (confirm(`¿Reiniciar puntaje de ${gName}?`)) {
-                    let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
-                    if (localGroups[gName]) {
-                        localGroups[gName].score = 0;
-                        localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
+                    let groups = await this.getStoredGroups();
+                    if (groups[gName]) {
+                        groups[gName].score = 0;
+                        localStorage.setItem('pucara_groups', JSON.stringify(groups));
                     }
                     if (db) { try { await db.collection('groups').doc(gName).update({ score: 0 }); } catch(e){} }
                     this.loadGroups();
@@ -839,17 +867,7 @@
                 this.hideAllViews();
                 document.getElementById('viewPodium').classList.remove('hidden');
 
-                let groups = {};
-                if (db) {
-                    try {
-                        let snapshot = await db.collection('groups').get();
-                        snapshot.forEach(doc => { groups[doc.id] = doc.data(); });
-                    } catch (e) {}
-                }
-                if (Object.keys(groups).length === 0) {
-                    groups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
-                }
-
+                let groups = await this.getStoredGroups();
                 const sortedGroups = Object.values(groups).sort((a,b) => (b.score || 0) - (a.score || 0));
                 const podiumStage = document.getElementById('podiumStage');
                 const podiumOrder = [
@@ -895,16 +913,6 @@
 
                 confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
             }
-
-            showQRCodeModal() {
-                document.getElementById('modalQRCode').classList.remove('hidden');
-                const url = window.location.href;
-                document.getElementById('currentUrlText').innerText = url;
-                document.getElementById('qrcode').innerHTML = '';
-                new QRCode(document.getElementById('qrcode'), { text: url, width: 160, height: 160, colorDark: "#0f172a", colorLight: "#ffffff" });
-            }
-
-            closeQRCodeModal() { document.getElementById('modalQRCode').classList.add('hidden'); }
 
             hideAllViews() {
                 ['viewRoleSelect', 'viewStudentJoin', 'viewStudentLobby', 'viewStudentGame', 'viewTeacherAuth', 'viewTeacherDashboard', 'viewPodium'].forEach(id => {
