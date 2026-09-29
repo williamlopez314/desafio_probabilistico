@@ -45,7 +45,7 @@
         <div style="display: flex; align-items: center; gap: 0.75rem;">
             <!-- BOTÓN DE INSTRUCCIONES SIEMPRE VISIBLE -->
             <button onclick="app.openInstructions()" style="background: #312e81; color: #c7d2fe; border: 1px solid #4338ca; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
-                📖 Instrucciones
+                📖 Instrucciones y QR
             </button>
 
             <!-- Estado de Conexión BD -->
@@ -158,7 +158,7 @@
                 <div style="font-size: 2.5rem; margin-bottom: 0.5rem;" class="animate-float">⏳</div>
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">Esperando la indicación del Profesor</h3>
                 <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">El botón de la Arena se activará en tu dispositivo cuando el docente inicie la ronda.</p>
-                <button onclick="app.openInstructions()" class="btn-primary" style="font-size: 0.75rem; padding: 0.5rem 1rem;">📖 Repasar Instrucciones del Juego</button>
+                <button onclick="app.openInstructions()" class="btn-primary" style="font-size: 0.75rem; padding: 0.5rem 1rem;">📖 Repasar Instrucciones y QR</button>
             </div>
         </div>
 
@@ -320,16 +320,24 @@
 
     </main>
 
-    <!-- MODAL DE INSTRUCCIONES PERMANENTE -->
+    <!-- MODAL DE INSTRUCCIONES Y QR PERMANENTE -->
     <div id="modalInstructions" class="hidden" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;">
-        <div class="glass-panel" style="max-width: 550px; width: 100%; padding: 1.75rem; position: relative;">
+        <div class="glass-panel" style="max-width: 600px; width: 100%; padding: 1.75rem; position: relative; max-height: 90vh; overflow-y: auto;">
             <button onclick="app.closeInstructions()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
-            <h3 style="font-size: 1.2rem; font-weight: 700; color: #312e81; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">📖 Reglamento del Juego</h3>
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: #312e81; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">📖 Reglamento del Juego y Acceso QR</h3>
+            
+            <!-- QR dentro de las instrucciones -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 0.75rem; text-align: center; margin-bottom: 1rem;">
+                <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.4rem; font-weight: 600;">📱 Escanea este código para unirte desde cualquier dispositivo</p>
+                <div id="modalQrcodeContainer" style="background: white; padding: 0.3rem; border-radius: 0.5rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.3rem;"></div>
+                <div id="modalUrlText" style="font-size: 0.5rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.25rem; border-radius: 0.3rem;"></div>
+            </div>
+
             <ul style="font-size: 0.75rem; color: #334155; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; line-height: 1.4;">
                 <li><strong>Modalidad Grupal:</strong> Resuelvan las preguntas en equipo. La actividad consta de 10 etapas secuenciales de probabilidad.</li>
                 <li><strong>Acceso a la Arena:</strong> El botón de ingreso solo se activa cuando el profesor deshabilite el bloqueo docente desde su panel.</li>
                 <li><strong>Tiempos y Pausas:</strong> Cada etapa incluye un cronómetro en vivo. Al vencer el tiempo o responder, hay una pausa para dialogar y revisar la respuesta antes de la siguiente etapa.</li>
-                <li><strong>Puntaje por Velocidad y Acierto:</strong> Cada respuesta correcta otorga una base fija de 500 puntos más un bono proporcional al tiempo restante.</li>
+                <li><strong>Puntaje por Velocidad y Acierto:</strong> Cada respuesta correcta otorga 500 puntos base más un bono proporcional al tiempo restante.</li>
                 <li><strong>Avatares Únicos:</strong> Cada equipo debe seleccionar un avatar que no haya sido tomado por otro grupo.</li>
             </ul>
             <button onclick="app.closeInstructions()" class="btn-primary" style="margin-top: 1.25rem; width: 100%; font-size: 0.8rem; padding: 0.6rem;">Entendido, ¡volver!</button>
@@ -403,7 +411,11 @@
                 this.subscribeToRealtimeDatabase();
             }
 
-            openInstructions() { document.getElementById('modalInstructions').classList.remove('hidden'); }
+            openInstructions() {
+                document.getElementById('modalInstructions').classList.remove('hidden');
+                this.renderModalQRCode();
+            }
+
             closeInstructions() { document.getElementById('modalInstructions').classList.add('hidden'); }
 
             renderHomeQRCode() {
@@ -424,6 +436,16 @@
                 urlText.innerText = currentUrl;
                 container.innerHTML = '';
                 new QRCode(container, { text: currentUrl, width: 110, height: 110, colorDark: "#0f172a", colorLight: "#ffffff" });
+            }
+
+            renderModalQRCode() {
+                const container = document.getElementById('modalQrcodeContainer');
+                const urlText = document.getElementById('modalUrlText');
+                if (!container || !urlText) return;
+                const currentUrl = window.location.href;
+                urlText.innerText = currentUrl;
+                container.innerHTML = '';
+                new QRCode(container, { text: currentUrl, width: 100, height: 100, colorDark: "#0f172a", colorLight: "#ffffff" });
             }
 
             subscribeToRealtimeDatabase() {
