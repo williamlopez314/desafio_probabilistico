@@ -378,16 +378,16 @@
         }
 
         const STAGES = [
-            { id: 1, title: "Etapa 1: Espacio Muestral (Dado Tetraédrico y Moneda)", difficulty: "Fácil (2 min)", duration: 120, category: "Parte I: Experimentos Aleatorios", question: "Se lanza un dado tetraédrico (4 caras, del 1 al 4) y una moneda. ¿Cuál es el número total de resultados posibles n(Ω) en el espacio muestral?", options: ["n(Ω) = 6", "n(Ω) = 8", "n(Ω) = 12", "n(Ω) = 4"], correct: 1 },
-            { id: 2, title: "Etapa 2: Eventos en Mazo Inglés", difficulty: "Fácil (2 min)", duration: 120, category: "Parte I: Experimentos Aleatorios", question: "Al extraer una carta de un mazo inglés de 52 cartas, ¿cuántos elementos forman el evento B: 'Extraer una carta de Corazones mayor o igual a 8 (sin contar K, Q, J)'?", options: ["3 cartas (8, 9, 10)", "4 cartas (8, 9, 10, As)", "5 cartas (8, 9, 10, J, Q)", "6 cartas"], correct: 0 },
-            { id: 3, title: "Etapa 3: Probabilidad Clásica (Regla de Laplace)", difficulty: "Media (3 min)", duration: 180, category: "Parte II: Probabilidad Clásica", question: "Una urna contiene 6 bolitas rojas, 4 blancas y 5 azules. Si se extrae una bolita al azar, ¿cuál es la probabilidad de que NO sea de color rojo?", options: ["6/15 (40%)", "9/15 o 3/5 (60%)", "4/15 (26.6%)", "11/15 (73.3%)"], correct: 1 },
-            { id: 4, title: "Etapa 4: Unión de Eventos y Encuestas", difficulty: "Media (3 min)", duration: 180, category: "Parte II: Probabilidad Clásica", question: "En un grupo de 40 personas, 25 hablan inglés, 15 francés y 8 ambos. Al seleccionar una persona, ¿cuál es la probabilidad de que hable inglés O francés?", options: ["32/40 (80%)", "40/40 (100%)", "25/40 (62.5%)", "17/40 (42.5%)"], correct: 0 },
-            { id: 5, title: "Etapa 5: Producto de Probabilidades (Dados)", difficulty: "Media-Alta (3.5 min)", duration: 210, category: "Parte II: Probabilidad Clásica", question: "Se lanza un par de dados comunes de 6 caras. ¿Cuál es la probabilidad de que el producto de los números obtenidos sea mayor que 20?", options: ["5/36", "7/36", "10/36 (o 5/18)", "12/36 (1/3)"], correct: 1 },
-            { id: 6, title: "Etapa 6: Variable Aleatoria Discreta (Lanzamiento de Dado)", difficulty: "Alta (4 min)", duration: 240, category: "Parte III: Variable Aleatoria Discreta", question: "Sea X la variable aleatoria 'Puntaje obtenido al lanzar un dado común'. ¿Cuál es el valor de P(X = x) para cada cara y qué propiedad cumple la sumatoria Σ P(X = x)?", options: ["Cada probabilidad es 1/6 y su suma es igual a 1", "Cada probabilidad es 1/36 y su suma es 1", "Cada probabilidad es 1/6 y su suma es 6", "Cada probabilidad depende del puntaje y suma 0"], correct: 0 },
-            { id: 7, title: "Etapa 7: Distribución de Probabilidad Familiar", difficulty: "Alta (4 min)", duration: 240, category: "Parte III: Variable Aleatoria Discreta", question: "Para una familia con 3 hijos (p=0,5 para niño/niña), sea X = 'Número de niñas'. ¿Cuál es la probabilidad de que en la familia haya AL MENOS 2 niñas P(X ≥ 2)?", options: ["1/8 (12.5%)", "3/8 (37.5%)", "4/8 o 1/2 (50%)", "7/8 (87.5%)"], correct: 2 },
-            { id: 8, title: "Etapa 8: Constante k en Función de Probabilidad", difficulty: "Muy Alta (4.5 min)", duration: 270, category: "Parte III: Variable Aleatoria Discreta", question: "Dada la función P(X = x) = k·x para x en {1, 2, 3, 4}, ¿cuál es el valor exacto de la constante k?", options: ["k = 1/5", "k = 1/10", "k = 1/4", "k = 1/12"], correct: 1 },
-            { id: 9, title: "Etapa 9: Diferencia Absoluta en Dos Dados", difficulty: "Muy Alta (5 min)", duration: 300, category: "Parte III: Variable Aleatoria Discreta", question: "Se lanzan dos dados estándar. Sea X = 'Diferencia en valor absoluto entre los puntos'. ¿Cuál es la probabilidad P(X = 0)?", options: ["1/36", "6/36 (o 1/6)", "12/36 (1/3)", "2/36"], correct: 1 },
-            { id: 10, title: "Etapa 10: Variable Aleatoria con Ruleta de Feria", difficulty: "Desafío Final (5 min)", duration: 300, category: "Parte III: Variable Aleatoria Discreta", question: "Ruleta de 8 sectores (1 al 8): Par gana $500; Impar divisible por 3 (solo el 3) gana $1.000; el 1 gana $0. Si W es el dinero ganado, ¿cuál es la probabilidad P(W ≥ 500)?", options: ["4/8 (pares 2,4,6,8)", "5/8 (pares 2,4,6,8 + el 3)", "3/8", "6/8"], correct: 1 }
+            { id: 1, title: "Etapa 1: Espacio Muestral (Dado Tetraédrico y Moneda)", difficulty: "Fácil (2 min)", duration: 120, category: "Nivel 1: Conceptos Básicos", question: "Se lanza un dado tetraédrico (4 caras, del 1 al 4) y una moneda. ¿Cuál es el número total de resultados posibles n(Ω) en el espacio muestral?", options: ["n(Ω) = 6", "n(Ω) = 8", "n(Ω) = 12", "n(Ω) = 4"], correct: 1 },
+            { id: 2, title: "Etapa 2: Eventos en Mazo Inglés", difficulty: "Fácil (2 min)", duration: 120, category: "Nivel 1: Conceptos Básicos", question: "Al extraer una carta de un mazo inglés de 52 cartas, ¿cuántos elementos forman el evento B: 'Extraer una carta de Corazones que sea un 8, 9, 10, J, Q o K'?", options: ["3 cartas (8, 9, 10)", "4 cartas (8, 9, 10, J)", "5 cartas (8, 9, 10, J, Q)", "6 cartas (8, 9, 10, J, Q, K)"], correct: 3 },
+            { id: 3, title: "Etapa 3: Probabilidad Clásica (Urna de Colores)", difficulty: "Media (2.5 min)", duration: 150, category: "Nivel 2: Regla de Laplace", question: "Una urna contiene 6 bolitas rojas, 4 blancas y 5 azules. Si se extrae una bolita al azar, ¿cuál es la probabilidad de que NO sea de color rojo?", options: ["6/15 (40%)", "9/15 o 3/5 (60%)", "4/15 (26.6%)", "11/15 (73.3%)"], correct: 1 },
+            { id: 4, title: "Etapa 4: Unión de Eventos (Encuesta Escolar)", difficulty: "Media (3 min)", duration: 180, category: "Nivel 2: Regla de Laplace y Unión", question: "En un grupo de 40 estudiantes, 25 practican fútbol, 15 básquetbol y 8 ambos deportes. Al elegir uno al azar, ¿cuál es la probabilidad de que practique fútbol O básquetbol?", options: ["32/40 (80%)", "40/40 (100%)", "25/40 (62.5%)", "17/40 (42.5%)"], correct: 0 },
+            { id: 5, title: "Etapa 5: Producto de Probabilidades (Lanzamiento de Dados)", difficulty: "Media-Alta (3 min)", duration: 180, category: "Nivel 3: Experimentos Compuestos", question: "Se lanza un par de dados comunes de 6 caras. ¿Cuál es la probabilidad de que el producto de los números obtenidos sea mayor que 20?", options: ["5/36", "7/36", "10/36 (o 5/18)", "12/36 (1/3)"], correct: 1 },
+            { id: 6, title: "Etapa 6: El Torneo de Videojuegos (Unión Simple)", difficulty: "Media-Alta (3.5 min)", duration: 210, category: "Nivel 3: Unión de Eventos", question: "En un torneo escolar, el 50% de los alumnos juega Minecraft, el 30% juega Roblox y el 10% juega ambos. Si se elige un alumno al azar, ¿cuál es la probabilidad de que juegue Minecraft O Roblox?", options: ["80% (0,8)", "70% (0,7)", "60% (0,6)", "50% (0,5)"], correct: 1 },
+            { id: 7, title: "Etapa 7: Intersección y Clima (Días Lluviosos y Fríos)", difficulty: "Alta (4 min)", duration: 240, category: "Nivel 4: Intersección de Eventos", question: "En el mes de junio (30 días), hubo 12 días con lluvia, 18 días con frío y 8 días en que ocurrió lluvia Y frío simultáneamente. Al elegir un día al azar, ¿cuál es la probabilidad de que haya tenido frío Sabiendo que llovió (o intersección respecto al total)? ¿Cuál es la probabilidad de que haya llovido Y hecho frío?", options: ["8/30 (o 4/15)", "12/30", "18/30", "20/30"], correct: 0 },
+            { id: 8, title: "Etapa 8: El Desafío de la Ruleta y los Colores", difficulty: "Alta (4 min)", duration: 240, category: "Nivel 4: Espacios Muestrales Condicionados", question: "Una ruleta tiene 12 sectores iguales numerados del 1 al 12. Sea A el evento 'obtener un número primo' y B el evento 'obtener un número par'. ¿Cuál es la probabilidad de la Intersección (A ∩ B)?", options: ["1/12 (solo el 2)", "2/12 (2 y 3)", "4/12", "3/12"], correct: 0 },
+            { id: 9, title: "Etapa 9: Selección de Delegación Escolar", difficulty: "Muy Alta (4.5 min)", duration: 270, category: "Nivel 5: Combinatoria y Probabilidad", question: "Se debe elegir una directiva de 2 personas (Presidente y Tesorero) de un grupo de 5 estudiantes (Ana, Bruno, Carla, Diego, Elena). ¿Cuántos resultados posibles tiene este espacio muestral ordenado y cuál es la probabilidad de que la directiva esté formada exclusivamente por mujeres si hay 3 mujeres y 2 hombres?", options: ["20 posibilidades totales; P = 3/20", "25 posibilidades totales; P = 4/25", "10 posibilidades totales; P = 1/5", "12 posibilidades totales; P = 1/4"], correct: 0 },
+            { id: 10, title: "Etapa 10: El Gran Dilema de las Urnas Múltiples", difficulty: "Desafío Final (5 min)", duration: 300, category: "Nivel 5: Desafío Complejo de Probabilidad", question: "Urna A tiene 3 bolitas rojas y 2 azules. Urna B tiene 2 bolitas rojas y 4 azules. Se lanza una moneda: si sale cara, se extrae de la Urna A; si sale sello, de la Urna B. ¿Cuál es la probabilidad total de extraer una bolita roja?", options: ["19/30", "1/2", "7/12", "11/30"], correct: 0 }
         ];
 
         const AVATARS = ["🚀", "🦁", "🦊", "⚡", "🤖", "🔥", "💎", "⭐", "🦄", "🍀", "🎯", "👑"];
@@ -499,7 +499,6 @@
                     this.remainingSeconds = state.remainingSeconds;
                 }
 
-                // Detectar cuando el docente cierra/termina la etapa (active pasa de true a false)
                 if (this.wasActive && !state.active) {
                     this.processStageResults();
                 }
@@ -693,7 +692,6 @@
 
                 const stage = STAGES[this.currentStageIndex];
 
-                // Guardamos de forma silenciosa sin calcular ni mostrar puntos aún
                 if (db) {
                     try {
                         await db.collection('groups').doc(this.groupName).update({
@@ -725,7 +723,6 @@
                         } catch (e) {}
                     }
 
-                    // Mostrar el resultado en la pantalla de pausa solo ahora que terminó el tiempo
                     const feedbackEl = document.getElementById('gameResultFeedback');
                     if (feedbackEl) {
                         feedbackEl.innerHTML = isCorrect
@@ -929,15 +926,16 @@
 
                 const sortedGroups = Object.values(this.groupsData).sort((a,b) => (b.score || 0) - (a.score || 0));
                 const podiumStage = document.getElementById('podiumStage');
+                
                 const podiumOrder = [
-                    { rank: 2, height: '130px', bg: '#cbd5e1', color: '#1e293b', crown: '🥈' },
-                    { rank: 1, height: '170px', bg: '#fbbf24', color: '#78350f', crown: '👑 🥇' },
-                    { rank: 3, height: '100px', bg: '#b45309', color: '#fef3c7', crown: '🥉' }
+                    { rank: 2, index: 1, height: '130px', bg: '#cbd5e1', color: '#1e293b', crown: '🥈' },
+                    { rank: 1, index: 0, height: '170px', bg: '#fbbf24', color: '#78350f', crown: '👑 🥇' },
+                    { rank: 3, index: 2, height: '100px', bg: '#b45309', color: '#fef3c7', crown: '🥉' }
                 ];
 
                 podiumStage.innerHTML = podiumOrder.map(p => {
-                    const group = sortedGroups[p.rank - 1];
-                    if (!group) return `<div style="width: 90px;"></div>`;
+                    const group = sortedGroups[p.index];
+                    if (!group) return `<div style="width: 110px;"></div>`;
                     const prizeText = this.teacherPrizes[p.rank] || 'Premio Sorpresa';
                     return `
                         <div style="width: 110px; display: flex; flex-direction: column; align-items: center;" class="animate-float">
@@ -959,7 +957,7 @@
                 fullList.innerHTML = sortedGroups.map((g, idx) => `
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.85rem; background: white; border-radius: 0.4rem; border: 1px solid #e2e8f0; font-size: 0.7rem;">
                         <div style="display: flex; align-items: center; gap: 0.6rem;">
-                            <span style="font-weight: 700; color: #94a3b8;">#${sortedGroups.length - idx}</span>
+                            <span style="font-weight: 700; color: #4f46e5;">#${idx + 1}</span>
                             <span style="font-size: 1.1rem;">${g.avatar || '🚀'}</span>
                             <div>
                                 <span style="font-weight: 700; color: #0f172a;">${g.name}</span>
@@ -968,7 +966,7 @@
                         </div>
                         <span style="font-weight: 700; color: #4f46e5; font-size: 0.85rem;">${g.score || 0} pts</span>
                     </div>
-                `).reverse().join('');
+                `).join('');
 
                 confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
             }
