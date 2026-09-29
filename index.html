@@ -343,7 +343,6 @@
 
     <!-- Lógica de la Aplicación -->
     <script>
-        // Configuración de Firebase integrada para 'juegoproba'
         const firebaseConfig = {
             apiKey: "AIzaSyDugAP1NxNBo7yyS4WTdr2np4PmwImoWvM",
             authDomain: "juegoproba.firebaseapp.com",
@@ -431,10 +430,13 @@
                 if (db) {
                     db.collection('groups').onSnapshot(snapshot => {
                         let newGroups = {};
-                        snapshot.forEach(doc => { newGroups[doc.id] = doc.data(); });
+                        snapshot.forEach(doc => {
+                            newGroups[doc.id] = doc.data();
+                        });
                         this.groupsData = newGroups;
                         this.onGroupsUpdated();
-                    }, err => {
+                    }, error => {
+                        console.error("Error en Firestore onSnapshot:", error);
                         this.useLocalStorageFallback();
                     });
 
@@ -453,7 +455,7 @@
                 setInterval(() => {
                     this.groupsData = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
                     this.onGroupsUpdated();
-                }, 2000);
+                }, 1500);
             }
 
             onGroupsUpdated() {
@@ -572,8 +574,13 @@
                 };
 
                 if (db) {
-                    try { await db.collection('groups').doc(gName).set(groupObj, { merge: true }); } catch (e) {}
+                    try {
+                        await db.collection('groups').doc(gName).set(groupObj, { merge: true });
+                    } catch (err) {
+                        console.error("Error al registrar grupo en Firebase:", err);
+                    }
                 }
+
                 let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
                 localGroups[gName] = groupObj;
                 localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
