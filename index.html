@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desafío Probabilístico - 2° Medio | Colegio Pucará</title>
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs (v9 compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- QRCodeJS -->
@@ -22,138 +23,146 @@
         .hidden { display: none !important; }
         .animate-float { animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-        header { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); border-bottom: 1px solid #334155; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
-        main { flex-grow: 1; max-width: 1000px; width: 100%; margin: 2rem auto; padding: 0 1rem; display: flex; flex-direction: column; justify-content: center; }
-        footer { text-align: center; padding: 1.5rem; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid #1e293b; }
+        header { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); border-bottom: 1px solid #334155; padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; gap: 0.5rem; }
+        main { flex-grow: 1; max-width: 1000px; width: 100%; margin: 1.5rem auto; padding: 0 1rem; display: flex; flex-direction: column; justify-content: center; }
+        footer { text-align: center; padding: 1.25rem; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid #1e293b; }
     </style>
 </head>
 <body>
 
-    <!-- Header Principal -->
+    <!-- Header Principal Permanente -->
     <header>
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div style="background: linear-gradient(135deg, #4f46e5, #db2777); padding: 0.6rem; border-radius: 1rem; color: white;" class="animate-float">
+            <div style="background: linear-gradient(135deg, #4f46e5, #db2777); padding: 0.5rem; border-radius: 0.8rem; color: white;" class="animate-float">
                 🎲
             </div>
             <div>
-                <h1 style="font-size: 1.25rem; font-weight: 700; background: linear-gradient(90deg, #93c5fd, #f472b6, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Desafío Probabilístico</h1>
-                <p style="font-size: 0.7rem; color: #94a3b8;">Colegio Pucará • Matemática 2° Medio | Prof. William López González</p>
+                <h1 style="font-size: 1.1rem; font-weight: 700; background: linear-gradient(90deg, #93c5fd, #f472b6, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Desafío Probabilístico</h1>
+                <p style="font-size: 0.65rem; color: #94a3b8;">Colegio Pucará • 2° Medio | Prof. William López González</p>
             </div>
         </div>
-        <div id="connectionStatus" style="display: flex; align-items: center; gap: 0.5rem; background: #1e293b; padding: 0.4rem 0.8rem; border-radius: 9999px; border: 1px solid #334155; font-size: 0.75rem; color: #fbbf24;">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #fbbf24;" id="statusDot"></span>
-            <span id="statusText">Configurando Sistema...</span>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <!-- BOTÓN DE INSTRUCCIONES SIEMPRE VISIBLE -->
+            <button onclick="app.openInstructions()" style="background: #312e81; color: #c7d2fe; border: 1px solid #4338ca; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
+                📖 Instrucciones
+            </button>
+
+            <!-- Estado de Conexión BD -->
+            <div id="connectionStatus" style="display: flex; align-items: center; gap: 0.4rem; background: #1e293b; padding: 0.35rem 0.7rem; border-radius: 9999px; border: 1px solid #334155; font-size: 0.7rem; color: #fbbf24;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: #fbbf24;" id="statusDot"></span>
+                <span id="statusText">Cargando BD...</span>
+            </div>
         </div>
     </header>
 
     <!-- Contenedor Principal Dinámico -->
     <main>
 
-        <!-- VISTA 0: CONFIGURACIÓN INICIAL / SELECCIÓN DE ROL + QR EN EL INICIO -->
-        <div id="viewRoleSelect" class="glass-panel" style="max-width: 750px; margin: 0 auto; padding: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+        <!-- VISTA 0: INICIO / SELECCIÓN DE ROL + QR INICIAL -->
+        <div id="viewRoleSelect" class="glass-panel" style="max-width: 750px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center;">
             <div style="text-align: left;">
-                <span style="background: #e0e7ff; color: #3730a3; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase;">Actividad Interactiva</span>
-                <h2 style="font-size: 1.6rem; font-weight: 700; margin: 0.75rem 0 0.5rem; color: #0f172a;">¡Bienvenidos al Reto de Probabilidades!</h2>
-                <p style="font-size: 0.8rem; color: #475569; margin-bottom: 1.5rem;">Selecciona cómo deseas participar en esta experiencia grupal cronometrada.</p>
+                <span style="background: #e0e7ff; color: #3730a3; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px; text-transform: uppercase;">Actividad Grupal</span>
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0.5rem 0 0.4rem; color: #0f172a;">¡Bienvenidos al Reto de Probabilidades!</h2>
+                <p style="font-size: 0.75rem; color: #475569; margin-bottom: 1.25rem;">Selecciona cómo deseas participar en esta experiencia grupal cronometrada.</p>
                 
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    <button onclick="app.showStudentJoin()" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; padding: 1rem; border-radius: 1rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 1rem; transition: transform 0.2s;" onmouseover="this.style.transform='translateX(3px)'" onmouseout="this.style.transform='translateX(0)'">
-                        <div style="font-size: 1.8rem;">👥</div>
+                <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                    <button onclick="app.showStudentJoin()" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; padding: 0.85rem; border-radius: 0.85rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 0.8rem;">
+                        <div style="font-size: 1.6rem;">👥</div>
                         <div>
-                            <div style="font-size: 0.95rem; font-weight: 700;">Soy Estudiante</div>
-                            <div style="font-size: 0.65rem; color: #c7d2fe;">Únete con tu equipo</div>
+                            <div style="font-size: 0.9rem; font-weight: 700;">Soy Estudiante</div>
+                            <div style="font-size: 0.6rem; color: #c7d2fe;">Inscribe a tu equipo</div>
                         </div>
                     </button>
-                    <button onclick="app.showTeacherAuth()" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: 1px solid #334155; padding: 1rem; border-radius: 1rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 1rem; transition: transform 0.2s;" onmouseover="this.style.transform='translateX(3px)'" onmouseout="this.style.transform='translateX(0)'">
-                        <div style="font-size: 1.8rem;">👨‍🏫</div>
+                    <button onclick="app.showTeacherAuth()" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: 1px solid #334155; padding: 0.85rem; border-radius: 0.85rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 0.8rem;">
+                        <div style="font-size: 1.6rem;">👨‍🏫</div>
                         <div>
-                            <div style="font-size: 0.95rem; font-weight: 700;">Panel Docente</div>
-                            <div style="font-size: 0.65rem; color: #94a3b8;">Controla la partida</div>
+                            <div style="font-size: 0.9rem; font-weight: 700;">Panel Docente</div>
+                            <div style="font-size: 0.6rem; color: #94a3b8;">Control de la sala</div>
                         </div>
                     </button>
                 </div>
             </div>
 
-            <!-- Código QR Integrado en el Inicio -->
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 1rem; text-align: center;">
-                <h3 style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">📱 Escanea para Unirte</h3>
-                <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.75rem;">Abre la actividad desde tu celular.</p>
-                <div id="homeQrcodeContainer" style="background: white; padding: 0.5rem; border-radius: 0.75rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.5rem;"></div>
-                <div id="homeUrlText" style="font-size: 0.55rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.4rem; border-radius: 0.4rem;"></div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; text-align: center;">
+                <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">📱 Escanea para Entrar</h3>
+                <p style="font-size: 0.6rem; color: #64748b; margin-bottom: 0.6rem;">Abre el juego desde tu celular.</p>
+                <div id="homeQrcodeContainer" style="background: white; padding: 0.4rem; border-radius: 0.6rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.4rem;"></div>
+                <div id="homeUrlText" style="font-size: 0.55rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.3rem; border-radius: 0.4rem;"></div>
             </div>
         </div>
 
-        <!-- VISTA 1: REGISTRO / ACCESO DE ESTUDIANTES + GRUPOS EN VIVO -->
-        <div id="viewStudentJoin" class="hidden glass-panel" style="max-width: 750px; margin: 0 auto; padding: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.85rem; font-weight: 600;">← Volver</button>
-                <span style="background: #fce7f3; color: #9d174d; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">Inscripción de Equipos</span>
+        <!-- VISTA 1: INSCRIPCIÓN DE ESTUDIANTES + QR + GRUPOS EN VIVO -->
+        <div id="viewStudentJoin" class="hidden glass-panel" style="max-width: 850px; margin: 0 auto; padding: 1.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.8rem; font-weight: 600;">← Volver</button>
+                <span style="background: #fce7f3; color: #9d174d; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Registro de Equipos</span>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
-                <!-- Columna 1: Formulario -->
+            <div style="display: grid; grid-template-columns: 1fr 200px 1fr; gap: 1.25rem; align-items: start;">
+                <!-- Formulario -->
                 <div>
-                    <h2 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">Registro de Grupo</h2>
-                    <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.75rem;">Crea tu grupo o reingresa si te desconectaste.</p>
+                    <h2 style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">Tu Equipo</h2>
+                    <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.6rem;">Selecciona un avatar único.</p>
 
-                    <form onsubmit="app.handleStudentJoin(event)" style="display: flex; flex-direction: column; gap: 0.6rem;">
+                    <form onsubmit="app.handleStudentJoin(event)" style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <div>
-                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Nombre del Grupo</label>
+                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.15rem;">Nombre del Grupo</label>
                             <input type="text" id="inputGroupName" required placeholder="Ej. Los Probabilistas" class="input-field" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Integrantes (Máx. 4)</label>
+                            <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.15rem;">Integrantes (Máx. 4)</label>
                             <input type="text" id="inputMembers" required placeholder="Ej. Ana, Carlos, Sofía" class="input-field" style="padding: 0.4rem 0.6rem; font-size: 0.75rem;">
                         </div>
                         <div>
                             <label style="display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.2rem;">Elige tu Avatar (No repetibles)</label>
                             <div id="avatarGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.25rem;"></div>
                         </div>
-                        <button type="submit" class="btn-primary" style="margin-top: 0.2rem; font-size: 0.85rem; padding: 0.5rem;">¡Entrar al Reto! 🚀</button>
+                        <button type="submit" class="btn-primary" style="margin-top: 0.2rem; font-size: 0.8rem; padding: 0.5rem;">¡Unirse a la Espera! 🚀</button>
                     </form>
                 </div>
 
-                <!-- Columna 2: Grupos Inscritos en Vivo -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 1rem; max-height: 400px; overflow-y: auto;">
-                    <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">👥 Inscritos (<span id="joinGroupCount">0</span>)</h3>
-                    <div id="liveJoinedGroupsList" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                        <!-- Dinámico -->
-                    </div>
+                <!-- Código QR de la Pestaña -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem; border-radius: 0.85rem; text-align: center;">
+                    <h3 style="font-size: 0.75rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">📱 Código QR</h3>
+                    <p style="font-size: 0.55rem; color: #64748b; margin-bottom: 0.5rem;">Escanear desde otro móvil</p>
+                    <div id="joinQrcodeContainer" style="background: white; padding: 0.3rem; border-radius: 0.5rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.3rem;"></div>
+                    <div id="joinUrlText" style="font-size: 0.5rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.25rem; border-radius: 0.3rem;"></div>
+                </div>
+
+                <!-- Grupos Inscritos en Vivo -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem; border-radius: 0.85rem; max-height: 380px; overflow-y: auto;">
+                    <h3 style="font-size: 0.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">👥 Grupos Inscritos (<span id="joinGroupCount">0</span>)</h3>
+                    <div id="liveJoinedGroupsList" style="display: flex; flex-direction: column; gap: 0.35rem;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA 2: SALA DE ESPERA / INSTRUCCIONES + LECTURA OBLIGATORIA -->
+        <!-- VISTA 2: SALA DE ESPERA DE ESTUDIANTES -->
         <div id="viewStudentLobby" class="hidden glass-panel" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem;">
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div id="lobbyAvatarDisplay" style="width: 50px; height: 50px; border-radius: 1rem; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;"></div>
                     <div>
-                        <h2 id="lobbyGroupName" style="font-size: 1.25rem; font-weight: 700; color: #0f172a;"></h2>
-                        <p id="lobbyMembers" style="font-size: 0.75rem; color: #64748b;"></p>
+                        <h2 id="lobbyGroupName" style="font-size: 1.2rem; font-weight: 700; color: #0f172a;"></h2>
+                        <p id="lobbyMembers" style="font-size: 0.7rem; color: #64748b;"></p>
                     </div>
                 </div>
                 <div style="text-align: right;">
                     <div style="font-size: 0.75rem; font-weight: 700; color: #4f46e5;">Tu Puntaje: <span id="lobbyPersonalScore">0</span> pts</div>
-                    <span style="background: #fef3c7; color: #92400e; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Esperando pase docente...</span>
+                    <span style="background: #fef3c7; color: #92400e; font-size: 0.6rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px;">En sala de espera</span>
                 </div>
             </div>
             
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; margin-bottom: 1.5rem;">
-                <h3 style="font-size: 0.95rem; font-weight: 700; color: #312e81; margin-bottom: 0.75rem;">📖 Instrucciones del Juego (Lee mientras esperas al resto de grupos)</h3>
-                <ul style="font-size: 0.75rem; color: #334155; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;">
-                    <li><strong>Dinámica Grupal:</strong> La actividad consta de 10 etapas secuenciales basadas en la guía de probabilidad de 2° Medio.</li>
-                    <li><strong>Acceso a la Arena:</strong> Ningún grupo puede ingresar a responder hasta que el profesor habilite el acceso general desde su panel.</li>
-                    <li><strong>Tiempos y Pausas:</strong> Cada etapa tiene un tiempo reverso (de 2 a 5 minutos). Entre pregunta y pregunta habrá una pausa docente para conversar, revisar aciertos y debatir.</li>
-                    <li><strong>Puntaje Privado:</strong> Solo tú ves tu puntaje acumulado en tu dispositivo. El ranquin general y los premios sorpresa se revelarán al final en el podio.</li>
-                </ul>
-            </div>
-            <div id="lobbyAccessMessage" style="text-align: center; font-size: 0.85rem; color: #059669; font-weight: 600;">
-                ⏳ El profesor pronto habilitará el ingreso a la Arena de Preguntas...
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;" class="animate-float">⏳</div>
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">Esperando la indicación del Profesor</h3>
+                <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">El botón de la Arena se activará en tu dispositivo cuando el docente inicie la ronda.</p>
+                <button onclick="app.openInstructions()" class="btn-primary" style="font-size: 0.75rem; padding: 0.5rem 1rem;">📖 Repasar Instrucciones del Juego</button>
             </div>
         </div>
 
-        <!-- VISTA 3: PANTALLA DE JUEGO / ARENA (ESTUDIANTE) -->
+        <!-- VISTA 3: ARENA DE JUEGO (ESTUDIANTE) -->
         <div id="viewStudentGame" class="hidden glass-panel" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; padding: 0.75rem 1.25rem; border-radius: 1rem; margin-bottom: 1.5rem;">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -161,69 +170,59 @@
                     <span id="gameTeamDisplay" style="font-size: 0.9rem; font-weight: 700;">Grupo</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div style="font-size: 0.8rem; color: #34d399; font-weight: 700;">Puntaje: <span id="gameLiveScore">0</span> pts</div>
+                    <div style="font-size: 0.8rem; color: #34d399; font-weight: 700;">Tu Puntaje: <span id="gameLiveScore">0</span> pts</div>
                     <div style="display: flex; align-items: center; gap: 0.3rem; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">
                         ⏱️ <span id="gameTimer">02:00</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Estado: Esperando Inicio de Pregunta por el Docente -->
-            <div id="gameWaitingStart" style="text-align: center; padding: 3rem 1rem;">
-                <div style="width: 70px; height: 70px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem;" class="animate-float">
-                    ⏸️
-                </div>
-                <h3 style="font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Pausa Docente / Esperando Siguiente Pregunta</h3>
-                <p style="font-size: 0.75rem; color: #64748b;">Comenten la pregunta anterior, consulten sus dudas y esperen a que el profesor active la siguiente etapa desde su panel.</p>
+            <!-- Estado: Pausa Docente -->
+            <div id="gameWaitingStart" style="text-align: center; padding: 2.5rem 1rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;" class="animate-float">⏸️</div>
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">Pausa Docente / Debate en Clase</h3>
+                <p style="font-size: 0.75rem; color: #64748b;">Comenten la pregunta anterior. El profesor activará la siguiente etapa en breve.</p>
             </div>
 
             <!-- Estado: Pregunta Activa -->
-            <div id="gameActiveQuestion" class="hidden" style="display: flex; flex-direction: column; gap: 1.5rem;">
-                <div style="background: #e0e7ff; border: 1px solid #c7d2fe; padding: 1.25rem; border-radius: 1rem;">
-                    <span id="gameQuestionCategory" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #4f46e5; display: block; margin-bottom: 0.4rem;"></span>
-                    <h3 id="gameQuestionText" style="font-size: 1.05rem; color: #0f172a; font-weight: 600; line-height: 1.5;"></h3>
+            <div id="gameActiveQuestion" class="hidden" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div style="background: #e0e7ff; border: 1px solid #c7d2fe; padding: 1.1rem; border-radius: 1rem;">
+                    <span id="gameQuestionCategory" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #4f46e5; display: block; margin-bottom: 0.3rem;"></span>
+                    <h3 id="gameQuestionText" style="font-size: 1rem; color: #0f172a; font-weight: 600; line-height: 1.4;"></h3>
                 </div>
-                <div id="gameOptionsContainer" style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;"></div>
+                <div id="gameOptionsContainer" style="display: grid; grid-template-columns: 1fr; gap: 0.6rem;"></div>
             </div>
 
-            <!-- Estado: Standby (Respondido) -->
-            <div id="gameAnsweredStandby" class="hidden" style="text-align: center; padding: 3rem 1rem;">
-                <div style="width: 70px; height: 70px; background: #d1fae5; color: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem;">
-                    ✅
-                </div>
-                <h3 style="font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">¡Respuesta Registrada!</h3>
-                <p style="font-size: 0.75rem; color: #64748b;">Has asegurado tu participación en esta etapa. Espera la pausa docente.</p>
+            <!-- Estado: Respondido -->
+            <div id="gameAnsweredStandby" class="hidden" style="text-align: center; padding: 2.5rem 1rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✅</div>
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">¡Respuesta Registrada!</h3>
+                <p style="font-size: 0.75rem; color: #64748b;">Espera a que finalice el tiempo o el profesor avance de etapa.</p>
             </div>
         </div>
 
-        <!-- VISTA 4: AUTENTICACIÓN DOCENTE -->
+        <!-- VISTA 4: LOGIN DOCENTE -->
         <div id="viewTeacherAuth" class="hidden glass-panel" style="max-width: 400px; margin: 0 auto; padding: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.85rem; font-weight: 600;">← Volver</button>
-                <span style="background: #fef3c7; color: #92400e; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">Restringido</span>
+                <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.8rem; font-weight: 600;">← Volver</button>
+                <span style="background: #fef3c7; color: #92400e; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Restringido</span>
             </div>
-            <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div style="width: 50px; height: 50px; background: #fef3c7; color: #d97706; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.75rem;">
-                    🔒
-                </div>
-                <h2 style="font-size: 1.35rem; font-weight: 700; color: #0f172a;">Panel Docente Pucará</h2>
-                <p style="font-size: 0.75rem; color: #64748b;">Ingrese la clave de profesor para continuar.</p>
+            <div style="text-align: center; margin-bottom: 1.25rem;">
+                <h2 style="font-size: 1.3rem; font-weight: 700; color: #0f172a;">Panel Docente</h2>
+                <p style="font-size: 0.75rem; color: #64748b;">Clave de acceso institucional</p>
             </div>
-            <form onsubmit="app.handleTeacherAuth(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-                <div>
-                    <label style="display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 0.3rem;">Contraseña Docente</label>
-                    <input type="password" id="inputTeacherPass" required placeholder="••••••••" class="input-field" autocomplete="current-password">
-                </div>
-                <button type="submit" class="btn-primary" style="background: #0f172a; margin-top: 0.5rem;">Acceder al Panel ⚙️</button>
+            <form onsubmit="app.handleTeacherAuth(event)" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <input type="password" id="inputTeacherPass" required placeholder="••••••••" class="input-field" autocomplete="current-password">
+                <button type="submit" class="btn-primary" style="background: #0f172a;">Acceder al Panel ⚙️</button>
             </form>
         </div>
 
-        <!-- VISTA 5: PANEL DE CONTROL DOCENTE -->
-        <div id="viewTeacherDashboard" class="hidden glass-panel" style="max-width: 900px; margin: 0 auto; padding: 2.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <!-- VISTA 5: PANEL DOCENTE -->
+        <div id="viewTeacherDashboard" class="hidden glass-panel" style="max-width: 900px; margin: 0 auto; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
                 <div>
-                    <h2 style="font-size: 1.5rem; font-weight: 700; color: #0f172a;">Panel de Control Docente</h2>
-                    <p style="font-size: 0.75rem; color: #64748b;">Control de acceso a la arena, cronómetros y pausas</p>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: #0f172a;">Control General Docente</h2>
+                    <p style="font-size: 0.7rem; color: #64748b;">Sincronizado en tiempo real con los estudiantes</p>
                 </div>
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
                     <button onclick="app.toggleArenaAccess()" id="btnArenaToggle" style="background: #059669; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">🟢 Habilitar Ingreso a Arena</button>
@@ -232,56 +231,55 @@
             </div>
 
             <!-- Pestañas Docente -->
-            <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                <button onclick="app.switchTeacherTab('control')" id="tabBtnControl" class="btn-primary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">Control Etapas (1-10)</button>
-                <button onclick="app.switchTeacherTab('groups')" id="tabBtnGroups" style="background: #e2e8f0; color: #334155; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; cursor: pointer;">Grupos (<span id="teacherGroupCount">0</span>)</button>
-                <button onclick="app.switchTeacherTab('settings')" id="tabBtnSettings" style="background: #e2e8f0; color: #334155; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; cursor: pointer;">Premios & Podio</button>
+            <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
+                <button onclick="app.switchTeacherTab('control')" id="tabBtnControl" class="btn-primary" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">Control Etapas (1-10)</button>
+                <button onclick="app.switchTeacherTab('groups')" id="tabBtnGroups" style="background: #e2e8f0; color: #334155; border: none; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Grupos (<span id="teacherGroupCount">0</span>)</button>
+                <button onclick="app.switchTeacherTab('settings')" id="tabBtnSettings" style="background: #e2e8f0; color: #334155; border: none; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Premios & Podio</button>
             </div>
 
             <!-- Tab 1: Control -->
-            <div id="teacherTabControl" style="display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem;">
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 1rem; max-height: 400px; overflow-y: auto;">
-                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem;">📋 Etapas (1 al 10)</h4>
-                    <div id="teacherStagesList" style="display: flex; flex-direction: column; gap: 0.4rem;"></div>
+            <div id="teacherTabControl" style="display: grid; grid-template-columns: 250px 1fr; gap: 1.25rem;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem; border-radius: 0.85rem; max-height: 380px; overflow-y: auto;">
+                    <h4 style="font-size: 0.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">📋 Lista de Etapas</h4>
+                    <div id="teacherStagesList" style="display: flex; flex-direction: column; gap: 0.35rem;"></div>
                 </div>
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.1rem; border-radius: 0.85rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
                     <div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                            <span id="teacherCurrentStageBadge" style="background: #4f46e5; color: white; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Etapa 1 de 10</span>
-                            <span id="teacherStageDifficulty" style="font-size: 0.75rem; color: #64748b; font-weight: 600;"></span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span id="teacherCurrentStageBadge" style="background: #4f46e5; color: white; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 9999px;">Etapa 1 de 10</span>
+                            <span id="teacherStageDifficulty" style="font-size: 0.7rem; color: #64748b; font-weight: 600;"></span>
                         </div>
-                        <h4 id="teacherQuestionTitle" style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;"></h4>
+                        <h4 id="teacherQuestionTitle" style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;"></h4>
                         <p id="teacherQuestionContent" style="font-size: 0.75rem; color: #334155; background: white; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; margin-bottom: 0.5rem;"></p>
-                        <div style="font-size: 0.7rem; color: #64748b;">Alternativas: <span id="teacherQuestionOptionsSummary"></span></div>
+                        <div style="font-size: 0.65rem; color: #64748b;">Alternativas: <span id="teacherQuestionOptionsSummary"></span></div>
                     </div>
                     
-                    <div style="border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <label style="font-size: 0.7rem; font-weight: 700; color: #475569;">Tiempo (seg):</label>
-                            <input type="number" id="inputCustomDuration" value="120" style="width: 70px; padding: 0.4rem; border-radius: 0.5rem; border: 1px solid #cbd5e1; text-align: center; font-size: 0.75rem;">
+                    <div style="border-top: 1px solid #e2e8f0; padding-top: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <label style="font-size: 0.65rem; font-weight: 700; color: #475569;">Tiempo (seg):</label>
+                            <input type="number" id="inputCustomDuration" value="120" style="width: 65px; padding: 0.35rem; border-radius: 0.4rem; border: 1px solid #cbd5e1; text-align: center; font-size: 0.75rem;">
                         </div>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button onclick="app.teacherStartQuestion()" style="background: #059669; color: white; border: none; padding: 0.6rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">▶️ Activar Pregunta</button>
-                            <button onclick="app.teacherNextStage()" style="background: #4f46e5; color: white; border: none; padding: 0.6rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Siguiente ➡️</button>
+                        <div style="display: flex; gap: 0.4rem;">
+                            <button onclick="app.teacherStartQuestion()" style="background: #059669; color: white; border: none; padding: 0.5rem 0.85rem; border-radius: 0.4rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">▶️ Activar Pregunta</button>
+                            <button onclick="app.teacherNextStage()" style="background: #4f46e5; color: white; border: none; padding: 0.5rem 0.85rem; border-radius: 0.4rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Siguiente ➡️</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Tab 2: Groups -->
-            <div id="teacherTabGroups" class="hidden" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div id="teacherTabGroups" class="hidden" style="display: flex; flex-direction: column; gap: 0.85rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a;">Grupos Participantes</h3>
-                    <button onclick="app.loadGroups()" style="background: #e0e7ff; color: #3730a3; border: none; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;">🔄 Actualizar</button>
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Grupos Conectados en Tiempo Real</h3>
                 </div>
-                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 1rem; overflow-x: auto;">
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 0.85rem; overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem;">
                         <thead>
                             <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569;">
-                                <th style="padding: 0.75rem;">Avatar & Grupo</th>
-                                <th style="padding: 0.75rem;">Integrantes</th>
-                                <th style="padding: 0.75rem;">Puntaje</th>
-                                <th style="padding: 0.75rem; text-align: center;">Acción</th>
+                                <th style="padding: 0.6rem;">Avatar & Grupo</th>
+                                <th style="padding: 0.6rem;">Integrantes</th>
+                                <th style="padding: 0.6rem;">Puntaje</th>
+                                <th style="padding: 0.6rem; text-align: center;">Acción</th>
                             </tr>
                         </thead>
                         <tbody id="teacherGroupsTableBody"></tbody>
@@ -289,53 +287,54 @@
                 </div>
             </div>
 
-            <!-- Tab 3: Settings & Prizes -->
-            <div id="teacherTabSettings" class="hidden" style="display: flex; flex-direction: column; gap: 1.5rem;">
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem;">
-                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">🏆 Configuración de Premios (Podio Top 3)</h3>
-                    <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">Ajusta los premios sorpresa que se revelarán al finalizar el juego.</p>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
-                        <div>
-                            <label style="display: block; font-size: 0.7rem; font-weight: 700; color: #b45309; margin-bottom: 0.3rem;">🥇 1° Lugar</label>
-                            <input type="text" id="inputPrize1" value="Nota 7.0 acumulativa en Matemática + Premio Sorpresa Pucará" class="input-field" style="font-size: 0.75rem;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 0.7rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">🥈 2° Lugar</label>
-                            <input type="text" id="inputPrize2" value="Nota 6.8 acumulativa + Kit escolar especial" class="input-field" style="font-size: 0.75rem;">
-                        </div>
-                        <div>
-                            <label style="display: block; font-size: 0.7rem; font-weight: 700; color: #92400e; margin-bottom: 0.3rem;">🥉 3° Lugar</label>
-                            <input type="text" id="inputPrize3" value="Nota 6.5 acumulativa + Dulces institucionales" class="input-field" style="font-size: 0.75rem;">
-                        </div>
+            <!-- Tab 3: Settings -->
+            <div id="teacherTabSettings" class="hidden" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.85rem;">
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">🏆 Configurar Premios</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 0.85rem;">
+                        <input type="text" id="inputPrize1" value="Nota 7.0 acumulativa en Matemática" class="input-field" style="font-size: 0.7rem;">
+                        <input type="text" id="inputPrize2" value="Nota 6.8 acumulativa" class="input-field" style="font-size: 0.7rem;">
+                        <input type="text" id="inputPrize3" value="Nota 6.5 acumulativa" class="input-field" style="font-size: 0.7rem;">
                     </div>
-                    <button onclick="app.savePrizes()" class="btn-primary" style="font-size: 0.75rem; padding: 0.5rem 1rem;">Guardar Premios</button>
+                    <button onclick="app.savePrizes()" class="btn-primary" style="font-size: 0.7rem; padding: 0.4rem 0.8rem;">Guardar Premios</button>
                 </div>
 
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem;">
-                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">🏁 Finalizar Actividad y Ver Podio</h3>
-                    <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">Calcula el ranking definitivo y muestra el podio de ganadores con confeti y premios.</p>
-                    <button onclick="app.showPodiumScreen()" class="btn-primary" style="background: linear-gradient(135deg, #d97706, #db2777); font-size: 0.9rem;">🏆 Lanzar Podio y Revelar Premios</button>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.85rem;">
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">🏁 Podio Final</h3>
+                    <button onclick="app.showPodiumScreen()" class="btn-primary" style="background: linear-gradient(135deg, #d97706, #db2777); font-size: 0.85rem;">🏆 Revelar Podio General</button>
                 </div>
             </div>
         </div>
 
         <!-- VISTA 6: PODIO Y RANKING FINAL -->
-        <div id="viewPodium" class="hidden glass-panel" style="max-width: 800px; margin: 0 auto; padding: 2.5rem; text-align: center;">
-            <span style="background: #fef3c7; color: #92400e; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 1rem; border-radius: 9999px; text-transform: uppercase;">🏆 Resultados Finales</span>
-            <h2 style="font-size: 1.8rem; font-weight: 700; color: #0f172a; margin: 0.75rem 0 0.25rem;">Podio de Campeones - 2° Medio</h2>
-            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 2rem;">¡Excelente desempeño en el Reto de Probabilidades y Combinatoria!</p>
-
-            <div id="podiumStage" style="display: flex; justify-content: center; align-items: flex-end; gap: 1rem; margin-bottom: 2.5rem; min-height: 280px;"></div>
-
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 1rem; text-align: left; margin-bottom: 1.5rem;">
-                <h3 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem;">Clasificación General (Desde el último al 1°)</h3>
-                <div id="fullRankingList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        <div id="viewPodium" class="hidden glass-panel" style="max-width: 800px; margin: 0 auto; padding: 2rem; text-align: center;">
+            <span style="background: #fef3c7; color: #92400e; font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.8rem; border-radius: 9999px;">🏆 Resultados Finales</span>
+            <h2 style="font-size: 1.6rem; font-weight: 700; color: #0f172a; margin: 0.5rem 0 0.2rem;">Podio de Campeones</h2>
+            <div id="podiumStage" style="display: flex; justify-content: center; align-items: flex-end; gap: 0.8rem; margin: 1.5rem 0; min-height: 250px;"></div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.85rem; text-align: left; margin-bottom: 1.25rem;">
+                <h3 style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Clasificación General</h3>
+                <div id="fullRankingList" style="display: flex; flex-direction: column; gap: 0.4rem;"></div>
             </div>
-
             <button onclick="app.showRoleSelect()" class="btn-primary" style="background: #0f172a;">Volver al Inicio</button>
         </div>
 
     </main>
+
+    <!-- MODAL DE INSTRUCCIONES PERMANENTE -->
+    <div id="modalInstructions" class="hidden" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem;">
+        <div class="glass-panel" style="max-width: 550px; width: 100%; padding: 1.75rem; position: relative;">
+            <button onclick="app.closeInstructions()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: #312e81; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">📖 Reglamento del Juego</h3>
+            <ul style="font-size: 0.75rem; color: #334155; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; line-height: 1.4;">
+                <li><strong>Modalidad Grupal:</strong> Resuelvan las preguntas en equipo. La actividad consta de 10 etapas secuenciales de probabilidad.</li>
+                <li><strong>Acceso a la Arena:</strong> El botón de ingreso solo se activa cuando el profesor deshabilite el bloqueo docente desde su panel.</li>
+                <li><strong>Tiempos y Pausas:</strong> Cada etapa incluye un cronómetro en vivo. Al vencer el tiempo o responder, hay una pausa para dialogar y revisar la respuesta antes de la siguiente etapa.</li>
+                <li><strong>Avatares Únicos:</strong> Cada equipo debe seleccionar un avatar que no haya sido tomado por otro grupo.</li>
+                <li><strong>Puntaje Privado:</strong> Durante el juego, solo verás tu propio puntaje acumulado en tu pantalla. La tabla general se mostrará al final en el Podio.</li>
+            </ul>
+            <button onclick="app.closeInstructions()" class="btn-primary" style="margin-top: 1.25rem; width: 100%; font-size: 0.8rem; padding: 0.6rem;">Entendido, ¡volver!</button>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -344,23 +343,28 @@
 
     <!-- Lógica de la Aplicación -->
     <script>
+        // Configuración de Firebase integrada para 'juegoproba'
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForPucaraMathApp2026",
-            authDomain: "pucara-math-app.firebaseapp.com",
-            projectId: "pucara-math-app",
-            storageBucket: "pucara-math-app.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef"
+            apiKey: "AIzaSyDugAP1NxNBo7yyS4WTdr2np4PmwImoWvM",
+            authDomain: "juegoproba.firebaseapp.com",
+            projectId: "juegoproba",
+            storageBucket: "juegoproba.firebasestorage.app",
+            messagingSenderId: "428129617435",
+            appId: "1:428129617435:web:e4e07427482691e6321abe",
+            measurementId: "G-MVXJL31NKG"
         };
 
-        let db;
+        let db = null;
         try {
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+                firebase.analytics();
+            }
             db = firebase.firestore();
-            document.getElementById('statusText').innerText = "Firebase Conectado";
+            document.getElementById('statusText').innerText = "BD en Línea";
             document.getElementById('statusDot').style.background = "#34d399";
         } catch (e) {
-            document.getElementById('statusText').innerText = "Modo Local Activo";
+            document.getElementById('statusText').innerText = "Modo Local";
             document.getElementById('statusDot').style.background = "#818cf8";
         }
 
@@ -387,79 +391,108 @@
                 this.currentStageIndex = 0;
                 this.remainingSeconds = 120;
                 this.hasAnsweredCurrentStage = false;
+                this.groupsData = {};
                 this.teacherPrizes = {
-                    1: "Nota 7.0 acumulativa en Matemática + Premio Sorpresa Pucará",
-                    2: "Nota 6.8 acumulativa + Kit escolar especial",
-                    3: "Nota 6.5 acumulativa + Dulces institucionales"
+                    1: "Nota 7.0 acumulativa en Matemática",
+                    2: "Nota 6.8 acumulativa",
+                    3: "Nota 6.5 acumulativa"
                 };
             }
 
             init() {
                 this.renderHomeQRCode();
-                this.startLiveGroupsPolling();
+                this.subscribeToRealtimeDatabase();
             }
+
+            openInstructions() { document.getElementById('modalInstructions').classList.remove('hidden'); }
+            closeInstructions() { document.getElementById('modalInstructions').classList.add('hidden'); }
 
             renderHomeQRCode() {
                 const container = document.getElementById('homeQrcodeContainer');
                 const urlText = document.getElementById('homeUrlText');
                 if (!container || !urlText) return;
-
                 const currentUrl = window.location.href;
                 urlText.innerText = currentUrl;
                 container.innerHTML = '';
-                new QRCode(container, {
-                    text: currentUrl,
-                    width: 140,
-                    height: 140,
-                    colorDark: "#0f172a",
-                    colorLight: "#ffffff"
-                });
+                new QRCode(container, { text: currentUrl, width: 130, height: 130, colorDark: "#0f172a", colorLight: "#ffffff" });
             }
 
-            async getStoredGroups() {
-                let groups = {};
+            renderJoinQRCode() {
+                const container = document.getElementById('joinQrcodeContainer');
+                const urlText = document.getElementById('joinUrlText');
+                if (!container || !urlText) return;
+                const currentUrl = window.location.href;
+                urlText.innerText = currentUrl;
+                container.innerHTML = '';
+                new QRCode(container, { text: currentUrl, width: 110, height: 110, colorDark: "#0f172a", colorLight: "#ffffff" });
+            }
+
+            subscribeToRealtimeDatabase() {
                 if (db) {
-                    try {
-                        let snapshot = await db.collection('groups').get();
-                        snapshot.forEach(doc => { groups[doc.id] = doc.data(); });
-                    } catch (e) {}
+                    db.collection('groups').onSnapshot(snapshot => {
+                        let newGroups = {};
+                        snapshot.forEach(doc => { newGroups[doc.id] = doc.data(); });
+                        this.groupsData = newGroups;
+                        this.onGroupsUpdated();
+                    }, err => {
+                        this.useLocalStorageFallback();
+                    });
+
+                    db.collection('game_state').doc('current').onSnapshot(doc => {
+                        if (doc.exists) {
+                            const state = doc.data();
+                            this.onGameStateUpdated(state);
+                        }
+                    });
+                } else {
+                    this.useLocalStorageFallback();
                 }
-                if (Object.keys(groups).length === 0) {
-                    groups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
-                }
-                return groups;
             }
 
-            async renderAvatarGrid() {
+            useLocalStorageFallback() {
+                setInterval(() => {
+                    this.groupsData = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                    this.onGroupsUpdated();
+                }, 2000);
+            }
+
+            onGroupsUpdated() {
+                this.updateLiveJoinedGroupsUI();
+                this.renderAvatarGrid();
+                this.updatePersonalScoreDisplay();
+                if (!document.getElementById('viewTeacherDashboard').classList.contains('hidden')) {
+                    this.loadGroupsTable();
+                }
+            }
+
+            onGameStateUpdated(state) {
+                if (state.arenaOpen && !document.getElementById('viewStudentLobby').classList.contains('hidden')) {
+                    this.currentStageIndex = state.currentStage || 0;
+                    this.showStudentGameScreen(state);
+                } else if (state.arenaOpen && !document.getElementById('viewStudentGame').classList.contains('hidden')) {
+                    this.currentStageIndex = state.currentStage || 0;
+                    this.showStudentGameScreen(state);
+                }
+            }
+
+            renderAvatarGrid() {
                 const grid = document.getElementById('avatarGrid');
                 if (!grid) return;
-                
-                const groups = await this.getStoredGroups();
-                const takenAvatars = Object.values(groups)
+
+                const takenAvatars = Object.values(this.groupsData)
                     .filter(g => g.name !== this.groupName)
                     .map(g => g.avatar);
 
-                if (takenAvatars.includes(this.avatar)) {
-                    this.avatar = '';
-                }
+                if (takenAvatars.includes(this.avatar)) this.avatar = '';
 
                 grid.innerHTML = AVATARS.map(av => {
                     const isTaken = takenAvatars.includes(av);
                     const isSelected = (this.avatar === av);
-                    
-                    if (isTaken) {
-                        return `
-                            <div style="padding: 0.4rem; font-size: 1.2rem; background: #e2e8f0; border-radius: 0.5rem; border: 2px solid #cbd5e1; text-align: center; opacity: 0.4; cursor: not-allowed;" title="Avatar Ocupado">
-                                ${av}
-                            </div>
-                        `;
-                    }
 
-                    return `
-                        <button type="button" onclick="app.selectAvatar('${av}')" style="padding: 0.4rem; font-size: 1.2rem; background: #f8fafc; border-radius: 0.5rem; border: 2px solid ${isSelected ? '#4f46e5' : '#e2e8f0'}; cursor: pointer; transition: transform 0.2s;">
-                            ${av}
-                        </button>
-                    `;
+                    if (isTaken) {
+                        return `<div style="padding: 0.35rem; font-size: 1.1rem; background: #e2e8f0; border-radius: 0.5rem; border: 1px solid #cbd5e1; text-align: center; opacity: 0.35; cursor: not-allowed;" title="Ocupado">${av}</div>`;
+                    }
+                    return `<button type="button" onclick="app.selectAvatar('${av}')" style="padding: 0.35rem; font-size: 1.1rem; background: #f8fafc; border-radius: 0.5rem; border: 2px solid ${isSelected ? '#4f46e5' : '#e2e8f0'}; cursor: pointer;">${av}</button>`;
                 }).join('');
             }
 
@@ -474,51 +507,41 @@
                 this.renderHomeQRCode();
             }
 
-            async showStudentJoin() {
+            showStudentJoin() {
                 this.hideAllViews();
                 document.getElementById('viewStudentJoin').classList.remove('hidden');
                 if (this.groupName) {
                     document.getElementById('inputGroupName').value = this.groupName;
                     document.getElementById('inputMembers').value = this.members;
                 }
-                await this.renderAvatarGrid();
-                await this.updateLiveJoinedGroups();
+                this.renderAvatarGrid();
+                this.updateLiveJoinedGroupsUI();
+                this.renderJoinQRCode();
             }
 
-            startLiveGroupsPolling() {
-                if (this.livePollInterval) clearInterval(this.livePollInterval);
-                this.livePollInterval = setInterval(async () => {
-                    const joinView = document.getElementById('viewStudentJoin');
-                    if (joinView && !joinView.classList.contains('hidden')) {
-                        await this.updateLiveJoinedGroups();
-                    }
-                }, 3000);
-            }
-
-            async updateLiveJoinedGroups() {
-                let groups = await this.getStoredGroups();
+            updateLiveJoinedGroupsUI() {
                 const listEl = document.getElementById('liveJoinedGroupsList');
                 const countEl = document.getElementById('joinGroupCount');
                 if (!listEl || !countEl) return;
 
-                const groupArray = Object.values(groups);
+                const groupArray = Object.values(this.groupsData);
                 countEl.innerText = groupArray.length;
 
                 if (groupArray.length === 0) {
-                    listEl.innerHTML = `<div style="font-size: 0.65rem; color: #64748b; text-align: center; padding: 1rem;">Aún no hay grupos inscritos. ¡Sé el primero!</div>`;
+                    listEl.innerHTML = `<div style="font-size: 0.65rem; color: #64748b; text-align: center; padding: 0.75rem;">Aún no hay grupos inscritos. ¡Sé el primero!</div>`;
                     return;
                 }
 
                 listEl.innerHTML = groupArray.map(g => `
-                    <div style="background: white; border: 1px solid #e2e8f0; padding: 0.4rem 0.6rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem;">
-                        <div style="display: flex; align-items: center; gap: 0.4rem;">
-                            <span style="font-size: 1.1rem;">${g.avatar || '🚀'}</span>
+                    <div style="background: white; border: 1px solid #e2e8f0; padding: 0.35rem 0.5rem; border-radius: 0.4rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.65rem;">
+                        <div style="display: flex; align-items: center; gap: 0.35rem;">
+                            <span style="font-size: 1rem;">${g.avatar || '🚀'}</span>
                             <div>
                                 <span style="font-weight: 700; color: #0f172a; display: block;">${g.name}</span>
-                                <span style="font-size: 0.6rem; color: #64748b;">${g.members}</span>
+                                <span style="font-size: 0.55rem; color: #64748b;">${g.members}</span>
                             </div>
                         </div>
-                        <span style="font-size: 0.55rem; background: #e0e7ff; color: #3730a3; padding: 0.1rem 0.3rem; border-radius: 9999px; font-weight: 600;">Registrado</span>
+                        <span style="font-size: 0.5rem; background: #e0e7ff; color: #3730a3; padding: 0.1rem 0.3rem; border-radius: 9999px; font-weight: 600;">En línea</span>
                     </div>
                 `).join('');
             }
@@ -527,10 +550,10 @@
                 e.preventDefault();
                 const gName = document.getElementById('inputGroupName').value.trim();
                 const mems = document.getElementById('inputMembers').value.trim();
-                
+
                 if (!gName || !mems) return;
                 if (!this.avatar) {
-                    alert("Por favor selecciona un avatar disponible.");
+                    alert("Por favor elige un avatar disponible.");
                     return;
                 }
 
@@ -540,70 +563,42 @@
                 localStorage.setItem('pucara_members', mems);
                 localStorage.setItem('pucara_avatar', this.avatar);
 
-                await this.saveGroupToDatabase({
+                const groupObj = {
                     name: gName,
                     members: mems,
                     avatar: this.avatar,
                     score: 0,
                     lastActive: new Date().toISOString()
-                });
+                };
+
+                if (db) {
+                    try { await db.collection('groups').doc(gName).set(groupObj, { merge: true }); } catch (e) {}
+                }
+                let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
+                localGroups[gName] = groupObj;
+                localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
 
                 this.showStudentLobby();
             }
 
-            async saveGroupToDatabase(groupData) {
-                if (db) {
-                    try { await db.collection('groups').doc(groupData.name).set(groupData, { merge: true }); } catch (e) {}
-                }
-                let localGroups = JSON.parse(localStorage.getItem('pucara_groups') || '{}');
-                localGroups[groupData.name] = { ...(localGroups[groupData.name] || {}), ...groupData };
-                localStorage.setItem('pucara_groups', JSON.stringify(localGroups));
-            }
-
-            async showStudentLobby() {
+            showStudentLobby() {
                 this.hideAllViews();
                 document.getElementById('viewStudentLobby').classList.remove('hidden');
                 document.getElementById('lobbyGroupName').innerText = `${this.avatar} ${this.groupName}`;
                 document.getElementById('lobbyMembers').innerText = `Integrantes: ${this.members}`;
                 document.getElementById('lobbyAvatarDisplay').innerText = this.avatar;
-
-                await this.updatePersonalScoreDisplay();
-                this.startStudentPolling();
+                this.updatePersonalScoreDisplay();
             }
 
-            async updatePersonalScoreDisplay() {
+            updatePersonalScoreDisplay() {
                 let score = 0;
-                let groups = await this.getStoredGroups();
-                if (groups[this.groupName]) {
-                    score = groups[this.groupName].score || 0;
+                if (this.groupsData[this.groupName]) {
+                    score = this.groupsData[this.groupName].score || 0;
                 }
                 const scoreEl = document.getElementById('lobbyPersonalScore');
                 if (scoreEl) scoreEl.innerText = score;
                 const liveScoreEl = document.getElementById('gameLiveScore');
                 if (liveScoreEl) liveScoreEl.innerText = score;
-            }
-
-            startStudentPolling() {
-                if (this.studentPollInterval) clearInterval(this.studentPollInterval);
-                this.studentPollInterval = setInterval(async () => {
-                    let gameState = await this.fetchGameState();
-                    await this.updatePersonalScoreDisplay();
-
-                    if (gameState && gameState.arenaOpen) {
-                        this.currentStageIndex = gameState.currentStage || 0;
-                        this.showStudentGameScreen(gameState);
-                    }
-                }, 2000);
-            }
-
-            async fetchGameState() {
-                if (db) {
-                    try {
-                        let doc = await db.collection('game_state').doc('current').get();
-                        if (doc.exists) return doc.data();
-                    } catch (e) {}
-                }
-                return JSON.parse(localStorage.getItem('pucara_gameState') || '{"arenaOpen":false, "currentStage":0, "active":false}');
             }
 
             showStudentGameScreen(state) {
@@ -630,8 +625,8 @@
                         document.getElementById('gameActiveQuestion').classList.remove('hidden');
 
                         optContainer.innerHTML = stage.options.map((opt, idx) => `
-                            <button onclick="app.submitAnswer(${idx})" style="text-align: left; padding: 1rem; border-radius: 0.75rem; border: 2px solid #cbd5e1; background: white; font-weight: 500; font-size: 0.85rem; color: #1e293b; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#4f46e5'; this.style.background='#e0e7ff'" onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='white'">
-                                <span style="font-weight: 700; color: #4f46e5; margin-right: 0.5rem;">${['A)', 'B)', 'C)', 'D)'][idx]}</span> ${opt}
+                            <button onclick="app.submitAnswer(${idx})" style="text-align: left; padding: 0.85rem; border-radius: 0.65rem; border: 2px solid #cbd5e1; background: white; font-weight: 500; font-size: 0.8rem; color: #1e293b; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#4f46e5'; this.style.background='#e0e7ff'" onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='white'">
+                                <span style="font-weight: 700; color: #4f46e5; margin-right: 0.4rem;">${['A)', 'B)', 'C)', 'D)'][idx]}</span> ${opt}
                             </button>
                         `).join('');
                         this.renderedStageId = stage.id;
@@ -653,31 +648,20 @@
                 const isCorrect = (optionIndex === stage.correct);
                 let pointsEarned = isCorrect ? (1000 + Math.floor(this.remainingSeconds * 2)) : 0;
 
-                await this.addScoreToGroup(this.groupName, pointsEarned, stage.id, isCorrect);
-
-                document.getElementById('gameActiveQuestion').classList.add('hidden');
-                document.getElementById('gameAnsweredStandby').classList.remove('hidden');
-            }
-
-            async addScoreToGroup(gName, points, stageId, isCorrect) {
-                let groups = await this.getStoredGroups();
-                if (groups[gName]) {
-                    groups[gName].score = (groups[gName].score || 0) + points;
-                    groups[gName][`stage_${stageId}`] = { answered: true, correct: isCorrect, points };
-                    localStorage.setItem('pucara_groups', JSON.stringify(groups));
-                }
                 if (db) {
                     try {
-                        let ref = db.collection('groups').doc(gName);
+                        let ref = db.collection('groups').doc(this.groupName);
                         let doc = await ref.get();
-                        let currentScore = doc.exists ? (doc.data().score || 0) : 0;
+                        let curScore = doc.exists ? (doc.data().score || 0) : 0;
                         await ref.update({
-                            score: currentScore + points,
-                            [`stage_${stageId}`]: { answered: true, correct: isCorrect, points }
+                            score: curScore + pointsEarned,
+                            [`stage_${stage.id}`]: { answered: true, correct: isCorrect, points: pointsEarned }
                         });
                     } catch (e) {}
                 }
-                await this.updatePersonalScoreDisplay();
+
+                document.getElementById('gameActiveQuestion').classList.add('hidden');
+                document.getElementById('gameAnsweredStandby').classList.remove('hidden');
             }
 
             formatTime(seconds) {
@@ -706,31 +690,28 @@
                 document.getElementById('viewTeacherDashboard').classList.remove('hidden');
                 this.renderTeacherStagesList();
                 this.selectTeacherStage(0);
-                this.loadGroups();
-                this.syncTeacherArenaButton();
+                this.loadGroupsTable();
             }
 
             async toggleArenaAccess() {
-                let state = await this.fetchGameState();
-                state.arenaOpen = !state.arenaOpen;
+                let state = { arenaOpen: true };
                 if (db) {
-                    try { await db.collection('game_state').doc('current').set(state, { merge: true }); } catch (e) {}
+                    try {
+                        let doc = await db.collection('game_state').doc('current').get();
+                        if (doc.exists) state = doc.data();
+                        state.arenaOpen = !state.arenaOpen;
+                        await db.collection('game_state').doc('current').set(state, { merge: true });
+                    } catch (e) {}
                 }
-                localStorage.setItem('pucara_gameState', JSON.stringify(state));
-                this.syncTeacherArenaButton();
-                alert(state.arenaOpen ? "¡Ingreso a la Arena HABILITADO! Los estudiantes ya pueden entrar." : "Ingreso a la Arena CERRADO.");
-            }
-
-            async syncTeacherArenaButton() {
-                let state = await this.fetchGameState();
                 const btn = document.getElementById('btnArenaToggle');
-                if (!btn) return;
                 if (state.arenaOpen) {
                     btn.style.background = "#dc2626";
-                    btn.innerText = "🔴 Cerrar Ingreso a Arena";
+                    btn.innerText = "🔴 Bloquear Ingreso a Arena";
+                    alert("¡Acceso a la Arena HABILITADO para los estudiantes!");
                 } else {
                     btn.style.background = "#059669";
                     btn.innerText = "🟢 Habilitar Ingreso a Arena";
+                    alert("Ingreso a la Arena BLOQUEADO.");
                 }
             }
 
@@ -750,7 +731,7 @@
             renderTeacherStagesList() {
                 const list = document.getElementById('teacherStagesList');
                 list.innerHTML = STAGES.map((s, idx) => `
-                    <button onclick="app.selectTeacherStage(${idx})" style="width: 100%; text-align: left; padding: 0.6rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; border: 1px solid #cbd5e1; cursor: pointer; background: ${idx === this.currentStageIndex ? '#4f46e5' : 'white'}; color: ${idx === this.currentStageIndex ? 'white' : '#334155'}; display: flex; justify-content: space-between;">
+                    <button onclick="app.selectTeacherStage(${idx})" style="width: 100%; text-align: left; padding: 0.5rem; border-radius: 0.4rem; font-size: 0.7rem; font-weight: 600; border: 1px solid #cbd5e1; cursor: pointer; background: ${idx === this.currentStageIndex ? '#4f46e5' : 'white'}; color: ${idx === this.currentStageIndex ? 'white' : '#334155'}; display: flex; justify-content: space-between;">
                         <span>Etapa ${s.id}</span>
                         <span>${Math.floor(s.duration/60)}m</span>
                     </button>
@@ -772,18 +753,19 @@
 
             async teacherStartQuestion() {
                 const customDuration = parseInt(document.getElementById('inputCustomDuration').value) || STAGES[this.currentStageIndex].duration;
-                let state = await this.fetchGameState();
-                state.isStarted = true;
-                state.currentStage = this.currentStageIndex;
-                state.active = true;
-                state.remainingSeconds = customDuration;
-                state.startTime = Date.now();
+                let state = {
+                    arenaOpen: true,
+                    isStarted: true,
+                    currentStage: this.currentStageIndex,
+                    active: true,
+                    remainingSeconds: customDuration,
+                    startTime: Date.now()
+                };
 
                 if (db) {
                     try { await db.collection('game_state').doc('current').set(state, { merge: true }); } catch (e) {}
                 }
-                localStorage.setItem('pucara_gameState', JSON.stringify(state));
-                alert(`¡Pregunta de Etapa ${this.currentStageIndex + 1} activada! El cronómetro corre.`);
+                alert(`¡Etapa ${this.currentStageIndex + 1} activada en vivo para todos los dispositivos!`);
                 this.startTeacherTimer(customDuration);
             }
 
@@ -793,20 +775,14 @@
 
                 this.teacherTimerInterval = setInterval(async () => {
                     remaining--;
-                    let state = await this.fetchGameState();
-                    state.remainingSeconds = remaining;
                     if (db) {
                         try { await db.collection('game_state').doc('current').update({ remainingSeconds: remaining }); } catch (e) {}
                     }
-                    localStorage.setItem('pucara_gameState', JSON.stringify(state));
-
                     if (remaining <= 0) {
                         clearInterval(this.teacherTimerInterval);
-                        state.active = false;
                         if (db) {
                             try { await db.collection('game_state').doc('current').update({ active: false }); } catch (e) {}
                         }
-                        localStorage.setItem('pucara_gameState', JSON.stringify(state));
                     }
                 }, 1000);
             }
@@ -814,36 +790,35 @@
             async teacherNextStage() {
                 if (this.currentStageIndex < STAGES.length - 1) {
                     this.selectTeacherStage(this.currentStageIndex + 1);
-                    let state = await this.fetchGameState();
-                    state.currentStage = this.currentStageIndex;
-                    state.active = false;
-                    state.remainingSeconds = STAGES[this.currentStageIndex].duration;
-
-                    if (db) db.collection('game_state').doc('current').set(state, { merge: true }).catch(()=>{});
-                    localStorage.setItem('pucara_gameState', JSON.stringify(state));
-                    alert(`Avanzado a Etapa ${this.currentStageIndex + 1}. Disfruten la pausa y presione "Activar Pregunta" cuando deseen.`);
+                    if (db) {
+                        db.collection('game_state').doc('current').set({
+                            currentStage: this.currentStageIndex,
+                            active: false,
+                            remainingSeconds: STAGES[this.currentStageIndex].duration
+                        }, { merge: true }).catch(()=>{});
+                    }
+                    alert(`Avanzado a Etapa ${this.currentStageIndex + 1}. Tienen pausa para dialogar antes de presionar 'Activar Pregunta'.`);
                 } else {
-                    alert('Última etapa alcanzada. Puedes lanzar el Podio.');
+                    alert('Llegaron a la última etapa. Puedes mostrar el Podio.');
                 }
             }
 
-            async loadGroups() {
-                let groups = await this.getStoredGroups();
-                document.getElementById('teacherGroupCount').innerText = Object.keys(groups).length;
+            loadGroupsTable() {
+                document.getElementById('teacherGroupCount').innerText = Object.keys(this.groupsData).length;
                 const tbody = document.getElementById('teacherGroupsTableBody');
-                
-                if (Object.keys(groups).length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="padding: 1rem; text-align: center; color: #64748b;">No hay grupos registrados aún.</td></tr>`;
+
+                if (Object.keys(this.groupsData).length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="padding: 0.75rem; text-align: center; color: #64748b;">No hay grupos inscritos.</td></tr>`;
                     return;
                 }
 
-                tbody.innerHTML = Object.values(groups).sort((a,b) => (b.score || 0) - (a.score || 0)).map(g => `
+                tbody.innerHTML = Object.values(this.groupsData).sort((a,b) => (b.score || 0) - (a.score || 0)).map(g => `
                     <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 0.75rem; font-weight: 700;"><span style="font-size: 1.2rem; margin-right: 0.4rem;">${g.avatar || '🚀'}</span> ${g.name}</td>
-                        <td style="padding: 0.75rem; color: #64748b;">${g.members}</td>
-                        <td style="padding: 0.75rem; font-weight: 700; color: #4f46e5;">${g.score || 0} pts</td>
-                        <td style="padding: 0.75rem; text-align: center;">
-                            <button onclick="app.resetGroupScore('${g.name}')" style="background: #fee2e2; color: #991b1b; border: none; padding: 0.3rem 0.6rem; border-radius: 0.4rem; font-size: 0.7rem; font-weight: 600; cursor: pointer;">Reiniciar</button>
+                        <td style="padding: 0.6rem; font-weight: 700;"><span style="font-size: 1.1rem; margin-right: 0.3rem;">${g.avatar || '🚀'}</span> ${g.name}</td>
+                        <td style="padding: 0.6rem; color: #64748b;">${g.members}</td>
+                        <td style="padding: 0.6rem; font-weight: 700; color: #4f46e5;">${g.score || 0} pts</td>
+                        <td style="padding: 0.6rem; text-align: center;">
+                            <button onclick="app.resetGroupScore('${g.name}')" style="background: #fee2e2; color: #991b1b; border: none; padding: 0.25rem 0.5rem; border-radius: 0.3rem; font-size: 0.65rem; font-weight: 600; cursor: pointer;">Reiniciar</button>
                         </td>
                     </tr>
                 `).join('');
@@ -851,13 +826,7 @@
 
             async resetGroupScore(gName) {
                 if (confirm(`¿Reiniciar puntaje de ${gName}?`)) {
-                    let groups = await this.getStoredGroups();
-                    if (groups[gName]) {
-                        groups[gName].score = 0;
-                        localStorage.setItem('pucara_groups', JSON.stringify(groups));
-                    }
                     if (db) { try { await db.collection('groups').doc(gName).update({ score: 0 }); } catch(e){} }
-                    this.loadGroups();
                 }
             }
 
@@ -865,37 +834,36 @@
                 this.teacherPrizes[1] = document.getElementById('inputPrize1').value;
                 this.teacherPrizes[2] = document.getElementById('inputPrize2').value;
                 this.teacherPrizes[3] = document.getElementById('inputPrize3').value;
-                alert('¡Premios guardados!');
+                alert('Premios guardados.');
             }
 
-            async showPodiumScreen() {
+            showPodiumScreen() {
                 this.hideAllViews();
                 document.getElementById('viewPodium').classList.remove('hidden');
 
-                let groups = await this.getStoredGroups();
-                const sortedGroups = Object.values(groups).sort((a,b) => (b.score || 0) - (a.score || 0));
+                const sortedGroups = Object.values(this.groupsData).sort((a,b) => (b.score || 0) - (a.score || 0));
                 const podiumStage = document.getElementById('podiumStage');
                 const podiumOrder = [
-                    { rank: 2, height: '140px', bg: '#cbd5e1', color: '#1e293b', crown: '🥈' },
-                    { rank: 1, height: '190px', bg: '#fbbf24', color: '#78350f', crown: '👑 🥇' },
-                    { rank: 3, height: '110px', bg: '#b45309', color: '#fef3c7', crown: '🥉' }
+                    { rank: 2, height: '130px', bg: '#cbd5e1', color: '#1e293b', crown: '🥈' },
+                    { rank: 1, height: '170px', bg: '#fbbf24', color: '#78350f', crown: '👑 🥇' },
+                    { rank: 3, height: '100px', bg: '#b45309', color: '#fef3c7', crown: '🥉' }
                 ];
 
                 podiumStage.innerHTML = podiumOrder.map(p => {
                     const group = sortedGroups[p.rank - 1];
-                    if (!group) return `<div style="width: 100px;"></div>`;
+                    if (!group) return `<div style="width: 90px;"></div>`;
                     const prizeText = this.teacherPrizes[p.rank] || 'Premio Sorpresa';
                     return `
-                        <div style="width: 120px; display: flex; flex-direction: column; align-items: center;" class="animate-float">
-                            <div style="text-align: center; margin-bottom: 0.5rem;">
-                                <div style="font-size: 1.8rem;">${group.avatar || '🚀'}</div>
-                                <div style="font-size: 0.8rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;">${group.name}</div>
-                                <div style="font-size: 0.7rem; font-weight: 700; color: #4f46e5;">${group.score || 0} pts</div>
-                                <div style="font-size: 0.65rem; background: #fce7f3; color: #9d174d; padding: 0.1rem 0.4rem; border-radius: 9999px; margin-top: 0.2rem;">🎁 ${prizeText}</div>
+                        <div style="width: 110px; display: flex; flex-direction: column; align-items: center;" class="animate-float">
+                            <div style="text-align: center; margin-bottom: 0.4rem;">
+                                <div style="font-size: 1.6rem;">${group.avatar || '🚀'}</div>
+                                <div style="font-size: 0.75rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">${group.name}</div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #4f46e5;">${group.score || 0} pts</div>
+                                <div style="font-size: 0.55rem; background: #fce7f3; color: #9d174d; padding: 0.1rem 0.3rem; border-radius: 9999px; margin-top: 0.2rem;">🎁 ${prizeText}</div>
                             </div>
-                            <div style="height: ${p.height}; width: 100%; background: ${p.bg}; color: ${p.color}; border-radius: 1rem 1rem 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);">
+                            <div style="height: ${p.height}; width: 100%; background: ${p.bg}; color: ${p.color}; border-radius: 0.85rem 0.85rem 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);">
                                 <span>${p.crown}</span>
-                                <span style="font-size: 0.75rem;">#${p.rank}</span>
+                                <span style="font-size: 0.7rem;">#${p.rank}</span>
                             </div>
                         </div>
                     `;
@@ -903,16 +871,16 @@
 
                 const fullList = document.getElementById('fullRankingList');
                 fullList.innerHTML = sortedGroups.map((g, idx) => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 1rem; background: white; border-radius: 0.5rem; border: 1px solid #e2e8f0; font-size: 0.75rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.85rem; background: white; border-radius: 0.4rem; border: 1px solid #e2e8f0; font-size: 0.7rem;">
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
                             <span style="font-weight: 700; color: #94a3b8;">#${sortedGroups.length - idx}</span>
-                            <span style="font-size: 1.2rem;">${g.avatar || '🚀'}</span>
+                            <span style="font-size: 1.1rem;">${g.avatar || '🚀'}</span>
                             <div>
                                 <span style="font-weight: 700; color: #0f172a;">${g.name}</span>
-                                <span style="font-size: 0.65rem; color: #64748b; display: block;">${g.members}</span>
+                                <span style="font-size: 0.6rem; color: #64748b; display: block;">${g.members}</span>
                             </div>
                         </div>
-                        <span style="font-weight: 700; color: #4f46e5; font-size: 0.9rem;">${g.score || 0} pts</span>
+                        <span style="font-weight: 700; color: #4f46e5; font-size: 0.85rem;">${g.score || 0} pts</span>
                     </div>
                 `).reverse().join('');
 
@@ -931,5 +899,3 @@
     </script>
 </body>
 </html>
-
-
