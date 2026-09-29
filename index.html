@@ -49,34 +49,48 @@
     <!-- Contenedor Principal Dinámico -->
     <main>
 
-        <!-- VISTA 0: CONFIGURACIÓN INICIAL / SELECCIÓN DE ROL -->
-        <div id="viewRoleSelect" class="glass-panel" style="max-width: 500px; margin: 0 auto; padding: 2.5rem; text-align: center;">
-            <span style="background: #e0e7ff; color: #3730a3; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase;">Actividad Interactiva</span>
-            <h2 style="font-size: 1.8rem; font-weight: 700; margin: 1rem 0 0.5rem; color: #0f172a;">¡Bienvenidos al Reto de Probabilidades!</h2>
-            <p style="font-size: 0.85rem; color: #475569; margin-bottom: 2rem;">Selecciona cómo deseas participar en esta experiencia grupal cronometrada.</p>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <button onclick="app.showStudentJoin()" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; padding: 1.5rem 1rem; border-radius: 1rem; cursor: pointer; text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
-                    <div style="font-size: 1rem; font-weight: 700;">Soy Estudiante</div>
-                    <div style="font-size: 0.7rem; color: #c7d2fe; margin-top: 0.25rem;">Únete con tu equipo</div>
-                </button>
-                <button onclick="app.showTeacherAuth()" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: 1px solid #334155; padding: 1.5rem 1rem; border-radius: 1rem; cursor: pointer; text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👨‍🏫</div>
-                    <div style="font-size: 1rem; font-weight: 700;">Panel Docente</div>
-                    <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.25rem;">Controla la partida</div>
-                </button>
+        <!-- VISTA 0: CONFIGURACIÓN INICIAL / SELECCIÓN DE ROL + QR EN EL INICIO -->
+        <div id="viewRoleSelect" class="glass-panel" style="max-width: 750px; margin: 0 auto; padding: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+            <div style="text-align: left;">
+                <span style="background: #e0e7ff; color: #3730a3; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase;">Actividad Interactiva</span>
+                <h2 style="font-size: 1.6rem; font-weight: 700; margin: 0.75rem 0 0.5rem; color: #0f172a;">¡Bienvenidos al Reto de Probabilidades!</h2>
+                <p style="font-size: 0.8rem; color: #475569; margin-bottom: 1.5rem;">Selecciona cómo deseas participar en esta experiencia grupal cronometrada.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <button onclick="app.showStudentJoin()" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; padding: 1rem; border-radius: 1rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 1rem; transition: transform 0.2s;" onmouseover="this.style.transform='translateX(3px)'" onmouseout="this.style.transform='translateX(0)'">
+                        <div style="font-size: 1.8rem;">👥</div>
+                        <div>
+                            <div style="font-size: 0.95rem; font-weight: 700;">Soy Estudiante</div>
+                            <div style="font-size: 0.65rem; color: #c7d2fe;">Únete con tu equipo</div>
+                        </div>
+                    </button>
+                    <button onclick="app.showTeacherAuth()" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: 1px solid #334155; padding: 1rem; border-radius: 1rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 1rem; transition: transform 0.2s;" onmouseover="this.style.transform='translateX(3px)'" onmouseout="this.style.transform='translateX(0)'">
+                        <div style="font-size: 1.8rem;">👨‍🏫</div>
+                        <div>
+                            <div style="font-size: 0.95rem; font-weight: 700;">Panel Docente</div>
+                            <div style="font-size: 0.65rem; color: #94a3b8;">Controla la partida</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Código QR Integrado en el Inicio -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 1rem; text-align: center;">
+                <h3 style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">📱 Escanea para Unirte</h3>
+                <p style="font-size: 0.65rem; color: #64748b; margin-bottom: 0.75rem;">Abre la actividad desde tu celular.</p>
+                <div id="homeQrcodeContainer" style="background: white; padding: 0.5rem; border-radius: 0.75rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.5rem;"></div>
+                <div id="homeUrlText" style="font-size: 0.55rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.4rem; border-radius: 0.4rem;"></div>
             </div>
         </div>
 
-        <!-- VISTA 1: REGISTRO / ACCESO DE ESTUDIANTES + QR + GRUPOS EN VIVO -->
-        <div id="viewStudentJoin" class="hidden glass-panel" style="max-width: 850px; margin: 0 auto; padding: 2rem;">
+        <!-- VISTA 1: REGISTRO / ACCESO DE ESTUDIANTES + GRUPOS EN VIVO -->
+        <div id="viewStudentJoin" class="hidden glass-panel" style="max-width: 750px; margin: 0 auto; padding: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <button onclick="app.showRoleSelect()" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.85rem; font-weight: 600;">← Volver</button>
                 <span style="background: #fce7f3; color: #9d174d; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px;">Inscripción de Equipos</span>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; align-items: start;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
                 <!-- Columna 1: Formulario -->
                 <div>
                     <h2 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">Registro de Grupo</h2>
@@ -99,15 +113,7 @@
                     </form>
                 </div>
 
-                <!-- Columna 2: Código QR de Acceso -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 1rem; text-align: center;">
-                    <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.3rem;">📱 Escanea con tu Celular</h3>
-                    <p style="font-size: 0.6rem; color: #64748b; margin-bottom: 0.75rem;">Accede instantáneamente a la actividad.</p>
-                    <div id="joinQrcodeContainer" style="background: white; padding: 0.5rem; border-radius: 0.75rem; display: inline-block; border: 1px solid #e2e8f0; margin-bottom: 0.5rem;"></div>
-                    <div id="joinUrlText" style="font-size: 0.55rem; font-family: monospace; color: #475569; word-break: break-all; background: #f1f5f9; padding: 0.4rem; border-radius: 0.4rem;"></div>
-                </div>
-
-                <!-- Columna 3: Grupos Inscritos en Vivo -->
+                <!-- Columna 2: Grupos Inscritos en Vivo -->
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 1rem; max-height: 400px; overflow-y: auto;">
                     <h3 style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">👥 Inscritos (<span id="joinGroupCount">0</span>)</h3>
                     <div id="liveJoinedGroupsList" style="display: flex; flex-direction: column; gap: 0.4rem;">
@@ -389,7 +395,25 @@
             }
 
             init() {
+                this.renderHomeQRCode();
                 this.startLiveGroupsPolling();
+            }
+
+            renderHomeQRCode() {
+                const container = document.getElementById('homeQrcodeContainer');
+                const urlText = document.getElementById('homeUrlText');
+                if (!container || !urlText) return;
+
+                const currentUrl = window.location.href;
+                urlText.innerText = currentUrl;
+                container.innerHTML = '';
+                new QRCode(container, {
+                    text: currentUrl,
+                    width: 140,
+                    height: 140,
+                    colorDark: "#0f172a",
+                    colorLight: "#ffffff"
+                });
             }
 
             async getStoredGroups() {
@@ -411,12 +435,10 @@
                 if (!grid) return;
                 
                 const groups = await this.getStoredGroups();
-                // Obtener avatares ya elegidos por otros grupos (excluyendo el grupo actual si ya está registrado)
                 const takenAvatars = Object.values(groups)
                     .filter(g => g.name !== this.groupName)
                     .map(g => g.avatar);
 
-                // Si el avatar actual del usuario está tomado por otro (raro caso de conflicto), limpiarlo
                 if (takenAvatars.includes(this.avatar)) {
                     this.avatar = '';
                 }
@@ -449,6 +471,7 @@
             showRoleSelect() {
                 this.hideAllViews();
                 document.getElementById('viewRoleSelect').classList.remove('hidden');
+                this.renderHomeQRCode();
             }
 
             async showStudentJoin() {
@@ -460,24 +483,6 @@
                 }
                 await this.renderAvatarGrid();
                 await this.updateLiveJoinedGroups();
-                this.renderJoinQRCode();
-            }
-
-            renderJoinQRCode() {
-                const container = document.getElementById('joinQrcodeContainer');
-                const urlText = document.getElementById('joinUrlText');
-                if (!container || !urlText) return;
-
-                const currentUrl = window.location.href;
-                urlText.innerText = currentUrl;
-                container.innerHTML = '';
-                new QRCode(container, {
-                    text: currentUrl,
-                    width: 130,
-                    height: 130,
-                    colorDark: "#0f172a",
-                    colorLight: "#ffffff"
-                });
             }
 
             startLiveGroupsPolling() {
@@ -926,3 +931,5 @@
     </script>
 </body>
 </html>
+
+
